@@ -1,0 +1,89 @@
+# VelocityNvim Repository .gitignore
+
+# Neovim runtime files
+*.tmp
+*.swp
+*.swo
+*~
+
+# Neovim state and cache directories
+.netrwhist
+
+# Plugin directories (managed by native vim.pack)
+# These should NOT be committed - users install via :PluginSync
+pack/*/start/*/
+pack/*/opt/*/
+
+# Local user data and logs
+*.log
+
+# System files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.sublime-*
+
+# Temporary backup files
+*.backup.*
+*.bak
+
+# Local environment variables
+.env
+.env.local
+
+# Python cache (if any Python scripts)
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Node.js (if any Node.js tools)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Rust build artifacts (for blink.cmp compilation)
+target/
+Cargo.lock
+
+# User-specific configuration overrides
+# (Allow users to create local customizations)
+local/
+user-config.lua
+
+# Testing artifacts
+test-results/
+coverage/
+
+# Documentation build artifacts
+docs/_build/
+docs/.doctrees/
+
+# Generated internal documentation (not for users)
+VelocityNvim-Complete-Documentation.md
+*-Complete-Documentation.md
+
+# Temporary plugin test directories
+plugin-test/
+temp-plugins/
+
+# Claude Code development files (not for public release)
+CLAUDE.md
+.claude/
+*.claude*
+
+# Development and internal files
+*debug*.log
+VIDEO-GUIDE.md
+
+# Internal documentation (not for public release)
+GITHUB-SETUP.md
+docs/EMOJI_POLICY.md
