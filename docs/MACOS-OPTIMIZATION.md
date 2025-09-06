@@ -7,11 +7,13 @@ Dieses Dokument beschreibt alle durchgeführten macOS M1 Optimierungen für Velo
 ## 🚀 Performance-Verbesserungen
 
 ### Rust Performance Suite
+
 - **ARM64 Native Compilation**: Rust-Tools kompiliert mit nativen ARM64-Optimierungen
 - **blink.cmp Rust Engine**: 5-10x schnelleres Fuzzy-Matching durch native Rust-Implementation
 - **Cross-Platform Tool Detection**: Automatische Erkennung von Homebrew und Cargo-Tools
 
 ### LaTeX Performance Suite
+
 - **Skim PDF-Viewer Integration**: Nativer macOS PDF-Viewer mit SyncTeX-Support
 - **Tectonic/Typst Optimierung**: Ultra-schnelle LaTeX-Compilation mit ARM64-Optimierungen
 - **PDF-Timing-Fixes**: Lösung für macOS-spezifische PDF-Öffnungs-Probleme
@@ -19,14 +21,17 @@ Dieses Dokument beschreibt alle durchgeführten macOS M1 Optimierungen für Velo
 ## 📁 Modifizierte Dateien
 
 ### Core-Dateien
+
 - `lua/core/keymaps.lua`: PDF-Viewer-Hierarchie (Skim → Zathura → Preview.app)
 - `lua/core/commands.lua`: macOS-spezifische LaTeX-Commands
 
 ### Utility-Module
+
 - `lua/utils/rust-performance.lua`: Cross-Platform Rust-Tool-Detection und ARM64-Optimierungen
 - `lua/utils/latex-performance.lua`: Skim-Integration, SyncTeX-Setup, PDF-Timing-Fixes
 
 ### Plugin-Konfigurationen
+
 - `lua/plugins/lsp/blink-cmp.lua`: Rust-Implementation statt Lua-Fallback
 
 ## 🛠️ Durchgeführte Optimierungen
@@ -34,6 +39,7 @@ Dieses Dokument beschreibt alle durchgeführten macOS M1 Optimierungen für Velo
 ### 1. Cross-Platform Detection Pattern
 
 **Implementierung**:
+
 ```lua
 if vim.fn.has("macunix") == 1 then
   -- macOS-spezifische Optimierungen
@@ -43,6 +49,7 @@ end
 ```
 
 **Vorteile**:
+
 - ✅ Keine Auswirkung auf Linux-Performance
 - ✅ Robuste Platform-Detection
 - ✅ Klare Fehlermeldungen bei falscher Platform
@@ -52,6 +59,7 @@ end
 **Problem**: Tools in `~/.cargo/bin/` und `/opt/homebrew/bin/` nicht gefunden
 
 **Lösung**:
+
 ```lua
 -- macOS: Zusätzliche Pfade für Cargo/Homebrew-Tools
 if vim.fn.has("macunix") == 1 then
@@ -62,6 +70,7 @@ end
 ```
 
 **Resultat**:
+
 - ✅ Alle Rust-Tools werden korrekt erkannt
 - ✅ Homebrew-Installation unterstützt
 - ✅ Mixed Cargo/Homebrew-Setups funktionieren
@@ -71,18 +80,21 @@ end
 **Die 4 kritischen Probleme + Lösungen**:
 
 1. **Homebrew vs rustup PATH-Konflikt**
+
    ```bash
    # PATH-Priorität erzwingen
    export PATH="$HOME/.rustup/toolchains/nightly-aarch64-apple-darwin/bin:$PATH"
    ```
 
 2. **macOS M1 Lua-Linking-Fehler**
+
    ```bash
    # Undefined symbols zur Laufzeit erlauben
    export RUSTFLAGS="-C target-cpu=native -C opt-level=3 -C link-args=-Wl,-undefined,dynamic_lookup"
    ```
 
 3. **Stable vs nightly Toolchain**
+
    ```bash
    # Nightly-Toolchain verifiziert erzwingen
    rustup override set nightly
@@ -96,12 +108,14 @@ end
    ```
 
 **VOLLAUTOMATISCHE Lösung**:
+
 ```bash
 cd ~/.config/VelocityNvim
 ./cleanup-and-rebuild.sh  # Löst ALLE 4 Probleme automatisch
 ```
 
 **Resultat**:
+
 - ✅ 100% reproduzierbare Rust-Compilation auf macOS M1
 - ✅ Funktioniert nach jedem :PluginSync
 - ✅ 5-10x schnelleres Fuzzy-Matching
@@ -112,6 +126,7 @@ cd ~/.config/VelocityNvim
 **Problem**: Zathura als einziger PDF-Viewer, "[No name]" Problem auf macOS
 
 **Lösung**: Intelligente PDF-Viewer-Hierarchie
+
 ```lua
 -- macOS: Skim > Zathura > Preview.app
 if vim.fn.has("macunix") == 1 then
@@ -133,6 +148,7 @@ end
 ```
 
 **Features**:
+
 - ✅ Skim als primärer PDF-Viewer (nativer macOS-Support)
 - ✅ Automatischer Fallback zu Zathura/Preview.app
 - ✅ Absoluter Pfad-Support (löst "[No name]" Problem)
@@ -141,6 +157,7 @@ end
 ### 5. Skim SyncTeX Integration
 
 **Implementation**:
+
 ```lua
 function M.skim_synctex_setup()
   if vim.fn.has("macunix") ~= 1 then
@@ -166,6 +183,7 @@ end
 ```
 
 **Resultat**:
+
 - ✅ Bidirektionale Synchronisation zwischen LaTeX und PDF
 - ✅ Click-to-Jump von PDF zu Quellcode
 - ✅ AppleScript-Automation für PDF-Refresh
@@ -173,6 +191,7 @@ end
 ### 6. ARM64-spezifische Rust-Optimierungen
 
 **CPU-Detection**:
+
 ```lua
 -- macOS: ARM64 vs Intel Detection
 local arch = vim.fn.system("uname -m"):gsub("\n", "")
@@ -181,6 +200,7 @@ if arch == "arm64" then
 ```
 
 **Memory-Detection**:
+
 ```lua
 -- macOS: sysctl statt /proc/meminfo
 local memory_bytes = vim.fn.system("sysctl -n hw.memsize 2>/dev/null"):gsub("\n", "")
@@ -188,6 +208,7 @@ local memory_gb = tonumber(memory_bytes) / 1024 / 1024 / 1024
 ```
 
 **Cargo-Profile Optimierung**:
+
 ```lua
 -- macOS: Native CPU-Target, system linker
 if vim.fn.has("macunix") == 1 then
@@ -197,6 +218,7 @@ end
 ```
 
 **Cross-Compilation Targets**:
+
 ```lua
 -- macOS ARM64 optimierte Targets
 targets = {
@@ -210,6 +232,7 @@ targets = {
 ## 🎯 Installation & Setup
 
 ### QUICKSTART: Automatisches Cleanup & Rebuild (NEU - 2025-09-03)
+
 ```bash
 # 1. VelocityNvim installieren
 git clone <repository> ~/.config/VelocityNvim
@@ -229,15 +252,16 @@ NVIM_APPNAME=VelocityNvim nvim
 ✅ macOS M1 Lua-Linking-Fix (`-Wl,-undefined,dynamic_lookup`)  
 ✅ Ultra-optimized Build (native CPU + LTO)  
 ✅ Binary-Pfad-Fix (target/ultra/ → target/release/)  
-✅ Health Check + Rust-Status-Verification  
+✅ Health Check + Rust-Status-Verification
 
-**Nach JEDEM :PluginSync ausführen!**  
+**Nach JEDEM :PluginSync ausführen!**
 
 ---
 
 ### MANUELLES Setup (für Experten)
 
 ### 1. Homebrew Dependencies
+
 ```bash
 # Core Tools
 brew install --cask skim
@@ -251,6 +275,7 @@ brew install tectonic  # Ultra-fast LaTeX compiler
 ```
 
 ### 2. Rust Development Setup
+
 ```bash
 # Rustup (falls nicht vorhanden)
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
@@ -268,12 +293,14 @@ rustup install nightly
 ### 3. blink.cmp Rust Compilation (DEFINITIVE METHODE - 2025-09-03)
 
 **AUTOMATISCH - cleanup-and-rebuild.sh verwenden**:
+
 ```bash
 cd ~/.config/VelocityNvim
 ./cleanup-and-rebuild.sh  # Macht ALLES automatisch korrekt
 ```
 
 **MANUELL - für Debugging** (alle 4 kritischen Fixes):
+
 ```bash
 # 1. PATH-Fix: Nightly-Toolchain direkt verwenden
 cd ~/.local/share/VelocityNvim/site/pack/user/start/blink.cmp
@@ -301,6 +328,7 @@ NVIM_APPNAME=VelocityNvim nvim --headless -c "lua print('Rust:', pcall(require, 
 ```
 
 ### 4. Skim SyncTeX Setup
+
 ```bash
 # In VelocityNvim ausführen
 NVIM_APPNAME=VelocityNvim nvim -c "LaTeXSkimSyncTeX"
@@ -311,11 +339,12 @@ NVIM_APPNAME=VelocityNvim nvim -c "LaTeXSkimSyncTeX"
 ## 🧪 Testing & Verification
 
 ### Performance Status Commands
+
 ```bash
 # Rust Performance Check
 NVIM_APPNAME=VelocityNvim nvim -c "RustUltimateBenchmark"
 
-# LaTeX Performance Check  
+# LaTeX Performance Check
 NVIM_APPNAME=VelocityNvim nvim -c "LaTeXUltimateSetup"
 
 # System Health Check
@@ -323,9 +352,10 @@ NVIM_APPNAME=VelocityNvim nvim -c "VelocityHealth"
 ```
 
 ### blink.cmp Rust Verification
+
 ```bash
 # Test Rust-Implementation
-NVIM_APPNAME=VelocityNvim nvim --headless -c "lua 
+NVIM_APPNAME=VelocityNvim nvim --headless -c "lua
 local ok, fuzzy = pcall(require, 'blink.cmp.fuzzy')
 if ok then
   print('Fuzzy Implementation:', fuzzy.get_implementation())
@@ -335,6 +365,7 @@ end" -c "qall"
 ```
 
 ### PDF-Viewer Test
+
 ```bash
 # Test LaTeX → PDF → Skim Workflow
 cd /tmp
@@ -342,7 +373,7 @@ NVIM_APPNAME=VelocityNvim nvim -c "
 :edit test.tex
 :put ='\\documentclass{article}'
 :put ='\\begin{document}'
-:put ='Test für Skim Integration'  
+:put ='Test für Skim Integration'
 :put ='\\end{document}'
 :w
 \\c
@@ -354,15 +385,18 @@ NVIM_APPNAME=VelocityNvim nvim -c "
 ## ⚠️ Wichtige Hinweise
 
 ### Plugin-Updates (AKTUALISIERTE Methode)
+
 **CRITICAL**: Nach `:PluginSync` IMMER blink.cmp Rust-Binary neu kompilieren:
 
 **Automatische Methode**:
+
 ```bash
 # Setup-Script nach Plugin-Updates
 ./setup-macos.sh  # Macht alles automatisch
 ```
 
 **Manuelle Methode** (mit korrekter PATH-Behandlung):
+
 ```bash
 # 1. Sicherstellen dass PATH korrekt ist
 export PATH="$HOME/.cargo/bin:$PATH"
@@ -388,20 +422,26 @@ fi
 ```
 
 ### Path Priority
+
 macOS Tool-Detection erfolgt in folgender Reihenfolge:
+
 1. `~/.cargo/bin/` (Cargo-installierte Tools)
 2. `/opt/homebrew/bin/` (ARM64 Homebrew)
 3. `/usr/local/bin/` (Intel Homebrew/System)
 4. Standard `$PATH`
 
 ### Memory Configuration
+
 **Automatische LSP-Konfiguration basierend auf RAM**:
+
 - **<8GB**: Conservative Config (weniger Features)
 - **8-15GB**: Balanced Config (empfohlen für M1 MacBook Air)
 - **>15GB**: High-Performance Config
 
 ### SyncTeX Integration
+
 Für optimale SyncTeX-Performance:
+
 1. LaTeX mit `\synctex=1` kompilieren
 2. Skim SyncTeX-Settings konfigurieren
 3. Neovim Socket für bidirektionale Kommunikation
@@ -411,6 +451,7 @@ Für optimale SyncTeX-Performance:
 ### ⚠️ DEFINITIVE LÖSUNG: cleanup-and-rebuild.sh (2025-09-03)
 
 **Alle bekannten Fehler GELÖST**:
+
 - ✅ `Error: module 'blink_cmp_fuzzy' not found` → Binary-Pfad-Fix
 - ✅ `Incomplete build of the fuzzy matching library detected` → Clean Build
 - ✅ `error[E0554]: #![feature] may not be used on the stable release channel` → Nightly erzwungen
@@ -418,14 +459,16 @@ Für optimale SyncTeX-Performance:
 - ✅ `symbol '_lua_*' missing` → macOS M1 Lua-Linking-Fix
 
 **Ein Script löst ALLE Probleme**:
+
 ```bash
 cd ~/.config/VelocityNvim
 ./cleanup-and-rebuild.sh  # 100% funktionale Lösung
 ```
 
 **Script macht automatisch** (in korrekter Reihenfolge):
+
 1. **Rust Toolchain Check** - Verifiziert rustup + nightly
-2. **PATH-Priorität erzwingen** - Nightly vor Homebrew 
+2. **PATH-Priorität erzwingen** - Nightly vor Homebrew
 3. **Clean Build Environment** - target/ + Cargo.lock löschen
 4. **Nightly-Override verifizieren** - Projektspezifisch setzen
 5. **macOS M1 Lua-Linking** - `-Wl,-undefined,dynamic_lookup` setzen
@@ -437,6 +480,7 @@ cd ~/.config/VelocityNvim
 **Nach JEDEM :PluginSync verwenden!**
 
 **Manueller Fallback** (nur falls Script nicht funktioniert):
+
 ```bash
 # Alle 4 kritischen Fixes manuell anwenden (siehe oben)
 ```
@@ -445,11 +489,13 @@ cd ~/.config/VelocityNvim
 
 **Root Cause Analysis (2025-09-03)**:
 Das häufigste Problem ist **Homebrew-Rust überschreibt rustup**:
+
 - Homebrew installiert `stable` Toolchain nach `/opt/homebrew/bin/`
 - blink.cmp benötigt `nightly` Features aus `~/.cargo/bin/`
 - PATH-Priorität ist falsch: Homebrew vor rustup
 
 **DEFINITIVE Lösung**:
+
 ```bash
 # 1. PATH-Priorität korrigieren (KRITISCH!)
 echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> ~/.zshrc
@@ -475,13 +521,16 @@ NVIM_APPNAME=VelocityNvim nvim --headless -c "lua print('Rust available:', pcall
 ```
 
 **Schnelle Automatische Lösung**:
+
 ```bash
 # Verwende das mitgelieferte Setup-Script
 ./setup-macos.sh
 ```
 
 ### Problem: PDF öffnet sich nicht / "[No name]"
+
 **Lösung**:
+
 ```bash
 # 1. Skim installieren
 brew install --cask skim
@@ -495,6 +544,7 @@ ls -la /path/to/file.pdf
 ### Problem: Tools nicht gefunden (ERWEITERTE Diagnose)
 
 **Diagnose-Commands**:
+
 ```bash
 # 1. PATH-Analyse
 echo $PATH | tr ':' '\n' | nl  # Zeige PATH-Priorität mit Zeilennummern
@@ -508,6 +558,7 @@ ls -la ~/.cargo/bin/ | grep -E "(rust|cargo)"      # Zeigt rustup-Rust
 ```
 
 **Lösung (Prioritäts-basiert)**:
+
 ```bash
 # 1. Korrekte PATH-Reihenfolge in ~/.zshrc
 # WICHTIG: ~/.cargo/bin MUSS vor /opt/homebrew/bin stehen!
@@ -526,6 +577,7 @@ fi
 ```
 
 **Alternative: Homebrew-Rust entfernen** (falls Probleme bleiben):
+
 ```bash
 # Nur wenn PATH-Fix nicht funktioniert
 brew uninstall rust  # Entfernt Homebrew-Rust komplett
@@ -533,7 +585,9 @@ brew uninstall rust  # Entfernt Homebrew-Rust komplett
 ```
 
 ### Problem: LaTeX Compilation Timeout
+
 **Lösung**:
+
 ```bash
 # 1. Tectonic installieren (ultra-fast)
 brew install tectonic
@@ -547,11 +601,13 @@ timeout_ms = 10000  -- 10 Sekunden für große Dokumente
 Das `setup-macos.sh` Script automatisiert die komplette macOS M1 Installation und löst alle bekannten PATH/Rust-Probleme:
 
 ### Script-Features
+
 ```bash
 ./setup-macos.sh
 ```
 
 **Was das Script macht**:
+
 1. **Rustup Installation prüfen** - Stoppt mit Installationsanleitung falls fehlend
 2. **Nightly Toolchain installieren** - `rustup install nightly` falls nicht vorhanden
 3. **blink.cmp Verzeichnis finden** - Automatische Pfad-Erkennung mit Fehlermeldung
@@ -563,6 +619,7 @@ Das `setup-macos.sh` Script automatisiert die komplette macOS M1 Installation un
 9. **User-Instructions** - Klare nächste Schritte für Terminal-Neustart
 
 ### Script-Output-Beispiel
+
 ```bash
 🚀 VelocityNvim macOS M1 Setup
 ================================
@@ -585,6 +642,7 @@ Das `setup-macos.sh` Script automatisiert die komplette macOS M1 Installation un
 ```
 
 ### Script-Sicherheit
+
 - **Keine System-weiten Änderungen** - Nur projekt-spezifische rustup overrides
 - **Intelligente PATH-Erkennung** - Fügt PATH nur hinzu falls noch nicht vorhanden
 - **Fehlerbehandlung** - Stoppt bei Problemen mit klaren Fehlermeldungen
@@ -592,13 +650,16 @@ Das `setup-macos.sh` Script automatisiert die komplette macOS M1 Installation un
 - **Backup-freundlich** - Keine Überschreibung existierender Konfiguration
 
 ### Nach Plugin-Updates
+
 Das Script kann jederzeit erneut ausgeführt werden:
+
 ```bash
 # Nach :PluginSync
 ./setup-macos.sh  # Rebuilds blink.cmp automatisch
 ```
 
 ### Troubleshooting des Scripts
+
 ```bash
 # Script-Berechtigungen prüfen
 ls -la setup-macos.sh  # Sollte 'x' flag haben
@@ -616,13 +677,15 @@ cat setup-macos.sh  # Zeigt alle Commands zum manuellen Ausführen
 ## 📈 Performance-Benchmarks
 
 ### Vor Optimierung (macOS M1)
-- Fuzzy-Matching: Lua-Fallback (~50ms für 1000 Items)  
+
+- Fuzzy-Matching: Lua-Fallback (~50ms für 1000 Items)
 - PDF-Viewer: Zathura mit "[No name]" Problem
 - Tool-Detection: 60% Fehlerrate
 - LaTeX-Build: Standard pdflatex (10-30s)
 - **Setup-Zeit**: 2-4 Stunden manuell mit Fehlern
 
 ### Nach Optimierung (macOS M1)
+
 - Fuzzy-Matching: Rust ARM64 Native (~5ms für 1000 Items) **10x Verbesserung**
 - PDF-Viewer: Skim native Integration, SyncTeX-Support
 - Tool-Detection: 100% Erkennungsrate
@@ -630,14 +693,16 @@ cat setup-macos.sh  # Zeigt alle Commands zum manuellen Ausführen
 - **Setup-Zeit**: 2-5 Minuten automatisch **30x schneller**
 
 ### Linux-System (Unverändert)
+
 - Fuzzy-Matching: Rust x86_64 (~8ms für 1000 Items)
-- PDF-Viewer: Zathura mit xdg-open Fallback  
+- PDF-Viewer: Zathura mit xdg-open Fallback
 - Tool-Detection: Standard PATH + mold-Linker
 - LaTeX-Build: pdflatex/tectonic je nach Verfügbarkeit
 
 ## 🎨 Icon Compliance
 
 Alle Optimierungen folgen den VelocityNvim Icon-Regeln:
+
 - ✅ **NUR NerdFont-Symbole** aus `require("core.icons")`
 - ❌ **KEINE Emojis** in Code oder Notifications
 - ✅ **Konsistente Icon-Usage** über alle Module
@@ -645,11 +710,12 @@ Alle Optimierungen folgen den VelocityNvim Icon-Regeln:
 ## 🔄 Maintenance
 
 ### Monatliche Checks
+
 ```bash
 # 1. Rust Toolchain aktualisieren
 rustup update
 
-# 2. Homebrew Dependencies aktualisieren  
+# 2. Homebrew Dependencies aktualisieren
 brew upgrade skim zathura fd ripgrep bat
 
 # 3. Performance-Benchmark laufen lassen
@@ -657,6 +723,7 @@ NVIM_APPNAME=VelocityNvim nvim -c "RustUltimateBenchmark"
 ```
 
 ### Nach System-Updates
+
 ```bash
 # 1. Health Check
 NVIM_APPNAME=VelocityNvim nvim -c "VelocityHealth"
@@ -671,40 +738,46 @@ NVIM_APPNAME=VelocityNvim nvim -c "LaTeXDebugZathura /tmp/test.pdf"
 ## 🔧 Häufige macOS-spezifische Probleme & Lösungen (2025-09-03)
 
 ### Problem 1: "Failed to setup fuzzy matcher and rust implementation forced"
+
 **Ursache**: Homebrew-Rust überschreibt rustup  
 **Symptom**: `rustc 1.89.0 (Homebrew)` statt nightly  
 **Lösung**: PATH-Priorität korrigieren + projekt-spezifisches nightly  
-**Prevention**: `./setup-macos.sh` verwenden  
+**Prevention**: `./setup-macos.sh` verwenden
 
-### Problem 2: "error[E0554]: #![feature] may not be used on the stable release channel"  
+### Problem 2: "error[E0554]: #![feature] may not be used on the stable release channel"
+
 **Ursache**: Stable Toolchain wird verwendet statt nightly  
 **Symptom**: frizbee-Dependency-Fehler beim cargo build  
 **Lösung**: `rustup override set nightly` im blink.cmp Verzeichnis  
-**Prevention**: Nie `rustup default nightly` system-weit setzen  
+**Prevention**: Nie `rustup default nightly` system-weit setzen
 
 ### Problem 3: "module 'blink_cmp_fuzzy' not found"
+
 **Ursache**: Binary fehlt oder falscher Pfad  
 **Symptom**: Lange Liste mit "no file" Meldungen  
 **Lösung**: `cargo build --release` mit korrekter Toolchain  
-**Prevention**: Nach Plugin-Updates Script erneut ausführen  
+**Prevention**: Nach Plugin-Updates Script erneut ausführen
 
 ### Problem 4: Build erfolgreich aber Binary fehlt
+
 **Ursache**: Build-Cache Probleme oder incomplete compilation  
 **Symptom**: `cargo build` zeigt "Finished" aber keine `.dylib`  
 **Lösung**: `cargo clean` vor rebuild  
-**Prevention**: Setup-Script macht automatisch clean build  
+**Prevention**: Setup-Script macht automatisch clean build
 
 ### Problem 5: PATH-Änderungen verschwinden nach Terminal-Restart
+
 **Ursache**: Shell-Profile nicht korrekt oder nicht geladen  
 **Symptom**: `which rustc` zeigt wieder `/opt/homebrew/bin/rustc`  
 **Lösung**: `source ~/.zshrc` oder neues Terminal starten  
-**Prevention**: Verify dass ~/.zshrc die PATH-Zeile enthält  
+**Prevention**: Verify dass ~/.zshrc die PATH-Zeile enthält
 
 ---
 
 ## 🚀 Future Optimierungen
 
 ### Geplante Verbesserungen
+
 - **LSP Performance**: rust-analyzer RAM-adaptive Konfiguration
 - **Terminal Integration**: Enhanced terminal mit native macOS-Features
 - **Git Performance**: Delta-Integration für bessere Diff-Anzeige
@@ -712,7 +785,9 @@ NVIM_APPNAME=VelocityNvim nvim -c "LaTeXDebugZathura /tmp/test.pdf"
 - **Setup-Script Enhancement**: Automatische Homebrew-Dependency-Installation
 
 ### Profile System
+
 Die geplante Implementierung eines Profile-Systems wird macOS-spezifische Profile unterstützen:
+
 - `profiles/macos-development.lua`: Optimiert für Entwicklung
 - `profiles/macos-writing.lua`: Optimiert für LaTeX/Markdown
 - `profiles/macos-minimal.lua`: Minimal-Setup für Performance
@@ -723,3 +798,4 @@ Die geplante Implementierung eines Profile-Systems wird macOS-spezifische Profil
 **Aktualisiert**: 2025-09-03 (PATH-Fix, Automatisches Setup)  
 **Version**: VelocityNvim 2.3.1  
 **Platform**: macOS M1 (ARM64) optimiert, Linux-kompatibel
+

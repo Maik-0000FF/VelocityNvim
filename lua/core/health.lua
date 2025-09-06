@@ -193,7 +193,7 @@ function M.check()
   -- Formatters
   local formatters = {
     { cmd = "stylua", name = "StyLua (Lua formatter)" },
-    { cmd = "black", name = "Black (Python formatter)" },
+    { cmd = "ruff", name = "Ruff (Python formatter)" },
     { cmd = "prettier", name = "Prettier (JS/TS/HTML/CSS formatter)" },
     { cmd = "shfmt", name = "shfmt (Shell script formatter)" },
   }

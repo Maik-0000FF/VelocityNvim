@@ -14,8 +14,9 @@ print("⚡ Performance optimized")
 ```
 
 **Why not emojis?**
+
 - Not all terminals support emojis
-- Inconsistent rendering across systems  
+- Inconsistent rendering across systems
 - Performance overhead (runtime string processing)
 - Not part of NerdFont standard
 
@@ -28,7 +29,7 @@ local icons = require("core.icons")
 
 -- ✅ CORRECT - Direct icon usage
 vim.notify(icons.status.rocket .. " Build successful", vim.log.levels.INFO)
-vim.notify(icons.status.success .. " Tests passed", vim.log.levels.INFO) 
+vim.notify(icons.status.success .. " Tests passed", vim.log.levels.INFO)
 print(icons.misc.flash .. " Performance optimized")
 ```
 
@@ -47,18 +48,20 @@ vim.notify(icons.status.hint .. " System ready", vim.log.levels.INFO)
 ## Icon Categories & Usage
 
 ### 📊 **Status Icons**
+
 ```lua
 local icons = require("core.icons")
 
 icons.status.success    -- ✓ Success, completion, passed tests
-icons.status.error      -- ✗ Errors, failures, critical issues  
+icons.status.error      -- ✗ Errors, failures, critical issues
 icons.status.gear       -- ⚙ Settings, configuration, warnings
 icons.status.hint       -- 💡 Information, tips, guidance
 icons.status.rocket     -- 🚀 Progress, launching, building
 icons.status.stats      -- 📊 Statistics, analytics, metrics
 ```
 
-### 🔧 **Action Icons** 
+### 🔧 **Action Icons**
+
 ```lua
 icons.misc.flash        -- ⚡ Performance, speed, optimization
 icons.misc.build        -- 🔨 Building, compiling, construction
@@ -69,6 +72,7 @@ icons.misc.trend_up     -- 📈 Growth, improvement, progress
 ```
 
 ### 💻 **LSP/Development Icons**
+
 ```lua
 icons.lsp.workspace     -- 🌍 Workspace, project, global scope
 icons.lsp.references    -- 🎯 References, targeting, focus
@@ -85,11 +89,11 @@ local icons = require("core.icons")
 
 -- Status notifications
 vim.notify(icons.status.success .. " Operation completed", vim.log.levels.INFO)
-vim.notify(icons.status.error .. " Something went wrong", vim.log.levels.ERROR)  
+vim.notify(icons.status.error .. " Something went wrong", vim.log.levels.ERROR)
 vim.notify(icons.status.gear .. " Check configuration", vim.log.levels.WARN)
 vim.notify(icons.status.hint .. " System information", vim.log.levels.INFO)
 
--- Action notifications  
+-- Action notifications
 vim.notify(icons.misc.flash .. " Speed improved", vim.log.levels.INFO)
 vim.notify(icons.misc.build .. " Compilation started", vim.log.levels.INFO)
 vim.notify(icons.misc.search .. " Found 5 matches", vim.log.levels.INFO)
@@ -107,6 +111,7 @@ end
 ## Adding New Icons
 
 ### 1. **Check Existing Icons First**
+
 Always verify if a suitable icon already exists in `lua/core/icons.lua`:
 
 ```bash
@@ -115,13 +120,14 @@ grep -r "your_use_case" ~/.config/VelocityNvim/lua/core/icons.lua
 ```
 
 ### 2. **Adding to Icon Registry**
+
 If you need a new icon, add it to the appropriate category in `lua/core/icons.lua`:
 
 ```lua
 -- In lua/core/icons.lua
 M.status = {
   success = "",      -- Existing
-  error = "",        -- Existing  
+  error = "",        -- Existing
   new_status = "",   -- Your new icon
 }
 
@@ -131,7 +137,8 @@ M.misc = {
 }
 ```
 
-### 3. **Update Template Functions** 
+### 3. **Update Template Functions**
+
 Add corresponding template function in `lua/utils/notifications.lua`:
 
 ```lua
@@ -145,18 +152,21 @@ end
 ## Performance Best Practices
 
 ### ✅ **DO**
+
 - Cache icon references in local variables for frequent use
-- Use template functions for consistency  
+- Use template functions for consistency
 - Follow the "minimal notifications" principle (CLAUDE.md)
 - Use DEBUG level for progress/internal notifications
 
 ### ❌ **DON'T**
+
 - Never use emojis in code
 - Don't create runtime string processing
 - Avoid excessive INFO level notifications for routine operations
 - Don't bypass the icon system with direct Unicode
 
 ### Performance Example:
+
 ```lua
 -- ✅ GOOD - Cache icons for frequent use
 local icons = require("core.icons")
@@ -181,13 +191,16 @@ end
 ## Troubleshooting
 
 ### Icons Not Showing
+
 1. **Check NerdFont Installation**:
+
    ```bash
    # Test NerdFont availability
    echo -e "\ue0b0 \uf00a \uf7f0"  # Should show three icons
    ```
 
 2. **Verify Icon Module**:
+
    ```lua
    -- In Neovim command line
    :lua print(require("core.icons").status.success)  -- Should print an icon
@@ -195,7 +208,7 @@ end
 
 3. **Check Terminal Compatibility**:
    - WezTerm: ✅ Full support
-   - Alacritty: ✅ Full support  
+   - Alacritty: ✅ Full support
    - Terminal.app: ⚠️ Partial support
    - TTY: ❌ No support (fallback to ASCII)
 
@@ -211,6 +224,7 @@ lua ~/.config/VelocityNvim/scripts/emoji-cleanup.lua
 ## Examples from VelocityNvim
 
 ### Health Check System
+
 ```lua
 local icons = require("core.icons")
 
@@ -220,17 +234,19 @@ vim.notify(icons.status.error .. " LSP server not found", vim.log.levels.ERROR)
 vim.notify(icons.status.gear .. " Fallback mode active", vim.log.levels.WARN)
 ```
 
-### Performance System  
+### Performance System
+
 ```lua
 local notify = require("utils.notifications")
 
 -- Using templates for consistency
 notify.performance("Cursor optimization active")
-notify.stats("Memory usage optimized: -25%") 
+notify.stats("Memory usage optimized: -25%")
 notify.build("Rust binaries compiled successfully")
 ```
 
 ### Plugin Integration
+
 ```lua
 local icons = require("core.icons")
 
@@ -238,7 +254,7 @@ local icons = require("core.icons")
 vim.notify(icons.lsp.workspace .. " Workspace loaded: " .. workspace_name, vim.log.levels.INFO)
 vim.notify(icons.lsp.references .. " Found " .. count .. " references", vim.log.levels.INFO)
 
--- Git integration  
+-- Git integration
 vim.notify(icons.misc.search .. " Delta renderer available", vim.log.levels.INFO)
 vim.notify(icons.status.success .. " Git hooks installed", vim.log.levels.INFO)
 ```
@@ -246,3 +262,4 @@ vim.notify(icons.status.success .. " Git hooks installed", vim.log.levels.INFO)
 ---
 
 **Remember**: Icons make VelocityNvim look professional and consistent. Always prefer NerdFont icons over emojis for the best consumer experience!
+

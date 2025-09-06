@@ -87,3 +87,8 @@ VIDEO-GUIDE.md
 # Internal documentation (not for public release)
 GITHUB-SETUP.md
 docs/EMOJI_POLICY.md
+
+# Test and installation documentation (not for repository)
+ARCH_INSTALLATION.md
+*_INSTALLATION.md
+TEST_*.md
