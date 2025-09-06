@@ -142,16 +142,14 @@ VelocityNvim works best with these Rust-powered tools:
 
 Choose your preferred installation method:
 
-### Method 1: One-Click Installer (Recommended)
+### Method 1: One-Click Installer (Coming Soon)
 
-> **🚧 COMMUNITY PREVIEW STATUS**: This repository is currently in private preview. The one-click installer will be available when VelocityNvim becomes public. For now, please use Method 2 (Manual Installation).
-
-**Automatic installation with dependencies (available after public release):**
+**Automatic installation with dependencies:**
 
 ```bash
 # Linux & macOS - Installs Neovim, NerdFont, and performance tools
-# curl -fsSL https://raw.githubusercontent.com/Maik-0000FF/VelocityNvim/main/install.sh | bash
-# (Available after public release)
+# Coming soon - use Method 2 (Manual Installation) for now
+curl -fsSL https://raw.githubusercontent.com/Maik-0000FF/VelocityNvim/main/install.sh | bash
 ```
 
 **What the installer does:**
