@@ -287,13 +287,52 @@ vim.lsp.config.cssls = {
   },
 }
 
--- TypeScript/JavaScript LSP
+-- TypeScript/JavaScript LSP (Performance-optimiert)
 vim.lsp.config.ts_ls = {
   cmd = { "typescript-language-server", "--stdio" },
   filetypes = { "javascript", "javascriptreact", "typescript", "typescriptreact" },
   root_markers = { "package.json", "tsconfig.json", ".git", "node_modules" },
   init_options = {
     hostInfo = "neovim",
+    preferences = {
+      -- Performance-Optimierungen
+      disableSuggestions = false,
+      includeCompletionsForImportStatements = true,
+    },
+    tsserver = {
+      -- Robuste TypeScript-Installation mit Fallback-Chain
+      path = (function()
+        -- 1. Lokale workspace installation (beste Performance)
+        local local_ts = vim.fn.getcwd() .. "/node_modules/typescript/lib/tsserver.js"
+        if vim.fn.filereadable(local_ts) == 1 then
+          return local_ts
+        end
+        
+        -- 2. Global npm installation
+        local global_npm = vim.fn.system("npm root -g 2>/dev/null"):gsub("%s+", "")
+        if vim.v.shell_error == 0 and global_npm ~= "" then
+          local global_ts = global_npm .. "/typescript/lib/tsserver.js"
+          if vim.fn.filereadable(global_ts) == 1 then
+            return global_ts
+          end
+        end
+        
+        -- 3. System TypeScript (Arch Linux)
+        local system_paths = {
+          "/usr/lib/node_modules/typescript/lib/tsserver.js",
+          "/usr/share/typescript/lib/tsserver.js",
+        }
+        for _, path in ipairs(system_paths) do
+          if vim.fn.filereadable(path) == 1 then
+            return path
+          end
+        end
+        
+        -- 4. Fallback: Auto-installation hint
+        vim.notify("TypeScript not found. Install with: npm install -g typescript", vim.log.levels.WARN)
+        return nil
+      end)(),
+    },
   },
   settings = {
     typescript = {

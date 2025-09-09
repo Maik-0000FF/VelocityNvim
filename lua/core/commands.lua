@@ -72,7 +72,7 @@ cmd("LspStatus", function()
 
   print("\n" .. icons.status.gear .. " Aktivierte LSP-Konfigurationen:")
   local utils = require("utils")
-  for _, name in ipairs({ "luals", "pyright", "texlab", "htmlls", "cssls", "ts_ls", "jsonls" }) do
+  for _, name in ipairs({ "luals", "pyright", "texlab", "htmlls", "cssls", "ts_ls", "jsonls", "rust_analyzer" }) do
     local enabled = utils.lsp().is_server_configured(name)
     local status = enabled and icons.status.success .. " aktiviert"
       or icons.status.error .. " deaktiviert"
@@ -81,6 +81,45 @@ cmd("LspStatus", function()
 end, {
   desc = "Show LSP client status",
 })
+
+-- LSP Health Check Command (NEW)
+cmd("LspHealth", function()
+  local health_checker = require("plugins.lsp.lsp-health-checker")
+  
+  -- Auto-Fix versuchen
+  local fixes = health_checker.auto_fix()
+  if #fixes > 0 then
+    print("🔧 Auto-Fixes angewendet:")
+    for _, fix in ipairs(fixes) do
+      print("  ✅ " .. fix)
+    end
+    print("")
+  end
+  
+  -- Health Check durchführen
+  local results, report_lines = health_checker.check_all()
+  
+  -- Report ausgeben
+  for _, line in ipairs(report_lines) do
+    print(line)
+  end
+  
+  -- Problematische LSPs hervorheben
+  local problematic = {}
+  for lsp_name, result in pairs(results) do
+    if not result.healthy then
+      table.insert(problematic, {lsp_name, result.message})
+    end
+  end
+  
+  if #problematic > 0 then
+    print("")
+    print("🩺 Installation-Commands für problematische LSPs:")
+    for _, problem in ipairs(problematic) do
+      print("  " .. problem[2])
+    end
+  end
+end, { desc = "Umfassender LSP Health Check mit Auto-Fix" })
 
 cmd("LspRestart", function()
   -- Get all active clients
