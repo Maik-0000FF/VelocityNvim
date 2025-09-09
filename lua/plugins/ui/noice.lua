@@ -298,10 +298,7 @@ require("noice").setup({
   },
 })
 
--- Force redraw für saubere Anzeige
-vim.schedule(function()
-  vim.cmd("redraw!")
-end)
+-- Removed force redraw - caused cursor jumping and performance impact
 
 -- ============================================================================
 -- STARTUP-CLEANUP
