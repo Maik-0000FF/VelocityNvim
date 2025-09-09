@@ -13,7 +13,7 @@ dashboard.section.buttons.val = {
   dashboard.button("e", icons.status.file .. " New file", "<cmd>ene <BAR> startinsert <CR>"),
   dashboard.button("f", icons.status.find_file .. " Find file", "<cmd>Neotree reveal<CR>"),
   dashboard.button("r", icons.status.recent_file .. " Recent files", "<cmd>FzfLua oldfiles<CR>"),
-  dashboard.button("c", icons.status.gear .. "  Configuration", "<cmd>e $MYVIMRC<CR>"),
+  dashboard.button("c", icons.status.gear .. " Configuration", "<cmd>e $MYVIMRC<CR>"),
   dashboard.button("I", icons.status.info .. " Info & Version", "<cmd>VelocityInfo<CR>"),
   dashboard.button("h", icons.status.health .. " Health Check", "<cmd>checkhealth<CR>"),
   dashboard.button("q", icons.status.quit .. " Quit", "<cmd>qa<CR>"),

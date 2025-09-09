@@ -1,8 +1,8 @@
 -- ~/.config/VelocityNvim/lua/plugins/blink-cmp.lua
 -- Ultra-performante Blink Completion
 
--- Force Rust implementation (funktionierte vorher!)
-require('plugins.lsp.blink-cmp-force-rust')
+-- REMOVED: Force Rust script (replaced with prefer_rust_with_warning for graceful fallback)
+-- require('plugins.lsp.blink-cmp-force-rust')
 
 require("blink.cmp").setup({
     keymap = { preset = "default" },
@@ -22,9 +22,10 @@ require("blink.cmp").setup({
     },
 
     fuzzy = {
-        implementation = "rust", -- DIREKTE Rust-Implementation (Binary kompiliert)
+        -- Use prefer_rust_with_warning for graceful fallback
+        implementation = "prefer_rust_with_warning", -- Graceful fallback to Lua if Rust fails
         prebuilt_binaries = {
-            download = false, -- Lokale Kompilierung verwenden
+            download = false, -- Always use local compilation
             force_version = "1.*",
         },
     },

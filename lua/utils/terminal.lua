@@ -270,7 +270,7 @@ function M.print_terminal_info()
   print("\n" .. icons.status.list .. " Verfügbare Befehle:")
   print("  Alt+- - Horizontales Terminal")
   print("  Alt+\\ - Vertikales Terminal")
-  print("  Alt+i - Floating Terminal " .. icons.status.star)
+  print("  Alt+i - Floating Terminal")
   print("  <leader>tf - Floating Terminal")
   print("  <leader>tc - Alle Terminals schließen")
 end

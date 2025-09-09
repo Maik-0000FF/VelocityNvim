@@ -533,7 +533,16 @@ cmd("FormatInfo", function()
     end
   end
 
-  local fallback_status = conform.will_fallback_lsp() and icons.status.success .. " Verfügbar"
+  -- Check for LSP fallback capability (safe API call)
+  local has_lsp_fallback = false
+  local ok, result = pcall(function()
+    return conform.will_fallback_lsp and conform.will_fallback_lsp() or false
+  end)
+  if ok then
+    has_lsp_fallback = result
+  end
+  
+  local fallback_status = has_lsp_fallback and icons.status.success .. " Verfügbar"
     or icons.status.error .. " Nicht verfügbar"
   print("  " .. icons.status.gear .. " LSP-Fallback: " .. fallback_status)
 end, {
