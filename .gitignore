@@ -92,3 +92,6 @@ docs/EMOJI_POLICY.md
 ARCH_INSTALLATION.md
 *_INSTALLATION.md
 TEST_*.md
+
+# Performance benchmarks (machine-specific, not for repository)
+BENCHMARKS.md

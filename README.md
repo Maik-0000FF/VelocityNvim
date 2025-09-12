@@ -336,8 +336,50 @@ _Performance tested on modern hardware with Neovim 0.10+_
 
 - **Rust Integration**: Native tools for maximum speed
 - **LSP Optimization**: Smart workspace scanning
-- **Syntax Highlighting**: nvim-treesitter
+- **Syntax Highlighting**: nvim-treesitter with performance-first parser management
 - **Code Formatting**: conform.nvim with ruff (Python)
+
+### Treesitter Parser Management
+
+VelocityNvim uses a **performance-first approach** to syntax highlighting:
+
+#### ⚡ Smart Parser Installation Strategy
+
+**Why Manual Parser Installation?**
+- **🚀 Faster Startup**: No automatic downloads blocking initialization
+- **🎯 Minimal Footprint**: Only install parsers you actually need
+- **💾 Reduced Memory**: Fewer loaded parsers = better performance
+- **🔧 Manual Control**: You decide what syntax highlighting to enable
+
+#### Current Parser Status
+```bash
+# Minimal default set for essential file types:
+- bash.so     # Shell scripts
+- html.so     # Web markup  
+- regex.so    # Regular expressions
+- yaml.so     # Configuration files
+```
+
+#### Installing Additional Parsers
+```vim
+# On-demand installation when you need specific language support:
+:TSInstall lua python javascript rust go cpp
+
+# Check available parsers (200+ languages supported):
+:TSInstallInfo
+```
+
+#### Performance Optimizations Active
+```lua
+-- Smart disabling for responsive cursor movement:
+disable = function(lang, bufnr)
+  -- Files > 1MB: Treesitter OFF (better than 10MB default)
+  -- Files > 5,000 lines: Treesitter OFF
+  -- File types csv/log/txt: Treesitter OFF (unnecessary overhead)
+end
+```
+
+**Philosophy**: VelocityNvim prioritizes **instant responsiveness** over convenience. Install parsers manually when you need them, not preemptively "just in case."
 
 ## 🎓 Learn Native Neovim Skills
 
