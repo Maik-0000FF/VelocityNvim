@@ -1,20 +1,5 @@
 -- ~/.config/VelocityNvim/lua/plugins/conform.lua
--- Hybrid Performance Formatter System (Biome + Prettier)
-
--- Check if Biome is available, fallback to Prettier
-local use_biome = vim.fn.executable("biome") == 1
-local js_formatter = use_biome and { "biome" } or { "prettier" }
-
--- Silent success - biome verfügbar, keine Notification nötig
--- Nur bei Problemen (prettier fallback) warnen
-if not use_biome then
-  vim.defer_fn(function()
-    if vim.g.velocitynvim_prettier_fallback_notified ~= true then
-      vim.notify("Prettier fallback active (install 'biome' for 20x speed boost)", vim.log.levels.WARN)
-      vim.g.velocitynvim_prettier_fallback_notified = true
-    end
-  end, 1000)
-end
+-- Prettier-based Formatter System
 
 require("conform").setup({
   -- Formatter pro Dateityp (Performance Optimized with Intelligent Fallback)
@@ -25,17 +10,17 @@ require("conform").setup({
     -- Python (Ruff does everything: format + imports + lint)
     python = { "ruff_organize_imports", "ruff_format" },
     
-    -- JavaScript/TypeScript (Ultra-fast with Biome, fallback to Prettier)
-    javascript = js_formatter,
-    typescript = js_formatter,
-    javascriptreact = js_formatter,
-    typescriptreact = js_formatter,
-    
-    -- JSON/CSS (Ultra-fast with Biome, fallback to Prettier)
-    json = js_formatter,
-    jsonc = js_formatter,
-    css = js_formatter,
-    scss = use_biome and { "biome" } or { "prettier" },
+    -- JavaScript/TypeScript (Prettier)
+    javascript = { "prettier" },
+    typescript = { "prettier" },
+    javascriptreact = { "prettier" },
+    typescriptreact = { "prettier" },
+
+    -- JSON/CSS (Prettier)
+    json = { "prettier" },
+    jsonc = { "prettier" },
+    css = { "prettier" },
+    scss = { "prettier" },
     
     -- Fallback to Prettier for unsupported languages
     html = { "prettier" },
@@ -74,18 +59,8 @@ require("conform").setup({
   -- Notify-Level für Formatierungs-Fehler
   notify_on_error = true,
 
-  -- Custom Formatter-Konfigurationen (Hybrid System)
+  -- Custom Formatter-Konfigurationen
   formatters = {
-    -- Biome (Ultra-fast Rust-based formatter for JS/TS/JSON/CSS)
-    biome = {
-      command = "biome",
-      args = { "format", "--stdin-file-path", "$FILENAME" },
-      stdin = true,
-      -- Fallback to prettier if biome fails
-      condition = function()
-        return vim.fn.executable("biome") == 1
-      end,
-    },
 
     -- StyLua für Lua (bessere Performance-Einstellungen)
     stylua = {
@@ -211,43 +186,36 @@ end, { desc = "Format selected lines" })
 
 -- Performance Status Command
 vim.api.nvim_create_user_command("FormatterPerformanceStatus", function()
-  local biome_available = vim.fn.executable("biome") == 1
   local prettier_available = vim.fn.executable("prettier") == 1
   local ruff_available = vim.fn.executable("ruff") == 1
-  
-  print("VelocityNvim Formatter Performance Status:")
-  print("──────────────────────────────────────────────")
-  
-  if biome_available then
-    print(" Biome: ACTIVE (~20x faster JS/TS/JSON/CSS)")
-  else
-    print(" Biome: NOT FOUND (install for 20x speed boost)")
-  end
-  
+
+  print("VelocityNvim Formatter Status:")
+  print("──────────────────────────────────────")
+
   if prettier_available then
-    print(" Prettier: Available (fallback for Vue/Svelte/Markdown/YAML)")
+    print(" Prettier: ACTIVE (JS/TS/CSS/JSON/HTML/Vue/Svelte/Markdown/YAML)")
   else
-    print(" Prettier: NOT FOUND (needed for Vue/Svelte/Markdown/YAML)")
+    print(" Prettier: NOT FOUND (install via: npm install -g prettier)")
   end
-  
+
   if ruff_available then
     print(" Ruff: ACTIVE (~10-100x faster Python formatting)")
   else
     print(" Ruff: NOT FOUND (install via: pip install ruff)")
   end
-  
-  print("──────────────────────────────────────────────")
-  local performance_score = (biome_available and 40 or 0) + (ruff_available and 30 or 0) + (prettier_available and 10 or 0)
+
+  print("──────────────────────────────────────")
+  local performance_score = (prettier_available and 50 or 0) + (ruff_available and 30 or 0)
   print("Performance Score: " .. performance_score .. "/80")
-  
+
   if performance_score >= 70 then
     print("Status: OPTIMAL")
   elseif performance_score >= 40 then
     print("Status: GOOD")
   else
-    print("Status: SLOW - Install missing formatters")
+    print("Status: INCOMPLETE - Install missing formatters")
   end
-end, { desc = "Show formatter performance status" })
+end, { desc = "Show formatter status" })
 
 -- Benchmark command for testing
 vim.api.nvim_create_user_command("FormatterBenchmark", function()

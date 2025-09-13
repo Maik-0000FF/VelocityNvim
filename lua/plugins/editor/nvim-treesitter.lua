@@ -8,26 +8,44 @@ if not ok then
   return
 end
 
-treesitter.setup({
-  -- Parser Installation komplett deaktiviert (Parser sind bereits installiert)
-  ensure_installed = {},
+-- LÖSUNG: Setze Install-Directory BEVOR nvim-treesitter.install geladen wird
+vim.g.ts_install_dir = vim.fn.stdpath("data") .. "/site/pack/user/start/nvim-treesitter/parser"
 
-  -- Automatische Installation deaktiviert
+-- KRITISCH: Schütze treesitter vor Arbeitsverzeichnis-Änderungen durch LSP/Git-Utils
+local treesitter_installing = false
+
+-- Überwache treesitter Installation-Status
+vim.api.nvim_create_autocmd("User", {
+  pattern = "TSInstall*",
+  callback = function(args)
+    treesitter_installing = args.match == "TSInstallStart"
+  end,
+})
+
+-- Blockiere gefährliche chdir-Operationen während treesitter Downloads
+local original_chdir = vim.fn.chdir
+vim.fn.chdir = function(dir)
+  if treesitter_installing then
+    -- Blockiere chdir während treesitter-Installation
+    return 0
+  end
+  return original_chdir(dir)
+end
+
+-- Parser Installation Konfiguration
+local install = require("nvim-treesitter.install")
+install.prefer_git = true
+install.compilers = { "gcc", "clang" }
+
+treesitter.setup({
+  -- Manuelle Parser-Installation - keine automatische Installation
+  ensure_installed = {},
   auto_install = false,
   sync_install = false,
   ignore_install = {},
   modules = {},
 
-  -- Parser Installation für native vim.pack
-  parser_install_dir = vim.fn.stdpath("data") .. "/site/pack/user/start/nvim-treesitter/parser",
-
   -- Syntax Highlighting
-  -- highlight = {
-  --   enable = true,
-  --   -- Zusätzliche vim regex highlighting deaktivieren
-  --   additional_vim_regex_highlighting = false,
-  -- },
-
   highlight = {
     enable = true,
     additional_vim_regex_highlighting = false,
