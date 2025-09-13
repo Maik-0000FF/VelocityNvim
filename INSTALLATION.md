@@ -60,7 +60,7 @@ The automatic installation runs in 5 phases:
 ## 🎯 Prerequisites
 
 ### Required
-- **Neovim >= 0.10.0** (tested up to 0.11.4)
+- **Neovim >= 0.11.0** (required for all features)
 - **Git** (for plugin installation)
 
 ### Recommended (for optimal performance)
@@ -114,8 +114,8 @@ NVIM_APPNAME=VelocityNvim nvim
 # Show version & features
 :VelocityInfo
 
-# Check performance status
-:PerformanceStatus
+# Check plugin status
+:PluginStatus
 ```
 
 ## 🛠️ Troubleshooting
@@ -167,14 +167,25 @@ For maximum performance:
 
 After successful installation, available features:
 
-- **Ultra-responsive cursor navigation** (< 2ms)
-- **Rust-optimized fuzzy matching** (5-10x faster)
-- **Automatic plugin updates** (`:PluginSync`)
-- **Advanced LSP integration** (multiple servers)
-- **Terminal management** (Alt+i/+/-/\\ keys)
-- **Git integration** (Delta diff viewer)
-- **Performance monitoring** (`:PerformanceStatus`)
+- **Complete IDE Experience** - 24 carefully selected plugins
+- **Rust-optimized components** - blink.cmp, fzf-lua with native performance
+- **Automatic plugin management** - `:PluginSync` and `:VelocityHealth`
+- **Native LSP integration** - Multiple language servers supported
+- **Terminal management** - Alt+i (floating), Alt+- (horizontal), Alt+\\ (vertical)
+- **Enhanced Git workflow** - Delta diff viewer with gitsigns integration
+- **System monitoring** - `:VelocityHealth` and `:PluginStatus`
 
 ---
 
-**🚀 Enjoy VelocityNvim - World-Class Neovim Configuration!**
+## 📦 VelocityNvim v1.0.0 Features
+
+**GitHub Release Features:**
+- ✅ **Native vim.pack architecture** - No external plugin managers
+- ✅ **24 curated plugins** - Complete IDE experience
+- ✅ **Rust performance optimization** - blink.cmp and fzf-lua
+- ✅ **Cross-platform support** - Linux, macOS, WSL2
+- ✅ **Professional documentation** - Complete setup and architecture guides
+- ✅ **Health monitoring** - Comprehensive system checks
+- ✅ **Version management** - Automatic migrations and updates
+
+**🚀 Enjoy VelocityNvim v1.0.0 - Native vim.pack Neovim Distribution!**

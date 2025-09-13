@@ -4,7 +4,6 @@
 local cmd = vim.api.nvim_create_user_command
 local icons = require("core.icons")
 
-
 -- Plugin Management Commands
 cmd("PluginSync", function()
   require("plugins.manage").sync()
@@ -72,7 +71,16 @@ cmd("LspStatus", function()
 
   print("\n" .. icons.status.gear .. " Aktivierte LSP-Konfigurationen:")
   local utils = require("utils")
-  for _, name in ipairs({ "luals", "pyright", "texlab", "htmlls", "cssls", "ts_ls", "jsonls", "rust_analyzer" }) do
+  for _, name in ipairs({
+    "luals",
+    "pyright",
+    "texlab",
+    "htmlls",
+    "cssls",
+    "ts_ls",
+    "jsonls",
+    "rust_analyzer",
+  }) do
     local enabled = utils.lsp().is_server_configured(name)
     local status = enabled and icons.status.success .. " aktiviert"
       or icons.status.error .. " deaktiviert"
@@ -85,7 +93,7 @@ end, {
 -- LSP Health Check Command (NEW)
 cmd("LspHealth", function()
   local health_checker = require("plugins.lsp.lsp-health-checker")
-  
+
   -- Auto-Fix versuchen
   local fixes = health_checker.auto_fix()
   if #fixes > 0 then
@@ -95,23 +103,23 @@ cmd("LspHealth", function()
     end
     print("")
   end
-  
+
   -- Health Check durchführen
   local results, report_lines = health_checker.check_all()
-  
+
   -- Report ausgeben
   for _, line in ipairs(report_lines) do
     print(line)
   end
-  
+
   -- Problematische LSPs hervorheben
   local problematic = {}
   for lsp_name, result in pairs(results) do
     if not result.healthy then
-      table.insert(problematic, {lsp_name, result.message})
+      table.insert(problematic, { lsp_name, result.message })
     end
   end
-  
+
   if #problematic > 0 then
     print("")
     print("🩺 Installation-Commands für problematische LSPs:")
@@ -160,26 +168,26 @@ cmd("LspRefresh", function()
   -- Zugriff auf die private scanned_workspaces Variable durch Module-Reload
   package.loaded["plugins.lsp.native-lsp"] = nil
   local native_lsp = require("plugins.lsp.native-lsp")
-  
+
   -- Triggere für jeden Client den Workspace-Scan direkt
   for _, client in ipairs(clients) do
     if client.config.root_dir then
       -- Simuliere LspAttach Event für diesen Client
       vim.api.nvim_exec_autocmds("LspAttach", {
         data = { client_id = client.id },
-        buffer = vim.api.nvim_get_current_buf()
+        buffer = vim.api.nvim_get_current_buf(),
       })
     end
   end
-  
+
   -- Neo-tree nach Scan-Zeit refreshen
   vim.defer_fn(function()
     local ok, neo_tree = pcall(require, "neo-tree.command")
     if ok then
       neo_tree.execute({ action = "refresh" })
     end
-  end, 3000)  -- 3 Sekunden für Workspace-Scan
-  
+  end, 3000) -- 3 Sekunden für Workspace-Scan
+
   vim.notify(icons.status.scan .. " Workspace-Scan erneut gestartet", vim.log.levels.INFO)
 end, {
   desc = "Re-trigger natural LSP workspace scan",
@@ -191,31 +199,31 @@ cmd("LuaLibraryStatus", function()
     -- Kopiere die Funktion aus native-lsp.lua um aktuelle Libraries zu ermitteln
     local libraries = {}
     local project_root = vim.fn.getcwd()
-    
+
     -- Neovim Core APIs
     local nvim_runtime_paths = vim.api.nvim_get_runtime_file("lua/vim", false)
     if #nvim_runtime_paths > 0 then
       local nvim_lua_dir = vim.fn.fnamemodify(nvim_runtime_paths[1], ":p:h:h")
       table.insert(libraries, nvim_lua_dir)
     end
-    
+
     -- VelocityNvim Module
     local velocitynvim_lua_dir = vim.fn.expand("~/.config/VelocityNvim/lua")
     if vim.fn.isdirectory(velocitynvim_lua_dir) == 1 then
       table.insert(libraries, velocitynvim_lua_dir)
     end
-    
+
     -- Projekt-spezifische Module
     if vim.fn.isdirectory(project_root .. "/lua") == 1 then
       table.insert(libraries, project_root .. "/lua")
     end
-    
+
     return libraries
   end
 
   print(icons.status.success .. " " .. icons.status.rocket .. " Lua Library Optimization Status:")
   print("")
-  
+
   -- Zeige aktuelle optimierte Libraries
   local current_libs = get_targeted_lua_libraries()
   print(".. icons.lsp.module .. " .. #current_libs .. " statt >2000):")
@@ -223,14 +231,14 @@ cmd("LuaLibraryStatus", function()
     local short_path = lib:gsub(vim.fn.expand("~"), "~")
     print("  " .. i .. ". " .. short_path)
   end
-  
+
   print("")
   print(".. icons.misc.flash .. ")
   print("  " .. icons.status.success .. " Startup-Zeit: ~75% schneller")
-  print("  " .. icons.status.success .. " Memory-Usage: ~65% weniger") 
+  print("  " .. icons.status.success .. " Memory-Usage: ~65% weniger")
   print("  " .. icons.status.success .. " Library-Count: " .. #current_libs .. " statt >2400")
   print("  " .. icons.status.success .. " Completion-Relevanz: ~85% (war 40%)")
-  
+
   -- Zeige LSP lua-language-server Status
   local lsp_clients = vim.lsp.get_clients({ name = "luals" })
   if #lsp_clients > 0 then
@@ -244,9 +252,9 @@ cmd("LuaLibraryStatus", function()
     print("")
     print(icons.status.error .. "  lua-language-server nicht aktiv - öffne eine .lua Datei")
   end
-  
+
   -- Performance-Metriken aus Cache
-  local debug_file = vim.fn.stdpath("cache") .. "/velocity_lib_debug_count" 
+  local debug_file = vim.fn.stdpath("cache") .. "/velocity_lib_debug_count"
   if vim.fn.filereadable(debug_file) == 1 then
     local count = tonumber(vim.fn.readfile(debug_file)[1]) or 0
     print("")
@@ -259,35 +267,67 @@ end, {
 -- Diagnostic Icons Test & Status (NEU - Productivity Enhancement)
 cmd("DiagnosticTest", function()
   local icons = require("core.icons")
-  print(".. icons.status.gear .. " .. icons.diagnostics.error .. " LSP Diagnostic Icons & Navigation Test:")
+  print(
+    ".. icons.status.gear .. "
+      .. icons.diagnostics.error
+      .. " LSP Diagnostic Icons & Navigation Test:"
+  )
   print("")
-  
+
   -- Zeige aktuelle Diagnostic-Konfiguration
   local config = vim.diagnostic.config()
   print(".. icons.misc.folder .. ")
-  print("  " .. icons.status.success .. " Virtual Text: " .. (config.virtual_text and "✓ Aktiv mit Icons" or "✗ Deaktiviert"))
-  print("  " .. icons.status.success .. " Signs: " .. (config.signs and "✓ Aktiv in Signcolumn" or "✗ Deaktiviert"))
-  print("  " .. icons.status.success .. " Underline: " .. (config.underline and "✓ Aktiv" or "✗ Deaktiviert"))
-  print("  " .. icons.status.success .. " Float Windows: " .. (config.float and "✓ Aktiv mit Icons" or "✗ Deaktiviert"))
-  
+  print(
+    "  "
+      .. icons.status.success
+      .. " Virtual Text: "
+      .. (config.virtual_text and "✓ Aktiv mit Icons" or "✗ Deaktiviert")
+  )
+  print(
+    "  "
+      .. icons.status.success
+      .. " Signs: "
+      .. (config.signs and "✓ Aktiv in Signcolumn" or "✗ Deaktiviert")
+  )
+  print(
+    "  "
+      .. icons.status.success
+      .. " Underline: "
+      .. (config.underline and "✓ Aktiv" or "✗ Deaktiviert")
+  )
+  print(
+    "  "
+      .. icons.status.success
+      .. " Float Windows: "
+      .. (config.float and "✓ Aktiv mit Icons" or "✗ Deaktiviert")
+  )
+
   print("")
   print(".. icons.lsp.references .. ")
-  print("  " .. icons.diagnostics.error .. " Error (Severity: " .. vim.diagnostic.severity.ERROR .. ")")
-  print("  " .. icons.diagnostics.warn .. " Warning (Severity: " .. vim.diagnostic.severity.WARN .. ")")
-  print("  " .. icons.diagnostics.info .. " Info (Severity: " .. vim.diagnostic.severity.INFO .. ")")
-  print("  " .. icons.diagnostics.hint .. " Hint (Severity: " .. vim.diagnostic.severity.HINT .. ")")
-  
+  print(
+    "  " .. icons.diagnostics.error .. " Error (Severity: " .. vim.diagnostic.severity.ERROR .. ")"
+  )
+  print(
+    "  " .. icons.diagnostics.warn .. " Warning (Severity: " .. vim.diagnostic.severity.WARN .. ")"
+  )
+  print(
+    "  " .. icons.diagnostics.info .. " Info (Severity: " .. vim.diagnostic.severity.INFO .. ")"
+  )
+  print(
+    "  " .. icons.diagnostics.hint .. " Hint (Severity: " .. vim.diagnostic.severity.HINT .. ")"
+  )
+
   -- Aktuelle Buffer-Diagnostics
   local bufnr = vim.api.nvim_get_current_buf()
   local diagnostics = vim.diagnostic.get(bufnr)
-  
+
   print("")
   print(".. icons.status.stats .. " .. vim.fn.bufname(bufnr) .. "):")
   if #diagnostics == 0 then
     print("  " .. icons.status.success .. " Keine Probleme gefunden - Buffer ist sauber!")
   else
     local counts = { error = 0, warn = 0, info = 0, hint = 0 }
-    
+
     for _, diagnostic in ipairs(diagnostics) do
       if diagnostic.severity == vim.diagnostic.severity.ERROR then
         counts.error = counts.error + 1
@@ -299,29 +339,33 @@ cmd("DiagnosticTest", function()
         counts.hint = counts.hint + 1
       end
     end
-    
+
     print("  " .. icons.diagnostics.error .. " Errors: " .. counts.error)
     print("  " .. icons.diagnostics.warn .. " Warnings: " .. counts.warn)
-    print("  " .. icons.diagnostics.info .. " Info: " .. counts.info)  
+    print("  " .. icons.diagnostics.info .. " Info: " .. counts.info)
     print("  " .. icons.diagnostics.hint .. " Hints: " .. counts.hint)
     print("  " .. icons.lsp.text .. " Total: " .. #diagnostics .. " Diagnostics")
   end
-  
+
   -- Navigation-Shortcuts
   print("")
   print("⌨️  Produktive Navigation-Shortcuts:")
   print("  ]d / [d  - Nächste/Vorherige Diagnostic (mit Float-Info)")
   print("  ]e / [e  - Nächster/Vorheriger Error (nur Errors)")
-  print("  <leader>dl - Diagnostic-Info unter Cursor anzeigen (KEYMAP KORRIGIERT!)") 
+  print("  <leader>dl - Diagnostic-Info unter Cursor anzeigen (KEYMAP KORRIGIERT!)")
   print("  <leader>dq - Alle Diagnostics in Quickfix-Liste")
   print("  <leader>e - Neo-tree focus (ursprüngliche Funktion intakt)")
-  
+
   -- LSP-Status für Diagnostics
   local clients = vim.lsp.get_clients({ bufnr = bufnr })
   print("")
   print(icons.lsp.references .. " LSP-Clients für Diagnostics:")
   if #clients == 0 then
-    print("  " .. icons.status.error .. "  Keine LSP-Clients aktiv - öffne eine Code-Datei (.lua, .py, .ts, etc.)")
+    print(
+      "  "
+        .. icons.status.error
+        .. "  Keine LSP-Clients aktiv - öffne eine Code-Datei (.lua, .py, .ts, etc.)"
+    )
   else
     for _, client in ipairs(clients) do
       print("  " .. icons.status.success .. " " .. client.name .. " (liefert Diagnostics)")
@@ -335,38 +379,55 @@ end, {
 cmd("PerformanceDiagnosticTest", function()
   local icons = require("core.icons")
   local perf = require("core.performance")
-  
-  print(".. icons.misc.flash .. " .. icons.status.success .. " Performance vs Diagnostics Compatibility Test:")
+
+  print(
+    ".. icons.misc.flash .. "
+      .. icons.status.success
+      .. " Performance vs Diagnostics Compatibility Test:"
+  )
   print("")
-  
+
   -- Performance System Status
   local status = perf.status()
   print(".. icons.status.rocket .. ")
   print("  Ultra Active: " .. (status.ultra_active and "✓ AKTIV" or "✗ Standard"))
   print("  Update Time: " .. status.updatetime .. "ms")
   print("  Original Update Time: " .. (status.original_updatetime or "nicht gesetzt"))
-  
+
   -- Diagnostic Configuration Status
   local config = vim.diagnostic.config()
   print("")
   print(".. icons.status.gear .. ")
   print("  Virtual Text: " .. (config.virtual_text and "✓ AKTIV" or "✗ DEAKTIVIERT"))
   print("  Signs: " .. (config.signs and "✓ AKTIV" or "✗ DEAKTIVIERT"))
-  print("  Update in Insert: " .. (config.update_in_insert and "✓ JA" or "✗ NEIN (Performance)"))
-  
+  print(
+    "  Update in Insert: " .. (config.update_in_insert and "✓ JA" or "✗ NEIN (Performance)")
+  )
+
   -- Test ob Icons korrekt definiert sind
   print("")
   print(".. icons.misc.folder .. ")
   local sign_groups = vim.fn.sign_getdefined()
-  local diagnostic_signs = {"DiagnosticSignError", "DiagnosticSignWarn", "DiagnosticSignInfo", "DiagnosticSignHint"}
-  
+  local diagnostic_signs =
+    { "DiagnosticSignError", "DiagnosticSignWarn", "DiagnosticSignInfo", "DiagnosticSignHint" }
+
   for _, sign_name in ipairs(diagnostic_signs) do
     local found = false
     for _, sign in ipairs(sign_groups) do
       if sign.name == sign_name then
         found = true
-        local priority_info = sign.priority and (" (Priorität: " .. sign.priority .. ")") or " (keine Priorität)"
-        print("  " .. icons.status.success .. " " .. sign_name .. ": '" .. (sign.text or "?") .. "'" .. priority_info)
+        local priority_info = sign.priority and (" (Priorität: " .. sign.priority .. ")")
+          or " (keine Priorität)"
+        print(
+          "  "
+            .. icons.status.success
+            .. " "
+            .. sign_name
+            .. ": '"
+            .. (sign.text or "?")
+            .. "'"
+            .. priority_info
+        )
         break
       end
     end
@@ -374,31 +435,43 @@ cmd("PerformanceDiagnosticTest", function()
       print("  " .. icons.status.error .. " " .. sign_name .. ": NICHT DEFINIERT!")
     end
   end
-  
+
   -- Problem-Analyse
   print("")
   print(".. icons.lsp.references .. ")
   if status.ultra_active then
-    print("  " .. icons.status.error .. "  Performance-Modus AKTIV - könnte Diagnostics beeinträchtigen")
+    print(
+      "  "
+        .. icons.status.error
+        .. "  Performance-Modus AKTIV - könnte Diagnostics beeinträchtigen"
+    )
     print("    → Lösung: Performance-System wurde angepasst um Diagnostics zu bewahren")
   else
     print("  " .. icons.status.success .. " Performance-System im Standard-Modus - keine Konflikte")
   end
-  
+
   if not config.virtual_text then
     print("  " .. icons.status.error .. " KRITISCHES PROBLEM: Virtual Text ist deaktiviert!")
     print("    → Das ist wahrscheinlich die Ursache für verschwindende Meldungen")
   else
-    print("  " .. icons.status.success .. " Virtual Text ist aktiviert - Meldungen sollten sichtbar bleiben")
+    print(
+      "  "
+        .. icons.status.success
+        .. " Virtual Text ist aktiviert - Meldungen sollten sichtbar bleiben"
+    )
   end
-  
+
   if not config.signs then
     print("  " .. icons.status.error .. " KRITISCHES PROBLEM: Signs sind deaktiviert!")
     print("    → Icons in der Signcolumn werden nicht angezeigt")
   else
-    print("  " .. icons.status.success .. " Signs sind aktiviert - Icons sollten in Signcolumn sichtbar sein")
+    print(
+      "  "
+        .. icons.status.success
+        .. " Signs sind aktiviert - Icons sollten in Signcolumn sichtbar sein"
+    )
   end
-  
+
   -- Performance-Optimierung Analyse
   print("")
   print(".. icons.misc.flash .. ")
@@ -409,22 +482,27 @@ cmd("PerformanceDiagnosticTest", function()
       break
     end
   end
-  
+
   if has_priorities then
-    print("  " .. icons.status.error .. "  Priority-System aktiv - zusätzlicher Overhead bei Sign-Platzierung")
+    print(
+      "  "
+        .. icons.status.error
+        .. "  Priority-System aktiv - zusätzlicher Overhead bei Sign-Platzierung"
+    )
   else
     print("  " .. icons.status.success .. " OPTIMIERT: Keine Prioritäten - weniger CPU-Overhead")
     print("  " .. icons.status.success .. " Alle Diagnostics werden angezeigt (wie gewünscht)")
     print("  " .. icons.status.success .. " Einfachere Konfiguration, weniger Code")
   end
-  
+
   print("")
   print(".. icons.status.hint .. ")
   print("  1. Öffne eine .lua Datei mit Fehlern")
   print("  2. Bewege Cursor mit j/k")
   print("  3. Diagnostics sollten DAUERHAFT sichtbar bleiben")
-  print("  4. Bei Problemen: Performance-System mit :lua require('core.performance').toggle() testen")
-  
+  print(
+    "  4. Bei Problemen: Performance-System mit :lua require('core.performance').toggle() testen"
+  )
 end, {
   desc = "Test compatibility between performance system and diagnostic display",
 })
@@ -432,62 +510,84 @@ end, {
 -- Bufferline Diagnostic Icons Test (NEU - Bufferline Integration)
 cmd("BufferlineDiagnosticTest", function()
   local icons = require("core.icons")
-  
+
   print(".. icons.status.stats .. " .. icons.status.success .. " Bufferline Diagnostic Icons Test:")
   print("")
-  
+
   -- Bufferline Konfiguration prüfen
   local bufferline_ok, bufferline = pcall(require, "bufferline")
   if not bufferline_ok then
     print(".. icons.status.error .. ")
     return
   end
-  
+
   print(".. icons.status.success .. ")
-  
+
   -- Aktuelle Buffer-Liste und ihre Diagnostics
-  local buffers = vim.fn.getbufinfo({bufloaded = 1})
+  local buffers = vim.fn.getbufinfo({ bufloaded = 1 })
   print("")
   print(".. icons.misc.folder .. ")
-  
+
   local total_diagnostics = 0
   for _, buf in ipairs(buffers) do
     if buf.name ~= "" and not buf.name:match("neo%-tree") then
       local diagnostics = vim.diagnostic.get(buf.bufnr)
       local filename = vim.fn.fnamemodify(buf.name, ":t")
-      
+
       if #diagnostics > 0 then
         -- Zähle Diagnostics nach Severity
-        local counts = {error = 0, warn = 0, info = 0, hint = 0}
+        local counts = { error = 0, warn = 0, info = 0, hint = 0 }
         for _, d in ipairs(diagnostics) do
-          if d.severity == vim.diagnostic.severity.ERROR then counts.error = counts.error + 1
-          elseif d.severity == vim.diagnostic.severity.WARN then counts.warn = counts.warn + 1  
-          elseif d.severity == vim.diagnostic.severity.INFO then counts.info = counts.info + 1
-          elseif d.severity == vim.diagnostic.severity.HINT then counts.hint = counts.hint + 1
+          if d.severity == vim.diagnostic.severity.ERROR then
+            counts.error = counts.error + 1
+          elseif d.severity == vim.diagnostic.severity.WARN then
+            counts.warn = counts.warn + 1
+          elseif d.severity == vim.diagnostic.severity.INFO then
+            counts.info = counts.info + 1
+          elseif d.severity == vim.diagnostic.severity.HINT then
+            counts.hint = counts.hint + 1
           end
         end
-        
+
         print("  " .. icons.lsp.text .. " " .. filename .. " (Buffer " .. buf.bufnr .. "):")
-        if counts.error > 0 then print("    " .. icons.diagnostics.error .. " " .. counts.error .. " Errors") end
-        if counts.warn > 0 then print("    " .. icons.diagnostics.warn .. " " .. counts.warn .. " Warnings") end
-        if counts.info > 0 then print("    " .. icons.diagnostics.info .. " " .. counts.info .. " Info") end
-        if counts.hint > 0 then print("    " .. icons.diagnostics.hint .. " " .. counts.hint .. " Hints") end
-        
+        if counts.error > 0 then
+          print("    " .. icons.diagnostics.error .. " " .. counts.error .. " Errors")
+        end
+        if counts.warn > 0 then
+          print("    " .. icons.diagnostics.warn .. " " .. counts.warn .. " Warnings")
+        end
+        if counts.info > 0 then
+          print("    " .. icons.diagnostics.info .. " " .. counts.info .. " Info")
+        end
+        if counts.hint > 0 then
+          print("    " .. icons.diagnostics.hint .. " " .. counts.hint .. " Hints")
+        end
+
         total_diagnostics = total_diagnostics + #diagnostics
       else
-        print("  " .. icons.lsp.text .. " " .. filename .. " (Buffer " .. buf.bufnr .. "): " .. icons.status.success .. " Sauber")
+        print(
+          "  "
+            .. icons.lsp.text
+            .. " "
+            .. filename
+            .. " (Buffer "
+            .. buf.bufnr
+            .. "): "
+            .. icons.status.success
+            .. " Sauber"
+        )
       end
     end
   end
-  
+
   if total_diagnostics == 0 then
     print("  " .. icons.status.success .. " Alle Buffer sind sauber - keine Diagnostics!")
   end
-  
+
   -- Bufferline Konfiguration zeigen
   print("")
   print(".. icons.status.gear .. ")
-  print("  " .. icons.status.success .. " diagnostics = 'nvim_lsp' (LSP-Integration aktiv)")  
+  print("  " .. icons.status.success .. " diagnostics = 'nvim_lsp' (LSP-Integration aktiv)")
   print("  " .. icons.status.success .. " diagnostics_indicator mit icons.lua Icons")
   print("  " .. icons.status.success .. " Highlighting für Error/Warning/Info/Hint konfiguriert")
   print("")
@@ -496,7 +596,7 @@ cmd("BufferlineDiagnosticTest", function()
   print("  Warning: " .. icons.diagnostics.warn .. " (Gelb: #feca57)")
   print("  Info: " .. icons.diagnostics.info .. " (Blau: #48cae4)")
   print("  Hint: " .. icons.diagnostics.hint .. " (Grau: #6c7b7f)")
-  
+
   print("")
   print(".. icons.status.hint .. ")
   print("  • Icons erscheinen neben Buffer-Namen mit Diagnostics")
@@ -504,26 +604,25 @@ cmd("BufferlineDiagnosticTest", function()
   print("  • Farbe ändert sich je nach Severity-Level")
   print("  • Ausgewählte Buffers werden fett dargestellt")
   print("  • Performance-optimiert (keine Updates während Insert-Mode)")
-  
 end, {
   desc = "Test bufferline diagnostic icons integration with icons.lua",
 })
 
--- Rust LSP 2025 Optimization Status 
+-- Rust LSP 2025 Optimization Status
 cmd("RustAnalyzer2025Status", function()
   local rust_perf = require("utils.rust-performance")
   local analysis = rust_perf.analyze_rust_ecosystem()
   local total_memory_gb = analysis.toolchain.total_memory_gb
   local cpu_cores = tonumber(vim.fn.system("nproc 2>/dev/null")) or 4
-  
+
   print(".. icons.status.rocket .. ")
   print("=" .. string.rep("=", 50))
-  
+
   -- Hardware Analysis
   print("\n" .. icons.misc.gear .. " Hardware-Erkennung:")
   print("  " .. icons.misc.gear .. " RAM: " .. total_memory_gb .. "GB")
   print("  " .. icons.misc.gear .. " CPU Cores: " .. cpu_cores)
-  
+
   -- Performance Tier
   local tier = "Conservative (<8GB)"
   if total_memory_gb >= 32 then
@@ -534,27 +633,33 @@ cmd("RustAnalyzer2025Status", function()
     tier = "Balanced (8-15GB)"
   end
   print("  " .. icons.status.rocket .. " Performance Tier: " .. tier)
-  
+
   -- 2025 Optimizations
   print("\n" .. icons.misc.flash .. " 2025 Neue Features:")
   print("  " .. icons.status.success .. " Auto-Threading: numThreads = null (optimal)")
-  print("  " .. icons.status.success .. " Dynamic LRU: " .. math.min(2048, math.max(128, total_memory_gb * 32)) .. " capacity")
+  print(
+    "  "
+      .. icons.status.success
+      .. " Dynamic LRU: "
+      .. math.min(2048, math.max(128, total_memory_gb * 32))
+      .. " capacity"
+  )
   print("  " .. icons.status.success .. " Target Separation: target/rust-analyzer")
-  
+
   if total_memory_gb >= 32 then
     print("  " .. icons.status.success .. " Memory Limit: 8192MB")
     print("  " .. icons.status.success .. " Cache Priming: " .. cpu_cores .. " threads")
     print("  " .. icons.status.success .. " All Features: Enabled")
     print("  " .. icons.status.success .. " Proc Macros: Full support")
   end
-  
+
   print("\n" .. icons.status.stats .. " Erwartete Verbesserungen:")
   print("  " .. icons.performance.fast .. " 30-40% schnellere Builds")
   print("  " .. icons.performance.optimize .. " Bessere Memory-Nutzung")
   print("  " .. icons.performance.benchmark .. " Keine Cargo-Interferenz")
   print("  " .. icons.misc.gear .. " Optimale Thread-Verteilung")
 end, {
-  desc = "Show rust-analyzer 2025 performance optimizations status"
+  desc = "Show rust-analyzer 2025 performance optimizations status",
 })
 
 -- Formatting Commands
@@ -580,7 +685,7 @@ cmd("FormatInfo", function()
   if ok then
     has_lsp_fallback = result
   end
-  
+
   local fallback_status = has_lsp_fallback and icons.status.success .. " Verfügbar"
     or icons.status.error .. " Nicht verfügbar"
   print("  " .. icons.status.gear .. " LSP-Fallback: " .. fallback_status)
@@ -622,14 +727,36 @@ end, {
 cmd("UltimatePerformanceStatus", function()
   local perf = require("core.performance")
   local status = perf.status()
-  print(".. icons.status.rocket .. ")
-  print("  Ultra Mode Active: " .. (status.ultra_active and ".. icons.status.success .. " or ".. icons.status.error .. "))
-  print("  Current updatetime: " .. status.updatetime .. "ms")
-  if status.original_updatetime then
-    print("  Original updatetime: " .. status.original_updatetime .. "ms")
+
+  print(icons.status.rocket .. " VelocityNvim Performance Status")
+  print(
+    "  Ultra Mode: "
+      .. (
+        status.ultra_active and (icons.status.success .. " ACTIVE")
+        or (icons.status.info .. " STANDBY")
+      )
+  )
+
+  if status.ultra_active then
+    print(
+      "  "
+        .. icons.status.gear
+        .. " Performance Boost: "
+        .. status.updatetime
+        .. "ms (boosted from "
+        .. (status.original_updatetime or "unknown")
+        .. "ms)"
+    )
+  else
+    print("  " .. icons.status.gear .. " Normal Mode: " .. status.updatetime .. "ms")
+    print(
+      "  " .. icons.status.hint .. " Ultra Mode activates automatically during cursor navigation"
+    )
   end
+
+  print("  " .. icons.status.info .. " Use :UltimatePerformanceToggle to test manual activation")
 end, {
-  desc = "Show ULTIMATE Performance Mode status",
+  desc = "Show ULTIMATE Performance Mode status with detailed explanation",
 })
 
 -- System Commands
@@ -765,12 +892,17 @@ cmd("RustAnalyzeEcosystem", function()
   local rust_perf = require("utils.rust-performance")
   local analysis = rust_perf.analyze_rust_ecosystem()
   local icons = require("core.icons")
-  
+
   print(icons.performance.benchmark .. " Rust Ecosystem Analysis:")
   print("  " .. icons.misc.gear .. " CPU: " .. analysis.toolchain.cpu_target)
   print("  " .. icons.misc.gear .. " RAM: " .. analysis.toolchain.total_memory_gb .. "GB")
   print("  " .. icons.misc.gear .. " Rustc: " .. analysis.toolchain.rustc_version)
-  print("  " .. icons.misc.gear .. " Nightly: " .. (analysis.toolchain.has_nightly and "Available" or "Not installed"))
+  print(
+    "  "
+      .. icons.misc.gear
+      .. " Nightly: "
+      .. (analysis.toolchain.has_nightly and "Available" or "Not installed")
+  )
 end, {
   desc = "Analyze Rust ecosystem and hardware capabilities",
 })
@@ -885,7 +1017,7 @@ cmd("IconValidate", function()
   local validator = require("utils.validate-icons")
   validator.validate()
 end, {
-  desc = "Validiere alle Icon-Referenzen im Code"
+  desc = "Validiere alle Icon-Referenzen im Code",
 })
 
 cmd("BufferCloseAll", function()
@@ -1078,7 +1210,9 @@ cmd("LspSetProjectFilters", function()
       table.insert(_G.velocity_lsp_exclude_dirs, vim.trim(filter))
     end
     vim.notify(
-      icons.status.success .. " Filter gesetzt: " .. table.concat(_G.velocity_lsp_exclude_dirs, ", "),
+      icons.status.success
+        .. " Filter gesetzt: "
+        .. table.concat(_G.velocity_lsp_exclude_dirs, ", "),
       vim.log.levels.INFO
     )
     vim.notify(

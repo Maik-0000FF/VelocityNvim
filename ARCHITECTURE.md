@@ -87,18 +87,25 @@ Each module has a single, well-defined responsibility:
 │   │   │   ├── alpha.lua    # Dashboard with version info
 │   │   │   ├── bufferline.lua # Buffer tabs
 │   │   │   ├── lualine.lua   # Enhanced status line with Git
-│   │   │   └── tokyonight.lua # Colorscheme
+│   │   │   ├── tokyonight.lua # Colorscheme
+│   │   │   ├── noice.lua    # Enhanced UI messages
+│   │   │   └── nvim-colorizer.lua # Color highlighting
 │   │   ├── editor/          # Editor enhancement plugins
 │   │   │   ├── which-key.lua # Key binding helper
 │   │   │   ├── nvim-treesitter.lua # Syntax highlighting
 │   │   │   ├── neo-tree.lua  # File explorer
 │   │   │   ├── nvim-window-picker.lua # Window selection
 │   │   │   ├── hlchunk.lua   # Code block highlighting
-│   │   │   └── hop.lua       # Ultra-fast cursor navigation
+│   │   │   ├── hop.lua       # Ultra-fast cursor navigation
+│   │   │   ├── mini-pairs.lua # Auto-pair brackets
+│   │   │   ├── german-chars.lua # German character input
+│   │   │   └── render-markdown.lua # Markdown rendering
 │   │   ├── lsp/             # LSP and completion
 │   │   │   ├── native-lsp.lua # Native LSP with smart scanning
 │   │   │   ├── blink-cmp.lua # Completion engine
-│   │   │   └── lsp-debug.lua # LSP debugging tools
+│   │   │   ├── blink-cmp-force-rust.lua # Rust performance optimization
+│   │   │   ├── lsp-debug.lua # LSP debugging tools
+│   │   │   └── lsp-health-checker.lua # LSP health monitoring
 │   │   └── tools/           # Development tools
 │   │       ├── gitsigns.lua # Git integration
 │   │       ├── conform.lua  # Code formatting
@@ -123,14 +130,28 @@ Each module has a single, well-defined responsibility:
 The loading order in `core/init.lua` is **strictly enforced**:
 
 ```lua
--- 1. Version system MUST be first (contains API compatibility fixes)
-require("core.version")
-require("core.migrations") 
-require("core.options")
-require("core.keymaps")
-require("core.autocmds")
-require("core.commands")
--- 2. Plugins loaded after core is stable
+-- First-Run Installation Check (MUST be absolute first)
+local first_run = require("core.first-run")
+if first_run.is_needed() then
+  first_run.run_installation()
+  return
+end
+
+-- Version-System initialisieren (nach first-run check)
+local version = require("core.version")
+version.init()
+
+-- Lade Basis-Module (Reihenfolge wichtig!)
+require("core.options")    -- Grundlegende Einstellungen
+
+-- ULTIMATE Performance System (nach options, vor plugins)
+require("core.performance").setup()
+
+require("core.keymaps")    -- Tastenkürzel
+require("core.autocmds")   -- Event-Handler
+require("core.commands")   -- Benutzerbefehle
+
+-- Lade Plugins (nach Core-Setup)
 require("plugins")
 ```
 
@@ -149,13 +170,15 @@ All icons use NerdFont symbols instead of Unicode emojis for better performance:
 ```lua
 -- Performance-optimized icons
 M.status = {
-  success = "",      -- instead of ✅
-  error = "",        -- instead of ❌  
-  warning = "",      -- instead of ⚠️
-  loading = "",      -- instead of 🔄
-  scan = "",         -- LSP scanning
-  filter = "",       -- Filtering operations
-  -- ... 30+ more icons
+  success = "󰄴",    -- instead of ✅
+  error = "󰅚",      -- instead of ❌
+  warning = "",     -- instead of ⚠️
+  loading = "󰝲",    -- instead of 🔄
+  sync = "",       -- sync operations
+  info = "󰋼",       -- information
+  gear = "",       -- settings/config
+  rocket = "",     -- performance status
+  -- ... 50+ more icons
 }
 ```
 
@@ -174,9 +197,9 @@ print(icons.status.success .. " Operation completed")
 
 ## Version Management
 
-### Current Version: 2.0.0
-- Configuration name: "VelocityNvim Native"
-- Last updated: 2025-08-28
+### Current Version: 1.0.0
+- Configuration name: "VelocityNvim - Native vim.pack Distribution"
+- Last updated: 2025-09-05 (GitHub Release Version)
 - Version tracking with automatic migration support
 
 ### Version Change Detection
@@ -215,8 +238,18 @@ Plugins are installed to: `~/.local/share/nvim/site/pack/user/start/[plugin-name
 ```lua
 M.plugins = {
   ["plenary.nvim"] = "https://github.com/nvim-lua/plenary.nvim",
+  ["nvim-web-devicons"] = "https://github.com/nvim-tree/nvim-web-devicons",
+  ["nui.nvim"] = "https://github.com/MunifTanjim/nui.nvim",
+  ["mini.nvim"] = "https://github.com/echasnovski/mini.nvim",
+  ["neo-tree.nvim"] = "https://github.com/nvim-neo-tree/neo-tree.nvim",
+  ["tokyonight.nvim"] = "https://github.com/folke/tokyonight.nvim",
+  ["which-key.nvim"] = "https://github.com/folke/which-key.nvim",
+  ["alpha-nvim"] = "https://github.com/goolord/alpha-nvim",
+  ["bufferline.nvim"] = "https://github.com/akinsho/bufferline.nvim",
   ["blink.cmp"] = "https://github.com/Saghen/blink.cmp",
-  -- ... all plugins with their Git URLs
+  ["fzf-lua"] = "https://github.com/ibhagwan/fzf-lua",
+  ["gitsigns.nvim"] = "https://github.com/lewis6991/gitsigns.nvim",
+  -- ... 24 total plugins
 }
 ```
 
@@ -258,12 +291,12 @@ local exclude_dirs = {
 _G.velocitynvim_lsp_exclude_dirs = {"data", "logs", "models", "checkpoints"}
 ```
 
-### LSP Diagnostic Integration (Phase 13 - v2.3.2)
+### LSP Diagnostic Integration (Current Implementation)
 
 #### Native vim.diagnostic Integration
-The LSP debug system was completely rewritten to use **native Neovim diagnostic APIs** instead of custom implementations:
+The LSP debug system uses **native Neovim diagnostic APIs** for optimal performance and compatibility:
 
-**✅ OPTIMIZED: lsp-debug.lua (181 → 94 lines, 48% reduction)**
+**✅ CURRENT: lsp-debug.lua - Native diagnostic integration**
 
 #### Replaced Custom Functions:
 1. **`update_diagnostics_buffer()`** → `vim.diagnostic.open_float()`
@@ -351,15 +384,18 @@ utils.buffer().print_info()
 
 #### Window Management (`utils.window()`)
 ```lua
-utils.window().balance()
 utils.window().toggle_zoom()
+utils.window().resize("up", 5)
 utils.window().print_info()
+utils.window().get_stats()
 ```
 
 #### Git Integration (`utils.git()`)
 ```lua
-local info = utils.git().get_info()
 local available = utils.git().is_available()
+local is_repo = utils.git().is_repo()
+local root = utils.git().get_root()
+local branch = utils.git().get_branch()
 utils.git().print_info()
 ```
 
@@ -666,99 +702,89 @@ end
 
 ## Current Status
 
-### ✅ Implemented Features (100% Complete)
+### ✅ Implemented Features (GitHub Release v1.0.0)
 - **Core System**: Version management, migrations, health checks
-- **Icon System**: Complete NerdFont integration with 50+ icons  
-- **LSP Integration**: Smart workspace scanning with advanced edge cases
-- **Plugin Management**: Native vim.pack with full dependency documentation
-- **UI Enhancement**: Enhanced lualine with Git status
-- **Utility System**: Comprehensive lazy-loaded utilities with caching
-- **Error Safety**: Modern API usage with extensive error handling
-- **Performance**: Optimized scanning and rendering with benchmarks
-- **Terminal System**: Native terminal management with Alt+i/+/-/\\ keybindings
-- **Testing Framework**: Complete automated test suite with performance monitoring
-- **Documentation**: Comprehensive plugin dependency mapping
-- **Edge Case Handling**: Advanced robustness for production environments
+- **Icon System**: Complete NerdFont integration with 50+ icons
+- **LSP Integration**: Native LSP with blink.cmp and Rust optimization
+- **Plugin Management**: Native vim.pack with comprehensive plugin collection
+- **UI Enhancement**: Enhanced lualine, bufferline, alpha dashboard, noice UI
+- **Editor Features**: Treesitter, neo-tree, window picker, hop navigation
+- **Development Tools**: gitsigns, conform formatting, fzf-lua fuzzy finder
+- **Specialized Tools**: German character input, markdown rendering, color highlighting
+- **Performance**: Rust-optimized components where available (blink.cmp, fzf)
+- **Quality**: Health checks, error handling, safe module loading
 
-### 🔄 Current Version (PERFECT SCORE: 100%)
-- **Version**: 2.1.0 (100% Release)
-- **Last Updated**: 2025-08-29
-- **Architecture**: World-class and production-ready  
-- **Dependencies**: Fully documented with load-order requirements
-- **Performance**: Benchmarked and optimized for enterprise use
-- **Testing**: Complete automated test coverage
-- **Code Quality**: Comprehensive documentation and comments
-- **Robustness**: Advanced edge case handling implemented
+### 🔄 Current Version (GitHub Release)
+- **Version**: 1.0.0 (First GitHub Release)
+- **Last Updated**: 2025-09-05
+- **Architecture**: Native vim.pack based, modular and maintainable
+- **Plugin Collection**: 24 carefully selected plugins for complete IDE experience
+- **Performance**: Rust-optimized components with fallback systems
+- **Quality**: Comprehensive health checks and error handling
+- **Documentation**: Complete architecture and development guidelines
+- **Compatibility**: Neovim 0.10+ with cross-platform support
 
-### 🏆 Quality Metrics (Professional Assessment)
-1. **Architecture & Design**: 100% (20/20 points)
-   - Native-first approach with zero external dependencies
-   - Fully documented plugin interdependencies
-   - Complete load-order management
-   - Graceful degradation strategies
+### 🏆 Quality Metrics (v1.0.0 Assessment)
+1. **Architecture & Design**: Excellent
+   - Native vim.pack approach without external plugin managers
+   - Modular structure with clear separation of concerns
+   - Safe module loading with comprehensive error handling
+   - Clean directory structure for easy maintenance
 
-2. **Code Quality**: 100% (20/20 points)
-   - Comprehensive inline documentation explaining WHY decisions were made
-   - Performance-critical sections extensively commented
-   - Consistent coding standards throughout
+2. **Plugin Collection**: Comprehensive
+   - 24 carefully selected plugins covering all IDE needs
+   - UI: alpha, bufferline, lualine, tokyonight, noice, nvim-colorizer
+   - Editor: treesitter, neo-tree, which-key, hop, mini-pairs, german-chars
+   - LSP: native-lsp, blink.cmp with Rust optimization, lsp-debug
+   - Tools: gitsigns, conform, fzf-lua, suda
+   - Specialized: render-markdown, window-picker, hlchunk
 
-3. **Performance**: 100% (20/20 points)
-   - Sub-50ms startup times with 15+ plugins
-   - Intelligent LSP workspace scanning (10-20x improvement)
-   - Dimension caching for UI components
-   - Batch processing for large workspaces
+3. **Performance**: Optimized
+   - Rust-based components where beneficial (blink.cmp, fzf-lua)
+   - Lazy loading for utilities and heavy components
+   - NerdFont icons for consistent rendering
+   - Efficient startup sequence
 
-4. **Error Handling & Robustness**: 100% (20/20 points)
-   - Advanced edge case handling (>10GB workspaces, network mounts)
+4. **User Experience**: Complete
+   - Beautiful dashboard with system information
+   - Enhanced status line with Git integration
+   - Intelligent fuzzy finding and file navigation
+   - Comprehensive keybinding system with help
+
+5. **Developer Experience**: Professional
+   - Native LSP integration with diagnostics
+   - Code formatting with conform.nvim
+   - Git workflow integration with gitsigns
+   - Comprehensive health checking system
+
+6. **Reliability**: Robust
+   - Safe module loading with pcall protection
    - Graceful fallbacks for missing dependencies
-   - Force-close mechanisms for unresponsive components
-   - Stale reference cleanup automation
+   - Version management with migration support
+   - Comprehensive error handling throughout
 
-5. **Documentation**: 100% (20/20 points)
-   - Complete ARCHITECTURE.md with implementation details
-   - Comprehensive CLAUDE.md development guidelines
-   - Plugin dependency documentation with failure modes
-   - Testing documentation with performance benchmarks
+### Health & Quality Assurance (v1.0.0)
+- **Health Checks**: Comprehensive system health monitoring with `:VelocityHealth`
+- **Error Handling**: Safe module loading with pcall protection throughout
+- **Icon System**: Consistent NerdFont usage for cross-platform compatibility
+- **Version Management**: Automatic version tracking and migration system
+- **Plugin Management**: Native installation with `:PluginSync` command
+- **LSP Integration**: Health monitoring and diagnostic tools
+- **Performance**: Optimized components with Rust fallbacks where available
 
-6. **Testing & Validation**: 100% (20/20 points)
-   - Automated unit test suite for core components
-   - Performance benchmarking with configurable thresholds
-   - Integration tests for component interactions
-   - Health checks with detailed diagnostics
+### 🔧 Key Features (v1.0.0)
+- **Native Architecture**: Built on vim.pack without external plugin managers
+- **Rust Performance**: Optimized components with automatic fallbacks
+- **Complete IDE**: All essential development tools in one configuration
+- **Beautiful UI**: Modern interface with consistent NerdFont theming
+- **Professional Quality**: Health checks, error handling, and documentation
+- **Cross-Platform**: Works on Linux, macOS, and WSL2
 
-7. **Maintainability**: 100% (20/20 points)
-   - Version tracking with semantic versioning
-   - Automated migration system for updates
-   - Modular architecture for easy extension
-   - Backward compatibility guarantees
-
-8. **Innovation & Best Practices**: 100% (20/20 points)
-   - Pioneering native vim.pack implementation
-   - Advanced LSP workspace optimization techniques  
-   - Intelligent caching strategies throughout
-   - Industry-standard testing methodologies
-
-###  Testing Framework (Komplett überarbeitet 2025-08-29)
-- **Isolierte Test-Engine**: `tests/isolated_test_runner.lua` - Haupttest-System
-- **Mock Environment**: Vollständige vim API Simulation ohne Dependencies  
-- **Emoji-freie Policy**: Strikte Verwendung von Nerd Font Symbolen
-- **Standalone Logic Tests**: Direkte Funktions-Tests ohne Module Loading
-- **Performance Benchmarks**: <5ms Schwellenwerte ohne vim Runtime Overhead
-- **100% Test Coverage**: Health (3/3), Unit (4/4), Performance (1/1), Integration (3/3)
-- **Legacy Support**: `tests/run_tests.lua` als Proxy für Kompatibilität
-
-### 🔧 Advanced Features
-- **Terminal Management**: Native terminal with caching and edge cases
-- **Plugin Dependencies**: Complete mapping with load-order optimization  
-- **Edge Case Handling**: Production-ready robustness features
-- **Performance Monitoring**: Built-in benchmarking and optimization
-- **Error Recovery**: Advanced fallback mechanisms
-
-### 📋 Future Development (Optional Enhancements)
-- **Profile System**: Multiple configuration variants (designed, not implemented)
-- **Enhanced Git Integration**: More advanced Git operations
-- **Custom Plugin API**: Framework for plugin development
-- **Advanced LSP Features**: Additional language server integrations
-- **Cloud Sync**: Configuration synchronization across devices
+### 📋 Future Development (Post v1.0.0)
+- **Enhanced Performance**: Additional Rust optimizations and benchmarking
+- **Extended Plugin Support**: More language servers and development tools
+- **Advanced Git Workflow**: Enhanced git operations and branch management
+- **Profile System**: Multiple configuration variants for different use cases
+- **Community Features**: Plugin development framework and community tools
 
 This architecture provides a solid foundation for a modern, performant, and maintainable Neovim configuration that scales with your development needs.
