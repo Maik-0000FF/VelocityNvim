@@ -24,8 +24,6 @@ M.plugins = {
   ["blink.cmp"] = "https://github.com/Saghen/blink.cmp",
   ["friendly-snippets"] = "https://github.com/rafamadriz/friendly-snippets",
   ["nvim-treesitter"] = "https://github.com/nvim-treesitter/nvim-treesitter",
-  -- LSP Configuration (CRITICAL DEPENDENCY - was missing!)
-  ["nvim-lspconfig"] = "https://github.com/neovim/nvim-lspconfig",
   -- Ultra-schneller Fuzzy Finder
   ["fzf-lua"] = "https://github.com/ibhagwan/fzf-lua",
   -- Ultra-schneller Autoformatter

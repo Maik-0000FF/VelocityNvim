@@ -519,8 +519,40 @@ local function scan_workspace_files(client)
   end
 
   -- EDGE CASE: Sehr großes Workspace (>10GB) warnen
+  -- KONSISTENTE LÖSUNG: Verwende dieselben exclude_dirs wie für File-Scanning
+  local default_exclude_dirs = {
+    -- Python
+    "venv", ".venv", "env", ".env", "__pycache__", ".pytest_cache",
+    "site-packages", ".tox", ".coverage", "htmlcov", "build", "dist",
+    "*.egg-info", ".mypy_cache", ".ruff_cache",
+    -- Node.js
+    "node_modules", ".npm", ".yarn",
+    -- General
+    ".git", ".svn", ".hg", ".bzr",
+    -- IDEs
+    ".vscode", ".idea", ".vs",
+    -- Build/Cache
+    "target", "build", "dist", ".cache", "tmp", "temp",
+    -- OS
+    ".DS_Store", "Thumbs.db",
+  }
+
+  -- Projektspezifische Ausschlüsse hinzufügen
+  local size_exclude_dirs = vim.deepcopy(default_exclude_dirs)
+  if _G.velocitynvim_lsp_exclude_dirs then
+    vim.list_extend(size_exclude_dirs, _G.velocitynvim_lsp_exclude_dirs)
+  end
+
+  -- Erstelle du exclude-Pattern für alle exclude_dirs
+  local exclude_pattern = ""
+  for _, exclude in ipairs(size_exclude_dirs) do
+    if not exclude:match("%*") then -- Nur echte Verzeichnisse, keine Wildcards
+      exclude_pattern = exclude_pattern .. string.format(" --exclude='%s'", exclude)
+    end
+  end
+
   local dir_size_check =
-    vim.fn.system(string.format("du -sb '%s' 2>/dev/null | cut -f1", client.config.root_dir))
+    vim.fn.system(string.format("du -sb%s '%s' 2>/dev/null | cut -f1", exclude_pattern, client.config.root_dir))
   if vim.v.shell_error == 0 then
     local size_bytes = tonumber(dir_size_check)
     if size_bytes and size_bytes > 10 * 1024 * 1024 * 1024 then -- 10GB
