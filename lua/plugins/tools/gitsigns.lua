@@ -14,19 +14,25 @@ local use_delta = vim.fn.executable("delta") == 1
 
 gitsigns.setup({
   -- MINIMAL Custom-Overrides nur wo Standard nicht ausreicht:
-  
+
   -- BEGRÜNDUNG: Delta-Integration für VelocityNvim Rust Performance Suite
   diff_opts = use_delta and {
     algorithm = "histogram",
     internal = false,
     external = "delta --color-only --features=interactive",
   } or nil,
-  
+
   -- BEGRÜNDUNG: Performance-Optimierung aus Phase 12 (WezTerm cursor responsiveness)
   update_debounce = 200, -- Weniger frequent Git-Updates für bessere Navigation
-  
+
   -- BEGRÜNDUNG: Performance-Limit für große Dateien (VelocityNvim Standard)
   max_file_length = 10000, -- 40k->10k für Phase 12 Performance-Optimierung
+
+  -- BEGRÜNDUNG: Auto-refresh bei externen Git-Operationen (Standard-Plugin-Option)
+  watch_gitdir = {
+    enable = true,      -- Standard: true (explizit gesetzt für Dokumentation)
+    follow_files = true, -- Standard: true (verfolgt git mv Operationen)
+  },
 })
 
 -- ALLE ANDEREN FEATURES NUTZEN STANDARD-DEFAULTS:
