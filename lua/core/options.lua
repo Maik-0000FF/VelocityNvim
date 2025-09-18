@@ -28,10 +28,10 @@ opt.smartindent = true -- Intelligente Einrückung
 -- Native Einrückungslinien (ersetzt hlchunk indent)
 opt.list = true -- Aktiviere native indent lines
 opt.listchars = {
-  tab = "→ ", -- Tab-Zeichen
-  space = "·", -- Space-Zeichen sichtbar machen
-  trail = "•", -- Trailing Spaces
-  nbsp = "␣", -- Non-breaking Space
+  -- tab = "→ ", -- Tab-Zeichen
+  -- space = "·", -- Space-Zeichen sichtbar machen
+  -- trail = "•", -- Trailing Spaces
+  -- nbsp = "␣", -- Non-breaking Space
   extends = "⟩", -- Zeilen die rechts abgeschnitten sind
   precedes = "⟨", -- Zeilen die links abgeschnitten sind
   leadmultispace = "│ ", -- Native indent lines (ersetzt hlchunk indent)
@@ -85,6 +85,11 @@ opt.title = true -- Fenstertitel setzen
 opt.pumheight = 10 -- Popup-Menühöhe begrenzen
 opt.showtabline = 0 -- Keine native tabline (bufferline plugin übernimmt)
 opt.laststatus = 0 -- Keine native statusline (lualine plugin übernimmt)
+
+-- Leerzeichen-Darstellung (Neo-tree Tilden entfernen)
+opt.fillchars = {
+  eob = " ", -- End-of-buffer Zeichen (entfernt ~ Tilden in leeren Zeilen)
+}
 
 -- WezTerm-spezifische Performance-Optimierungen
 opt.mouse = "a" -- Mouse support für WezTerm
