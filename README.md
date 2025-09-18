@@ -14,7 +14,7 @@
 
 VelocityNvim leverages Neovim's built-in plugin system for enhanced performance, stability, and simplicity.
 
-![VelocityNvim Dashboard](./Bildschirmfoto_VelocityNvim.png)
+![VelocityNvim Dashboard](./VelocityNvim_Dashboard_Screenshot.png)
 
 *VelocityNvim's customized dashboard with performance metrics and native vim.pack integration*
 
