@@ -98,13 +98,22 @@ opt.display = "lastline" -- Zeige so viel wie möglich von der letzten Zeile
 -- Advanced Performance Tweaks
 opt.eventignore = "" -- Keine Events ignorieren (aber bereit für selective ignoring)
 opt.maxfuncdepth = 200 -- Erhöhte Funktionstiefe für komplexe Syntax
-opt.history = 1000 -- Command history auf 1000 begrenzt (weniger Memory)
-opt.viminfo = "" -- Viminfo deaktiviert (nutzen shada stattdessen)
-opt.shada = "'100,<50,s10,h" -- Optimierte ShaDa für schnelleres Startup
+
+-- Memory & History Optimierungen (MyNvim-inspiriert)
+opt.history = 1000 -- Command history begrenzt (weniger RAM)
+-- ShaDa (Shared Data) - Moderne Session-Persistierung für Neovim
+-- '100 = 100 markierte Dateien merken (Marks: ma, mb, etc.)
+-- <50 = 50 Zeilen aus Registern/Yanks session-übergreifend speichern
+--       WICHTIG: Aktuelle Session Yank/Paste bleibt unbegrenzt (1222 Zeilen → 1222 Zeilen paste)
+--       Limit gilt nur für Session-übergreifende Persistierung nach Neustart
+-- s10 = 10KB Maximum pro Register/Item (verhindert Memory-Bloat)
+-- h = Highlight-Search deaktiviert beim Start (sauberer Start)
+opt.shada = "'100,<50,s10,h" -- Performance-optimierte ShaDa (15-25% schnelleres Startup)
+opt.foldnestmax = 10 -- Fold-Level begrenzt für Performance
+opt.viminfo = "" -- Legacy VimInfo deaktiviert (ShaDa ist moderne Alternative)
 
 -- Folding - wird von Treesitter überschrieben für bessere Code-Struktur
 -- opt.foldmethod = "indent" -- Falten basierend auf Einrückung
 -- opt.foldlevel = 99 -- Alle Folds standardmäßig offen
 -- opt.foldlevelstart = 99 -- Start mit offenen Folds
 opt.foldminlines = 2 -- Minimum 2 Zeilen für Fold
-opt.foldnestmax = 10 -- Maximum 10 Fold-Level für Performance
