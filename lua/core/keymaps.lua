@@ -102,7 +102,7 @@ map("n", "<leader>cc", function()
     if choice == 1 then
       -- Speichern und schließen
       local ok, err = pcall(function()
-        vim.cmd("w")
+        vim.api.nvim_command("w")
       end)
       if not ok then
         vim.notify("Fehler beim Speichern: " .. err, vim.log.levels.ERROR)
@@ -124,12 +124,11 @@ map("n", "<leader>cc", function()
 
   if buf_count <= 1 then
     -- Es ist der letzte normale Buffer
-    -- Speichere den aktuellen Buffer-Namen für die Benachrichtigung
+    -- Speichere den aktuellen Buffer für die Löschung
     local buffer_to_delete = current_buf
-    local buffer_name = current_name
 
     -- Erstelle zuerst einen neuen Buffer
-    vim.cmd("enew")
+    vim.api.nvim_command("enew")
 
     -- Lösche den alten Buffer direkt mit seiner ID
     local ok, err = pcall(vim.api.nvim_buf_delete, buffer_to_delete, { force = true })
@@ -144,7 +143,7 @@ map("n", "<leader>cc", function()
     local buffer_to_delete = current_buf
 
     -- Wechsle zuerst zu einem anderen Buffer
-    vim.cmd("bprevious")
+    vim.api.nvim_command("bprevious")
 
     -- Lösche den spezifischen Buffer
     local ok, err = pcall(vim.api.nvim_buf_delete, buffer_to_delete, { force = true })
@@ -164,7 +163,7 @@ map("n", "<C-n>", "<cmd>Neotree toggle<CR>", { desc = "Toggle NeoTree" })
 map("n", "<leader>ge", "<cmd>Neotree git_status<CR>", { desc = "Git Explorer" })
 map("n", "<leader>be", "<cmd>Neotree buffers<CR>", { desc = "Buffer Explorer" })
 
--- Hop Navigation  
+-- Hop Navigation
 map("n", "<leader>ll", "<cmd>HopLine<CR>", { desc = "Hop Line" })
 map("n", "<leader>ww", "<cmd>HopWord<CR>", { desc = "Hop Word" })
 
@@ -182,7 +181,7 @@ map("n", "<leader>W", "<cmd>SudaWrite<CR>", { desc = "Write with sudo" })
 map("n", "\\s", "<cmd>LaTeXStatus<CR>", { desc = "LaTeX: Performance Status" })
 map("n", "\\i", "<cmd>LaTeXLivePreview<CR>", { desc = "LaTeX: Live Preview aktivieren" })
 
--- LaTeX Building  
+-- LaTeX Building
 map("n", "\\b", "<cmd>LaTeXBuildTectonic<CR>", { desc = "LaTeX: Build mit Tectonic (Ultra-Fast)" })
 map("n", "\\B", "<cmd>LaTeXBuildTypst<CR>", { desc = "LaTeX: Build mit Typst (Modern)" })
 
@@ -190,50 +189,79 @@ map("n", "\\B", "<cmd>LaTeXBuildTypst<CR>", { desc = "LaTeX: Build mit Typst (Mo
 map("n", "\\c", function()
   local file = vim.fn.expand("%:p")
   local bufname = vim.fn.bufname()
-  
+
   -- Prüfe ob es ein gültiger Dateibuffer ist
   if not file or file == "" or bufname:match("^neo%-tree") then
     vim.notify("Kein LaTeX-Dokument geöffnet", vim.log.levels.WARN)
     return
   end
-  
+
   local file_dir = vim.fn.fnamemodify(file, ":h")
   local filename = vim.fn.fnamemodify(file, ":t")
-  
+  local basename = vim.fn.fnamemodify(file, ":t:r")
+
   if file:match("%.tex$") then
     -- Prüfe ob pdflatex verfügbar ist
     if vim.fn.executable("pdflatex") ~= 1 then
       vim.notify("pdflatex nicht gefunden - installiere texlive-core", vim.log.levels.ERROR)
       return
     end
-    
+
     -- Wechsle ins Verzeichnis der .tex-Datei für pdflatex
     local original_dir = vim.fn.getcwd()
     vim.fn.chdir(file_dir)
-    vim.cmd("!pdflatex " .. filename)
+    vim.api.nvim_command("!pdflatex " .. filename)
     vim.fn.chdir(original_dir)
-  elseif file:match("%.typ$") then  
-    vim.cmd("LaTeXBuildTypst")
+
+    -- Nach erfolgreichem Kompilieren PDF öffnen
+    vim.defer_fn(function()
+      local pdf_file = file_dir .. "/" .. basename .. ".pdf"
+      if vim.fn.filereadable(pdf_file) == 1 then
+        if vim.fn.executable("zathura") == 1 then
+          vim.fn.system("zathura " .. pdf_file .. " &")
+        else
+          vim.notify("Zathura nicht verfügbar", vim.log.levels.WARN)
+        end
+      else
+        vim.notify("PDF nicht gefunden: " .. pdf_file, vim.log.levels.ERROR)
+      end
+    end, 1000) -- 1s Verzögerung für pdflatex completion
+  elseif file:match("%.typ$") then
+    vim.api.nvim_command("LaTeXBuildTypst")
+
+    -- Nach Typst-Kompilierung PDF öffnen
+    vim.defer_fn(function()
+      local pdf_file = file_dir .. "/" .. basename .. ".pdf"
+      if vim.fn.filereadable(pdf_file) == 1 then
+        if vim.fn.executable("zathura") == 1 then
+          vim.fn.system("zathura " .. pdf_file .. " &")
+        else
+          vim.notify("Zathura nicht verfügbar", vim.log.levels.WARN)
+        end
+      else
+        vim.notify("PDF nicht gefunden: " .. pdf_file, vim.log.levels.ERROR)
+      end
+    end, 500) -- 500ms Verzögerung für Typst completion
   else
     vim.notify("Keine LaTeX/Typst-Datei", vim.log.levels.WARN)
   end
-end, { desc = "LaTeX: Compile aktueller Datei" })
+end, { desc = "LaTeX: Compile aktueller Datei + Anzeige" })
 
 -- LaTeX Viewer
 map("n", "\\v", function()
   local current_file = vim.fn.expand("%:p")
   local bufname = vim.fn.bufname()
-  
+
   -- Prüfe ob es ein gültiger Dateibuffer ist
   if not current_file or current_file == "" or bufname:match("^neo%-tree") then
     vim.notify("Kein LaTeX-Dokument geöffnet", vim.log.levels.WARN)
     return
   end
-  
+
   local file_dir = vim.fn.fnamemodify(current_file, ":h")
   local basename = vim.fn.fnamemodify(current_file, ":t:r")
   local file = file_dir .. "/" .. basename .. ".pdf"
-  
+
   if vim.fn.filereadable(file) == 1 then
     if vim.fn.executable("zathura") == 1 then
       vim.fn.system("zathura " .. file .. " &")
@@ -248,12 +276,13 @@ end, { desc = "LaTeX: PDF Viewer öffnen" })
 
 -- LaTeX Cleanup
 map("n", "\\x", function()
-  local extensions = { "aux", "log", "out", "toc", "bbl", "blg", "fdb_latexmk", "fls", "synctex.gz" }
+  local extensions =
+    { "aux", "log", "out", "toc", "bbl", "blg", "fdb_latexmk", "fls", "synctex.gz" }
   local cleaned = {}
   local current_file = vim.fn.expand("%:p")
   local file_dir = vim.fn.fnamemodify(current_file, ":h")
   local basename = vim.fn.fnamemodify(current_file, ":t:r")
-  
+
   for _, ext in ipairs(extensions) do
     local file = file_dir .. "/" .. basename .. "." .. ext
     if vim.fn.filereadable(file) == 1 then
@@ -261,7 +290,7 @@ map("n", "\\x", function()
       table.insert(cleaned, ext)
     end
   end
-  
+
   if #cleaned > 0 then
     vim.notify("Auxiliary files cleaned: " .. table.concat(cleaned, ", "), vim.log.levels.INFO)
   else
@@ -273,15 +302,6 @@ end, { desc = "LaTeX: Auxiliary files bereinigen" })
 map("n", "\\<CR>", function()
   local latex_perf = require("utils.latex-performance")
   local current_file = vim.fn.expand("%:p")
-  if latex_perf.build_with_tectonic(current_file) then
-    -- Bei erfolgreichem Build automatisch PDF öffnen
-    vim.defer_fn(function()
-      local file_dir = vim.fn.fnamemodify(current_file, ":h")
-      local basename = vim.fn.fnamemodify(current_file, ":t:r")
-      local file = file_dir .. "/" .. basename .. ".pdf"
-      if vim.fn.filereadable(file) == 1 and vim.fn.executable("zathura") == 1 then
-        vim.fn.system("zathura " .. file .. " &")
-      end
-    end, 500) -- Kurze Verzögerung damit PDF fertig ist
-  end
+  latex_perf.build_with_tectonic(current_file)
+  -- PDF-Öffnen ist bereits in build_with_tectonic() integriert
 end, { desc = "LaTeX: Quick Build + Anzeige" })

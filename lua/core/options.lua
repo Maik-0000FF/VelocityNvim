@@ -28,9 +28,9 @@ opt.smartindent = true -- Intelligente Einrückung
 -- Native Einrückungslinien (ersetzt hlchunk indent)
 opt.list = true -- Aktiviere native indent lines
 opt.listchars = {
-  -- tab = "→ ", -- Tab-Zeichen
+  tab = "  ", -- Tab-Zeichen unsichtbar (werden als normale Spaces angezeigt)
   -- space = "·", -- Space-Zeichen sichtbar machen
-  -- trail = "•", -- Trailing Spaces
+  trail = "•", -- Trailing Spaces anzeigen (wichtig!)
   -- nbsp = "␣", -- Non-breaking Space
   extends = "⟩", -- Zeilen die rechts abgeschnitten sind
   precedes = "⟨", -- Zeilen die links abgeschnitten sind

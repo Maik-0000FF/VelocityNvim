@@ -17,13 +17,13 @@ wk.add({
   { "<leader>u", group = "UI/Utils" },
 
   -- LaTeX Mappings (Backslash Leader)
-  { "\\\\", group = "LaTeX" },
-  { "\\\\s", desc = "LaTeX: Performance Status" },
-  { "\\\\i", desc = "LaTeX: Live Preview aktivieren" },
-  { "\\\\b", desc = "LaTeX: Build mit Tectonic (Ultra-Fast)" },
-  { "\\\\B", desc = "LaTeX: Build mit Typst (Modern)" },
-  { "\\\\c", desc = "LaTeX: Compile aktueller Datei" },
-  { "\\\\v", desc = "LaTeX: PDF Viewer öffnen" },
-  { "\\\\x", desc = "LaTeX: Auxiliary files bereinigen" },
-  { "\\\\<CR>", desc = "LaTeX: Quick Build + Anzeige" },
+  { "\\", group = "LaTeX" },
+  { "\\s", desc = "LaTeX: Performance Status" },
+  { "\\i", desc = "LaTeX: Live Preview aktivieren" },
+  { "\\b", desc = "LaTeX: Build mit Tectonic (Ultra-Fast)" },
+  { "\\B", desc = "LaTeX: Build mit Typst (Modern)" },
+  { "\\c", desc = "LaTeX: Compile aktueller Datei + Anzeige" },
+  { "\\v", desc = "LaTeX: PDF Viewer öffnen" },
+  { "\\x", desc = "LaTeX: Auxiliary files bereinigen" },
+  { "\\<CR>", desc = "LaTeX: Quick Build + Anzeige" },
 })
