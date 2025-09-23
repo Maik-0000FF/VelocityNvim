@@ -74,20 +74,20 @@ local function update_progress_ui(message, phase_progress)
   local phase_num = state.current_phase
   local total = state.total_phases
   local phase_name = PHASES[phase_num].name
-  
+
   -- Calculate overall progress
   local overall_progress = (phase_num - 1) / total + (phase_progress or 0) / total
   local phase_only_progress = phase_progress or 0
-  
+
   -- Create progress bars
   local overall_bar_width = 60
   local phase_bar_width = 40
   local overall_filled = math.floor(overall_progress * overall_bar_width)
   local phase_filled = math.floor(phase_only_progress * phase_bar_width)
-  
+
   local overall_bar = string.rep("█", overall_filled) .. string.rep("░", overall_bar_width - overall_filled)
   local phase_bar = string.rep("█", phase_filled) .. string.rep("░", phase_bar_width - phase_filled)
-  
+
   -- Build UI content
   local lines = {
     "",
@@ -101,7 +101,7 @@ local function update_progress_ui(message, phase_progress)
     string.format("  %s %s", icons.status.info, message or "Processing..."),
     "",
   }
-  
+
   -- Add error/warning summary
   if #state.errors > 0 then
     table.insert(lines, string.format("  %s Errors: %d", icons.status.error, #state.errors))
@@ -109,12 +109,12 @@ local function update_progress_ui(message, phase_progress)
   if #state.warnings > 0 then
     table.insert(lines, string.format("  %s Warnings: %d", icons.status.warning, #state.warnings))
   end
-  
+
   -- Update buffer content atomically
   vim.api.nvim_buf_set_option(state.ui_buffer, 'modifiable', true)
   vim.api.nvim_buf_set_lines(state.ui_buffer, 0, -1, false, lines)
   vim.api.nvim_buf_set_option(state.ui_buffer, 'modifiable', false)
-  
+
   -- Force redraw only once
   vim.cmd('redraw')
 end
@@ -135,18 +135,18 @@ end
 local function phase_compatibility(callback)
   state.phase_start_time = vim.fn.reltime()
   update_progress_ui("Checking Neovim compatibility...", 0)
-  
+
   -- Non-blocking compatibility check with progress updates
   local function check_step(step, max_steps, check_func, description)
     vim.defer_fn(function()
       local progress = step / max_steps
       update_progress_ui(description, progress)
-      
+
       local success, result = pcall(check_func)
       if not success then
         table.insert(state.errors, "Compatibility check failed: " .. tostring(result))
       end
-      
+
       -- Continue to next step or finish
       if step < max_steps then
         local next_step = step + 1
@@ -169,7 +169,7 @@ local function phase_compatibility(callback)
               { cmd = "rg", name = "Ripgrep", required = false },
               { cmd = "fzf", name = "FZF", required = false },
             }
-            
+
             for _, tool in ipairs(tools) do
               local available = vim.fn.executable(tool.cmd) == 1
               if tool.required and not available then
@@ -191,15 +191,15 @@ local function phase_compatibility(callback)
       end
     end, 500)
   end
-  
+
   -- Start the step chain
   check_step(1, 3, function() return true end, "Starting compatibility check...")
 end
 
--- ASYNC Phase 2: Plugin Installation  
+-- ASYNC Phase 2: Plugin Installation
 local function phase_plugins(callback)
   state.phase_start_time = vim.fn.reltime()
-  
+
   local manage_ok, manage = pcall(require, "plugins.manage")
   if not manage_ok then
     table.insert(state.errors, "Plugin manager not found")
@@ -219,43 +219,43 @@ local function phase_plugins(callback)
   -- ASYNC plugin installation - one at a time to avoid blocking
   local function install_next_plugin()
     current_index = current_index + 1
-    
+
     if current_index > plugin_count then
       -- All plugins processed
       local final_message = string.format(
-        "Plugin installation complete: %d/%d successful", 
-        success_count, 
+        "Plugin installation complete: %d/%d successful",
+        success_count,
         plugin_count
       )
       update_progress_ui(final_message, 1.0)
-      
+
       if success_count < plugin_count then
         table.insert(
           state.errors,
           string.format("Only %d/%d plugins installed successfully", success_count, plugin_count)
         )
       end
-      
+
       vim.defer_fn(function()
         callback(success_count > 0)
       end, 500)
       return
     end
-    
+
     local name = plugins[current_index]
     local url = manage.plugins[name]
     local plugin_path = pack_dir .. name
     local progress = current_index / plugin_count
-    
+
     if vim.fn.isdirectory(plugin_path) == 0 then
       -- Need to install
       update_progress_ui(string.format("Installing %d/%d: %s", current_index, plugin_count, name), progress)
-      
+
       -- ASYNC git clone using vim.fn.jobstart
       local cmd = {
         "git", "clone", "--depth", "1", "--quiet", url, plugin_path
       }
-      
+
       vim.fn.jobstart(cmd, {
         on_exit = function(_, exit_code)
           if exit_code == 0 then
@@ -265,7 +265,7 @@ local function phase_plugins(callback)
             table.insert(state.errors, string.format("Failed to install %s", name))
             update_progress_ui(string.format("Failed to install %s", name), progress)
           end
-          
+
           -- Continue to next plugin after short delay
           vim.defer_fn(install_next_plugin, 100)
         end,
@@ -276,12 +276,12 @@ local function phase_plugins(callback)
       -- Already installed
       success_count = success_count + 1
       update_progress_ui(string.format("Already installed %d/%d: %s", current_index, plugin_count, name), progress)
-      
+
       -- Continue immediately
       vim.defer_fn(install_next_plugin, 50)
     end
   end
-  
+
   -- Start installation chain
   update_progress_ui("Starting plugin installation...", 0)
   vim.defer_fn(install_next_plugin, 300)
@@ -290,7 +290,7 @@ end
 -- ASYNC Phase 3: Rust Performance Build
 local function phase_rust(callback)
   state.phase_start_time = vim.fn.reltime()
-  
+
   -- Check if Cargo is available
   if vim.fn.executable("cargo") == 0 then
     update_progress_ui("Cargo not available - skipping Rust builds", 0.5)
@@ -303,7 +303,7 @@ local function phase_rust(callback)
   end
 
   update_progress_ui("Rust detected - preparing build environment...", 0.1)
-  
+
   -- Check for blink.cmp directory
   local blink_path = vim.fn.stdpath("data") .. "/site/pack/user/start/blink.cmp"
   if vim.fn.isdirectory(blink_path) == 0 then
@@ -317,10 +317,10 @@ local function phase_rust(callback)
   end
 
   update_progress_ui("Building blink.cmp Rust fuzzy matching (this may take a while)...", 0.2)
-  
+
   -- ASYNC Rust build using jobstart
   local build_cmd = { "cargo", "build", "--release" }
-  
+
   vim.fn.jobstart(build_cmd, {
     cwd = blink_path,
     on_stdout = function(_, data)
@@ -338,15 +338,15 @@ local function phase_rust(callback)
     on_exit = function(_, exit_code)
       if exit_code == 0 then
         update_progress_ui("Rust build successful - verifying binary...", 0.9)
-        
+
         -- Verify binary exists
         local binary_path = blink_path .. "/target/release/"
         local possible_libs = {
           "libblink_cmp_fuzzy.so",    -- Linux
-          "libblink_cmp_fuzzy.dylib", -- macOS  
+          "libblink_cmp_fuzzy.dylib", -- macOS
           "blink_cmp_fuzzy.dll",      -- Windows
         }
-        
+
         local lib_found = false
         local lib_name = ""
         for _, lib in ipairs(possible_libs) do
@@ -356,7 +356,7 @@ local function phase_rust(callback)
             break
           end
         end
-        
+
         if lib_found then
           update_progress_ui(string.format("Rust performance binary ready (%s)", lib_name), 1.0)
           vim.defer_fn(function() callback(true) end, 800)
@@ -380,7 +380,7 @@ end
 local function phase_health(callback)
   state.phase_start_time = vim.fn.reltime()
   update_progress_ui("Running system health checks...", 0)
-  
+
   -- Check if health system is available
   local health_ok, health = pcall(require, "core.health")
   if not health_ok then
@@ -389,21 +389,21 @@ local function phase_health(callback)
     vim.defer_fn(function() callback(false) end, 500)
     return
   end
-  
+
   update_progress_ui("Verifying core systems...", 0.3)
-  
+
   -- Run health check asynchronously
   vim.defer_fn(function()
     local health_results = {}
-    
+
     -- Capture health check results
     local success = pcall(function()
       -- Run basic health verification
       health.check()
     end)
-    
+
     update_progress_ui("Analyzing health check results...", 0.7)
-    
+
     vim.defer_fn(function()
       if success then
         update_progress_ui("Health verification completed successfully", 1.0)
@@ -421,21 +421,21 @@ end
 local function phase_welcome(callback)
   state.phase_start_time = vim.fn.reltime()
   update_progress_ui("Finalizing installation...", 0.2)
-  
+
   -- Mark installation as complete
   local version_mod = require("core.version")
   version_mod.store_version()
-  
+
   update_progress_ui("Saving configuration state...", 0.5)
-  
+
   vim.defer_fn(function()
     -- Calculate installation time
     local duration = state.start_time and vim.fn.reltimefloat(vim.fn.reltime(state.start_time)) or 0
     local plugin_count = vim.tbl_count(require("plugins.manage").plugins)
     local rust_status = vim.fn.executable("cargo") == 1 and "Available" or "Not Available"
-    
+
     update_progress_ui("Generating installation summary...", 0.8)
-    
+
     vim.defer_fn(function()
       -- Show final summary in UI
       local summary_lines = {
@@ -452,7 +452,7 @@ local function phase_welcome(callback)
         "",
         "  Press any key to exit and restart VelocityNvim...",
       }
-      
+
       -- Update UI with final summary
       if state.ui_buffer and vim.api.nvim_buf_is_valid(state.ui_buffer) then
         vim.api.nvim_buf_set_option(state.ui_buffer, 'modifiable', true)
@@ -460,17 +460,17 @@ local function phase_welcome(callback)
         vim.api.nvim_buf_set_option(state.ui_buffer, 'modifiable', false)
         vim.cmd('redraw')
       end
-      
+
       -- Wait for user input or timeout
       vim.defer_fn(function()
         cleanup_progress_ui()
         state.is_running = false
-        
+
         -- Show final message in command line
         print(string.format("%s VelocityNvim Installation Complete! Restart to use.", icons.status.success))
-        
+
         callback(true)
-        
+
         -- Auto-exit after delay
         vim.defer_fn(function()
           vim.cmd("qall!")
@@ -491,10 +491,10 @@ function M.run_installation()
   state.current_phase = 1
   state.errors = {}
   state.warnings = {}
-  
+
   -- Initialize UI
   create_progress_ui()
-  
+
   -- ASYNC phase execution chain with callbacks
   local phases = {
     { name = "Compatibility Check", func = phase_compatibility, critical = true },
@@ -503,7 +503,7 @@ function M.run_installation()
     { name = "Health Verification", func = phase_health, critical = false },
     { name = "Welcome Setup", func = phase_welcome, critical = false },
   }
-  
+
   -- Sequential phase execution with proper error handling
   local function run_phase(phase_index)
     if phase_index > #phases then
@@ -511,17 +511,17 @@ function M.run_installation()
       state.is_running = false
       return
     end
-    
+
     local phase = phases[phase_index]
     state.current_phase = phase_index
-    
+
     -- Run phase with callback
     phase.func(function(success)
       if not success and phase.critical then
         -- Critical failure - stop installation
         local error_msg = string.format("Installation failed in %s phase", phase.name)
         update_progress_ui(error_msg, 1.0)
-        
+
         vim.defer_fn(function()
           cleanup_progress_ui()
           vim.notify("VelocityNvim installation failed. Check errors and try again.", vim.log.levels.ERROR)
@@ -529,14 +529,14 @@ function M.run_installation()
         end, 3000)
         return
       end
-      
+
       -- Continue to next phase
       vim.defer_fn(function()
         run_phase(phase_index + 1)
       end, 200)
     end)
   end
-  
+
   -- Start the installation chain
   update_progress_ui("Starting VelocityNvim installation...", 0)
   vim.defer_fn(function()
@@ -578,4 +578,3 @@ function M.quick_check()
 end
 
 return M
-

@@ -11,12 +11,12 @@ local icons = require("core.icons")
 local function show_diagnostics_float()
   local buf = vim.api.nvim_get_current_buf()
   local diagnostics = vim.diagnostic.get(buf)
-  
+
   if #diagnostics == 0 then
     vim.notify(icons.ui.checkmark .. " Keine Probleme gefunden", vim.log.levels.INFO)
     return
   end
-  
+
   -- Native Float-Window mit verbesserter Formatierung
   vim.diagnostic.open_float(buf, {
     header = string.format("%s LSP Diagnostics (%s)", icons.status.stats, vim.fn.expand("%:t")),
@@ -29,7 +29,7 @@ local function show_diagnostics_float()
         [vim.diagnostic.severity.INFO] = icons.diagnostics.info,
         [vim.diagnostic.severity.HINT] = icons.diagnostics.hint,
       })[diagnostic.severity] or "●"
-      
+
       local source = diagnostic.source and ("[" .. diagnostic.source .. "] ") or ""
       return string.format("%s %s%s", icon, source, diagnostic.message)
     end,
@@ -43,15 +43,15 @@ end
 local function show_diagnostics_quickfix()
   local buf = vim.api.nvim_get_current_buf()
   local diagnostics = vim.diagnostic.get(buf)
-  
+
   if #diagnostics == 0 then
     vim.notify(icons.ui.checkmark .. " Keine Probleme gefunden", vim.log.levels.INFO)
     return
   end
-  
+
   -- KORRIGIERT: Buffer-spezifische Quickfix-Liste
-  vim.diagnostic.setqflist({ 
-    open = true, 
+  vim.diagnostic.setqflist({
+    open = true,
     title = "LSP Diagnostics - " .. vim.fn.expand("%:t"),
     bufnr = buf  -- WICHTIG: Nur Diagnostics vom aktuellen Buffer!
   })
@@ -62,7 +62,7 @@ local function toggle_diagnostics()
   local buf = vim.api.nvim_get_current_buf()
   local diagnostics = vim.diagnostic.get(buf)
   local count = #diagnostics
-  
+
   if count == 0 then
     vim.notify(icons.ui.checkmark .. " Keine Probleme gefunden", vim.log.levels.INFO)
   elseif count <= 5 then
@@ -90,16 +90,16 @@ vim.keymap.set("n", "<leader>ld", toggle_diagnostics, { desc = "Toggle LSP Diagn
 vim.keymap.set("n", "<leader>lf", show_diagnostics_float, { desc = "LSP Diagnostics Float" })
 
 -- LSP DIAGNOSTICS KEYMAPS
--- <leader>lq - Buffer Diagnostics (Location List) 
+-- <leader>lq - Buffer Diagnostics (Location List)
 vim.keymap.set("n", "<leader>lq", function()
   local buf = vim.api.nvim_get_current_buf()
   local diagnostics = vim.diagnostic.get(buf)
-  
+
   if #diagnostics == 0 then
     vim.notify("✓ Keine Probleme in diesem Buffer gefunden", vim.log.levels.INFO)
     return
   end
-  
+
   vim.diagnostic.setloclist({
     open = true,
     title = string.format("Buffer Diagnostics: %s (%d problems)", vim.fn.expand("%:t"), #diagnostics),
@@ -113,7 +113,7 @@ end, { desc = "Buffer Diagnostics (Location List)" })
 vim.keymap.set("n", "<leader>lQ", function()
   vim.diagnostic.setqflist({
     open = true,
-    title = "Workspace Diagnostics (All Buffers)", 
+    title = "Workspace Diagnostics (All Buffers)",
     severity_sort = true,
     namespace = nil,
   })

@@ -233,7 +233,7 @@ M.version_history = {
     changes = {
       ".. icons.lsp.references .. ",
       ".. icons.misc.flash .. ",
-      ".. icons.status.gear .. ", 
+      ".. icons.status.gear .. ",
       ".. icons.status.stats .. ",
       "KEYMAP BEREINIGUNG: lx/lX entfernt, lq/lQ/le/lE als saubere Standard-Integration",
       ".. icons.misc.search .. ",
@@ -450,4 +450,3 @@ function M.init()
 end
 
 return M
-

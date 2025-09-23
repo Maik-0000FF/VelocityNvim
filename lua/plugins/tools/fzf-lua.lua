@@ -12,7 +12,7 @@ local use_delta = vim.fn.executable("delta") == 1
 -- DEFAULT-PROFILE OPTIMIERUNG: Minimale Standard-Konfiguration
 require("fzf-lua").setup({
   -- MINIMAL Custom-Overrides nur wo VelocityNvim-spezifische Features erforderlich:
-  
+
   -- BEGRÜNDUNG: VelocityNvim Rust Performance Suite - Delta Git Integration
   git = {
     status = {
@@ -25,7 +25,7 @@ require("fzf-lua").setup({
       preview = use_delta and "git show --color=always {1} -- <file> | delta --features=interactive" or nil,
     },
   },
-  
+
   -- BEGRÜNDUNG: VelocityNvim Diagnostic Icons Integration (aus core.icons)
   diagnostics = {
     signs = {
@@ -70,7 +70,7 @@ map("n", "<leader>le", "<cmd>FzfLua diagnostics_document<CR>", { desc = "Documen
 map("n", "<leader>lE", "<cmd>FzfLua diagnostics_workspace<CR>", { desc = "Workspace diagnostics" })
 map("n", "<leader>lR", "<cmd>LspRefresh<CR>", { desc = "Refresh LSP workspace scan" })
 
--- Git  
+-- Git
 map("n", "<leader>gs", "<cmd>FzfLua git_status<CR>", { desc = "Git status" })
 map("n", "<leader>gc", "<cmd>FzfLua git_commits<CR>", { desc = "Git commits" })
 map("n", "<leader>gb", "<cmd>FzfLua git_branches<CR>", { desc = "Git branches" })

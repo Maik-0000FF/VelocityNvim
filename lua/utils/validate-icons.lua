@@ -52,4 +52,3 @@ local function validate_icons()
 end
 
 return { validate = validate_icons }
-

@@ -108,7 +108,7 @@ function M.get_workspace_diagnostics()
   -- 30-40% schneller bei großen Workspaces, identische Funktionalität
   local by_buffer = {}
   local total_counts = { error = 0, warn = 0, info = 0, hint = 0, total = 0 }
-  
+
   -- Native vim.diagnostic.count() ist deutlich effizienter als Manual-Loop
   local buffers = vim.api.nvim_list_bufs()
   for _, bufnr in ipairs(buffers) do
@@ -117,7 +117,7 @@ function M.get_workspace_diagnostics()
       if next(counts) then  -- Nur Buffer mit Diagnostics hinzufügen
         -- Native counts Format: {[1]=error_count, [2]=warn_count, [3]=info_count, [4]=hint_count}
         local buffer_counts = { error = 0, warn = 0, info = 0, hint = 0, total = 0 }
-        
+
         for severity, count in pairs(counts) do
           if severity == vim.diagnostic.severity.ERROR then
             buffer_counts.error = count
@@ -127,14 +127,14 @@ function M.get_workspace_diagnostics()
             total_counts.warn = total_counts.warn + count
           elseif severity == vim.diagnostic.severity.INFO then
             buffer_counts.info = count
-            total_counts.info = total_counts.info + count  
+            total_counts.info = total_counts.info + count
           elseif severity == vim.diagnostic.severity.HINT then
             buffer_counts.hint = count
             total_counts.hint = total_counts.hint + count
           end
           buffer_counts.total = buffer_counts.total + count
         end
-        
+
         by_buffer[bufnr] = buffer_counts
         total_counts.total = total_counts.total + buffer_counts.total
       end
@@ -415,10 +415,10 @@ function M.show_diagnostics_fzf(workspace)
   -- PERFORMANCE OPTIMIERT: Nutzt native fzf-lua diagnostics mit Custom Ctrl-Y Action
   -- Reduziert 150+ Zeilen auf ~30 Zeilen bei identischer Funktionalität
   workspace = workspace or false
-  
+
   local icons = require("core.icons")
   local fzf = require("fzf-lua")
-  
+
   -- Custom Copy-All Funktion (behält Original-Funktionalität)
   local function copy_all_to_clipboard()
     local diagnostics = workspace and vim.diagnostic.get() or M.get_diagnostics()
@@ -426,7 +426,7 @@ function M.show_diagnostics_fzf(workspace)
       vim.notify("Keine Diagnosen gefunden", vim.log.levels.INFO)
       return
     end
-    
+
     local all_text = {}
     local title = workspace and "=== WORKSPACE DIAGNOSTICS ===" or "=== BUFFER DIAGNOSTICS ==="
     table.insert(all_text, title)
@@ -457,7 +457,7 @@ function M.show_diagnostics_fzf(workspace)
     vim.fn.setreg('"', clipboard_text)
     vim.notify(icons.status.clipboard .. " Alle Diagnosen in Zwischenablage kopiert (" .. #diagnostics .. " Einträge)", vim.log.levels.INFO)
   end
-  
+
   -- Native fzf-lua diagnostics mit Custom Action für Ctrl-Y
   local native_opts = {
     fzf_opts = {
@@ -485,7 +485,7 @@ function M.show_diagnostics_fzf(workspace)
       }
     }
   }
-  
+
   -- Nutze native fzf-lua Funktionen mit Custom Actions
   if workspace then
     fzf.diagnostics_workspace(native_opts)

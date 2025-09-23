@@ -37,9 +37,9 @@ gitsigns.setup({
 
 -- ALLE ANDEREN FEATURES NUTZEN STANDARD-DEFAULTS:
 -- ✅ Signs: Identische Defaults verfügbar (┃, _, ‾, ~, ┆)
--- ✅ Navigation: ]c und [c funktionieren automatisch  
+-- ✅ Navigation: ]c und [c funktionieren automatisch
 -- ✅ Commands: :Gitsigns stage_hunk, :Gitsigns preview_hunk, etc.
 -- ✅ Staged signs: Standard enabled
 -- ✅ Blame: :Gitsigns toggle_current_line_blame
--- ✅ Preview: :Gitsigns preview_hunk_inline  
+-- ✅ Preview: :Gitsigns preview_hunk_inline
 -- ✅ Text objects: 'ih' für hunk selection automatisch verfügbar

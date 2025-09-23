@@ -14,13 +14,13 @@ local performance_mode = {
 -- Deaktiviere UI-Updates während Cursor-Navigation (DIAGNOSTICS AUSGESCHLOSSEN)
 local function disable_ui_updates()
   if performance_mode.ultra_active then return end
-  
+
   performance_mode.ultra_active = true
   performance_mode.original_updatetime = vim.opt.updatetime:get()
-  
+
   -- Drastisch reduzierte Update-Frequenz während Navigation
   vim.opt.updatetime = 2000  -- 2 Sekunden statt 250ms
-  
+
   -- KRITISCHE ÄNDERUNG: LSP diagnostics NICHT deaktivieren - sie sollen sichtbar bleiben!
   -- Die Diagnostics sind bereits optimal konfiguriert und sollen bei Cursor-Bewegung sichtbar bleiben
   -- Nur die automatischen Updates pausieren, nicht die Anzeige
@@ -33,19 +33,19 @@ end
 -- Reaktiviere UI-Updates nach Navigation (DIAGNOSTICS BLEIBEN AKTIV)
 local function enable_ui_updates()
   if not performance_mode.ultra_active then return end
-  
+
   vim.defer_fn(function()
     performance_mode.ultra_active = false
-    
+
     -- Restore original settings
     if performance_mode.original_updatetime then
       vim.opt.updatetime = performance_mode.original_updatetime
     end
-    
+
     -- WICHTIG: Diagnostics-Konfiguration NICHT zurücksetzen!
     -- Die Diagnostics sollen die in native-lsp.lua definierten Einstellungen behalten
     -- mit Icons aus icons.lua und dauerhaftem Display
-    
+
   end, 100)  -- 100ms delay nach Navigation
 end
 
@@ -53,7 +53,7 @@ end
 function M.setup()
   -- Navigation-basierte Performance-Optimierung
   local navigation_keys = {'j', 'k', 'h', 'l', 'w', 'b', 'e', 'g', 'G', 'f', 'F', 't', 'T', '/', '?', 'n', 'N'}
-  
+
   for _, key in ipairs(navigation_keys) do
     -- Before navigation - disable UI updates
     vim.keymap.set('n', key, function()
@@ -63,7 +63,7 @@ function M.setup()
       vim.defer_fn(enable_ui_updates, 50)
     end, { silent = true })
   end
-  
+
   -- Cursor movement detection
   vim.api.nvim_create_autocmd('CursorMoved', {
     callback = function()
@@ -71,7 +71,7 @@ function M.setup()
       vim.defer_fn(enable_ui_updates, 200)  -- Longer delay for continuous movements
     end
   })
-  
+
   -- Silent setup - Performance-Optimierung läuft im Hintergrund
 end
 

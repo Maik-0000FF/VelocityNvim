@@ -30,11 +30,11 @@ colorizer.setup({
 
     -- Performance: Update-Verhalten (WezTerm optimiert)
     always_update = false,
-    
+
     -- Buffer-basierte Updates für bessere Performance
     sass = { enable = false }, -- Sass deaktiviert für Performance
     vim = true, -- Vim color names aktiviert
-    
+
     -- Update-Events reduzieren für weniger Cursor-Interruptions
     use_default_namespace = true,
     buftypes = {
@@ -42,7 +42,7 @@ colorizer.setup({
       "!prompt",
       "!popup",
     },
-    
+
     -- Performance: Lazy-Update für bessere Responsivität
     debounce = {
       default = 100, -- 100ms debounce für Updates
@@ -95,4 +95,3 @@ vim.keymap.set("n", "<leader>cr", "<cmd>ColorizerReloadAllBuffers<CR>", {
 })
 
 -- Colorizer ist mit der setup() Konfiguration automatisch aktiv für die angegebenen Filetypes
-

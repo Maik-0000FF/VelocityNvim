@@ -214,13 +214,13 @@ end
 ---@return table List of matching files
 function M.find_files(pattern, path, recursive)
   path = path or vim.fn.getcwd()
-  
+
   -- Use native vim.fs.find - much more efficient!
   local opts = { type = "file", path = path }
   if recursive == false then
     opts.limit = math.huge  -- No depth limit but stay in directory
   end
-  
+
   return vim.fs.find(function(name)
     return name:match(pattern)
   end, opts)
@@ -233,13 +233,13 @@ end
 ---@return table List of matching directories
 function M.find_directories(pattern, path, recursive)
   path = path or vim.fn.getcwd()
-  
+
   -- Use native vim.fs.find - much more efficient!
   local opts = { type = "directory", path = path }
   if recursive == false then
     opts.limit = math.huge  -- No depth limit but stay in directory
   end
-  
+
   return vim.fs.find(function(name)
     return name:match(pattern)
   end, opts)

@@ -70,4 +70,3 @@ local health_ok, health = pcall(require, "core.health")
 if health_ok and health.register then
   health.register("mini_pairs", check_mini_pairs_health)
 end
-

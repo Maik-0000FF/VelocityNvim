@@ -317,7 +317,7 @@ vim.api.nvim_create_autocmd("VimEnter", {
 -- ============================================================================
 -- NOTE: Noice Commands deaktiviert weil messages = false für saubere Statusline
 -- vim.keymap.set("n", "<leader>nh", "<cmd>Noice history<cr>", { desc = "Noice History" })
--- vim.keymap.set("n", "<leader>nl", "<cmd>Noice last<cr>", { desc = "Noice Last Message" })  
+-- vim.keymap.set("n", "<leader>nl", "<cmd>Noice last<cr>", { desc = "Noice Last Message" })
 -- vim.keymap.set("n", "<leader>ne", "<cmd>Noice errors<cr>", { desc = "Noice Errors" })
 
 -- ============================================================================

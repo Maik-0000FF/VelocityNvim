@@ -79,10 +79,10 @@ function M.close(winid, force)
   winid = winid or vim.api.nvim_get_current_win()
 
   -- Don't close if it's the last window (use native API directly)
-  local normal_windows = vim.tbl_filter(function(w) 
-    return not M.is_floating(w) 
+  local normal_windows = vim.tbl_filter(function(w)
+    return not M.is_floating(w)
   end, vim.api.nvim_list_wins())
-  
+
   if #normal_windows <= 1 then
     vim.notify("Cannot close last window", vim.log.levels.WARN)
     return false
@@ -169,8 +169,8 @@ end
 ---@return boolean success
 function M.switch_to(num)
   -- Get non-floating windows directly
-  local windows = vim.tbl_filter(function(w) 
-    return not M.is_floating(w) 
+  local windows = vim.tbl_filter(function(w)
+    return not M.is_floating(w)
   end, vim.api.nvim_list_wins())
 
   if num < 1 or num > #windows then
@@ -188,8 +188,8 @@ end
 function M.get_number(winid)
   winid = winid or vim.api.nvim_get_current_win()
   -- Get non-floating windows directly
-  local windows = vim.tbl_filter(function(w) 
-    return not M.is_floating(w) 
+  local windows = vim.tbl_filter(function(w)
+    return not M.is_floating(w)
   end, vim.api.nvim_list_wins())
 
   for i, win in ipairs(windows) do
@@ -209,10 +209,10 @@ end
 function M.find_by_buffer(bufnr, include_floating)
   -- Get windows with inline filtering (native API)
   local all_windows = vim.api.nvim_list_wins()
-  local windows = include_floating and all_windows or vim.tbl_filter(function(w) 
-    return not M.is_floating(w) 
+  local windows = include_floating and all_windows or vim.tbl_filter(function(w)
+    return not M.is_floating(w)
   end, all_windows)
-  
+
   local result = {}
   for _, winid in ipairs(windows) do
     if vim.api.nvim_win_get_buf(winid) == bufnr then  -- Native check
@@ -230,10 +230,10 @@ end
 function M.get_stats()
   local all_windows = vim.api.nvim_list_wins()
   -- Calculate directly with native API
-  local normal_windows = vim.tbl_filter(function(w) 
-    return not M.is_floating(w) 
+  local normal_windows = vim.tbl_filter(function(w)
+    return not M.is_floating(w)
   end, all_windows)
-  
+
   local floating_count = #all_windows - #normal_windows
   local zoomed_count = 0
 

@@ -260,4 +260,3 @@ function M.build_with_typst(file)
 end
 
 return M
-

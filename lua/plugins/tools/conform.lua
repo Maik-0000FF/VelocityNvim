@@ -6,10 +6,10 @@ require("conform").setup({
   formatters_by_ft = {
     -- Lua (Rust-based, fast)
     lua = { "stylua" },
-    
+
     -- Python (Ruff does everything: format + imports + lint)
     python = { "ruff_organize_imports", "ruff_format" },
-    
+
     -- JavaScript/TypeScript (Prettier)
     javascript = { "prettier" },
     typescript = { "prettier" },
@@ -21,7 +21,7 @@ require("conform").setup({
     jsonc = { "prettier" },
     css = { "prettier" },
     scss = { "prettier" },
-    
+
     -- Fallback to Prettier for unsupported languages
     html = { "prettier" },
     vue = { "prettier" },
@@ -190,7 +190,9 @@ vim.api.nvim_create_user_command("FormatterPerformanceStatus", function()
   local ruff_available = vim.fn.executable("ruff") == 1
 
   print("VelocityNvim Formatter Status:")
-  print("──────────────────────────────────────")
+  print(
+    "──────────────────────────────────────"
+  )
 
   if prettier_available then
     print(" Prettier: ACTIVE (JS/TS/CSS/JSON/HTML/Vue/Svelte/Markdown/YAML)")
@@ -204,7 +206,9 @@ vim.api.nvim_create_user_command("FormatterPerformanceStatus", function()
     print(" Ruff: NOT FOUND (install via: pip install ruff)")
   end
 
-  print("──────────────────────────────────────")
+  print(
+    "──────────────────────────────────────"
+  )
   local performance_score = (prettier_available and 50 or 0) + (ruff_available and 30 or 0)
   print("Performance Score: " .. performance_score .. "/80")
 
@@ -220,9 +224,9 @@ end, { desc = "Show formatter status" })
 -- Benchmark command for testing
 vim.api.nvim_create_user_command("FormatterBenchmark", function()
   local start_time = vim.fn.reltime()
-  require("conform").format({ 
-    bufnr = 0, 
-    timeout_ms = 5000 
+  require("conform").format({
+    bufnr = 0,
+    timeout_ms = 5000,
   })
   local elapsed = vim.fn.reltimestr(vim.fn.reltime(start_time))
   vim.notify("Format completed in " .. elapsed .. "s", vim.log.levels.INFO)
