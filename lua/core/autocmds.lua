@@ -4,8 +4,7 @@
 local augroup = vim.api.nvim_create_augroup
 local autocmd = vim.api.nvim_create_autocmd
 
--- Compatibility layer für uv
-local uv = vim.uv or vim.loop
+-- Cross-version compatibility layer für fs_stat access
 
 -- VelocityNvim Autocommand Gruppen
 local velocity_general = augroup("VelocityGeneral", { clear = true })
@@ -44,7 +43,7 @@ autocmd("BufWritePre", {
   pattern = "*.lua",
   callback = function()
     local cursor_pos = vim.api.nvim_win_get_cursor(0)
-    vim.cmd([[%s/\s\+$//e]])
+    vim.api.nvim_command("%s/\\s\\+$//e")
     vim.api.nvim_win_set_cursor(0, cursor_pos)
   end,
 })
@@ -69,7 +68,7 @@ autocmd("ColorScheme", {
   callback = function()
     -- Trigger Farb-Updates für verschiedene Plugins
     vim.defer_fn(function()
-      vim.cmd("doautocmd User ColorSchemeChanged")
+      vim.cmd.doautocmd("User", "ColorSchemeChanged")
     end, 100)
   end,
 })
@@ -105,10 +104,13 @@ autocmd("LspAttach", {
     vim.bo[bufnr].omnifunc = "v:lua.vim.lsp.omnifunc"
 
     -- Inlay Hints aktivieren (wenn verfügbar)
-    if client and client.supports_method and client.supports_method("textDocument/inlayHint") then
-      vim.defer_fn(function()
-        vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
-      end, 500)
+    if client and client.supports_method then
+      local supports_inlay = pcall(client.supports_method, client, "textDocument/inlayHint")
+      if supports_inlay then
+        vim.defer_fn(function()
+          vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
+        end, 500)
+      end
     end
   end,
 })
@@ -140,7 +142,8 @@ autocmd("BufReadPre", {
   group = velocity_general,
   desc = "Optimize settings for large files (ultra-performance)",
   callback = function()
-    local ok, stats = pcall(uv.fs_stat, vim.fn.expand("<afile>"))
+    local fs_stat_func = rawget(vim.uv, 'fs_stat') or rawget(vim.loop, 'fs_stat')
+    local ok, stats = fs_stat_func and pcall(fs_stat_func, vim.fn.expand("<afile>")) or false, nil
     if ok and stats and stats.size > 512 * 1024 then -- 512KB (aggressiver als 1MB)
       -- Ultra-Performance Einstellungen für große Dateien
       vim.opt_local.swapfile = false
