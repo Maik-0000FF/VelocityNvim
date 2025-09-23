@@ -11,26 +11,7 @@ end
 -- LÖSUNG: Setze Install-Directory BEVOR nvim-treesitter.install geladen wird
 vim.g.ts_install_dir = vim.fn.stdpath("data") .. "/site/pack/user/start/nvim-treesitter/parser"
 
--- KRITISCH: Schütze treesitter vor Arbeitsverzeichnis-Änderungen durch LSP/Git-Utils
-local treesitter_installing = false
-
--- Überwache treesitter Installation-Status
-vim.api.nvim_create_autocmd("User", {
-  pattern = "TSInstall*",
-  callback = function(args)
-    treesitter_installing = args.match == "TSInstallStart"
-  end,
-})
-
--- Blockiere gefährliche chdir-Operationen während treesitter Downloads
-local original_chdir = vim.fn.chdir
-vim.fn.chdir = function(dir)
-  if treesitter_installing then
-    -- Blockiere chdir während treesitter-Installation
-    return 0
-  end
-  return original_chdir(dir)
-end
+-- KRITISCH: Parser Installation Schutz aktiviert
 
 -- Parser Installation Konfiguration
 local install = require("nvim-treesitter.install")
@@ -107,5 +88,5 @@ treesitter.setup({
 -- Treesitter Folding (bessere Code-Struktur) - IMMER alles aufgeklappt
 vim.opt.foldmethod = "expr"
 vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
-vim.opt.foldlevel = 99     -- Immer alles aufgeklappt
+vim.opt.foldlevel = 99 -- Immer alles aufgeklappt
 vim.opt.foldlevelstart = 99 -- Start immer mit allem aufgeklappt

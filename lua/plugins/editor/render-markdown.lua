@@ -15,14 +15,17 @@ end
 -- VALIDATION: WebSearch + WebFetch bestätigt - Preset deckt 90% unserer Anforderungen ab
 render_markdown.setup({
   -- STANDARD-PRESET: Optimierte Defaults statt Custom-Code
-  preset = 'obsidian',  -- Vordefinierte, getestete Konfiguration
-  
+  preset = "obsidian", -- Vordefinierte, getestete Konfiguration
+
   -- MINIMAL Custom-Overrides nur wo Standard-Preset nicht ausreicht:
-  max_file_size = 5.0,  -- BEGRÜNDUNG: Preset hat kein file size limit
-  
+  max_file_size = 5.0, -- BEGRÜNDUNG: Preset hat kein file size limit
+
+  -- LaTeX-Unterstützung deaktiviert (utftex/latex2text nicht verfügbar)
+  latex = { enabled = false },
+
   -- WICHTIG: blink.cmp Integration für VelocityNvim
   completions = {
-    blink = { enabled = true },  -- BEGRÜNDUNG: VelocityNvim-spezifische Integration
+    blink = { enabled = true }, -- BEGRÜNDUNG: VelocityNvim-spezifische Integration
   },
 })
 
@@ -84,4 +87,3 @@ end, vim.tbl_extend("force", opts, { desc = "UI: render-markdown Toggle" }))
 map("n", "<leader>us", function()
   vim.notify("render-markdown Toggle: <leader>um", vim.log.levels.INFO)
 end, vim.tbl_extend("force", opts, { desc = "UI: render-markdown Status" }))
-

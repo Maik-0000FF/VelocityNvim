@@ -3,6 +3,53 @@
 
 local icons = require("core.icons")
 
+-- Standard-Ausschlussverzeichnisse für LSP-Scanning (shared zwischen Funktionen)
+local default_exclude_dirs = {
+  -- Python
+  "venv",
+  ".venv",
+  "env",
+  ".env",
+  "__pycache__",
+  ".pytest_cache",
+  "site-packages",
+  ".tox",
+  ".coverage",
+  "htmlcov",
+  "build",
+  "dist",
+  "*.egg-info",
+  ".mypy_cache",
+  -- Node.js
+  "node_modules",
+  ".npm",
+  ".yarn",
+  "bower_components",
+  "jspm_packages",
+  -- Rust
+  "target",
+  "Cargo.lock",
+  -- Go
+  "vendor",
+  "bin",
+  "pkg",
+  -- Java
+  ".gradle",
+  ".m2",
+  "target",
+  "build",
+  "out",
+  -- General
+  ".git",
+  ".svn",
+  ".hg",
+  ".bzr",
+  "_darcs",
+  "CVS",
+  ".DS_Store",
+  "Thumbs.db",
+}
+
 -- OPTIMIERT: Einfache Sign-Definition ohne unnötige Prioritäten
 -- PERFORMANCE: Keine Priority-Berechnungen, da alle Diagnostics relevant sind
 vim.fn.sign_define("DiagnosticSignError", {
@@ -69,7 +116,7 @@ vim.diagnostic.config({
         [vim.diagnostic.severity.INFO] = icons.diagnostics.info .. " INFO",
         [vim.diagnostic.severity.HINT] = icons.diagnostics.hint .. " HINT",
       }
-      return severity_icons[diagnostic.severity] or "●"
+      return severity_icons[diagnostic.severity] or "●", ""
     end,
     format = function(diagnostic)
       return diagnostic.message
@@ -307,7 +354,7 @@ vim.lsp.config.ts_ls = {
         if vim.fn.filereadable(local_ts) == 1 then
           return local_ts
         end
-        
+
         -- 2. Global npm installation
         local global_npm = vim.fn.system("npm root -g 2>/dev/null"):gsub("%s+", "")
         if vim.v.shell_error == 0 and global_npm ~= "" then
@@ -316,7 +363,7 @@ vim.lsp.config.ts_ls = {
             return global_ts
           end
         end
-        
+
         -- 3. System TypeScript (Arch Linux)
         local system_paths = {
           "/usr/lib/node_modules/typescript/lib/tsserver.js",
@@ -327,9 +374,12 @@ vim.lsp.config.ts_ls = {
             return path
           end
         end
-        
+
         -- 4. Fallback: Auto-installation hint
-        vim.notify("TypeScript not found. Install with: npm install -g typescript", vim.log.levels.WARN)
+        vim.notify(
+          "TypeScript not found. Install with: npm install -g typescript",
+          vim.log.levels.WARN
+        )
         return nil
       end)(),
     },
@@ -509,38 +559,40 @@ local function scan_workspace_files(client)
   end
 
   -- EDGE CASE: Root-Verzeichnis existiert nicht mehr (removable drives, network mounts)
-  local ok, stat = pcall(vim.uv.fs_stat, client.config.root_dir)
-  if not ok or not stat or stat.type ~= "directory" then
-    vim.notify(
-      string.format("LSP root directory not accessible: %s", client.config.root_dir),
-      vim.log.levels.WARN
-    )
-    return
+  local fs_stat_func = nil
+  if vim.uv and rawget(vim.uv, 'fs_stat') then
+    fs_stat_func = rawget(vim.uv, 'fs_stat')
+  elseif vim.loop and rawget(vim.loop, 'fs_stat') then
+    fs_stat_func = rawget(vim.loop, 'fs_stat')
+  end
+
+  if not fs_stat_func then
+    -- Fallback: verwende vim.fn.isdirectory
+    if vim.fn.isdirectory(client.config.root_dir) == 0 then
+      vim.notify(
+        string.format("LSP root directory not accessible: %s", client.config.root_dir),
+        vim.log.levels.WARN
+      )
+      return
+    end
+  else
+    local ok, stat = pcall(fs_stat_func, client.config.root_dir)
+    if not ok or not stat or stat.type ~= "directory" then
+      vim.notify(
+        string.format("LSP root directory not accessible: %s", client.config.root_dir),
+        vim.log.levels.WARN
+      )
+      return
+    end
   end
 
   -- EDGE CASE: Sehr großes Workspace (>10GB) warnen
-  -- KONSISTENTE LÖSUNG: Verwende dieselben exclude_dirs wie für File-Scanning
-  local default_exclude_dirs = {
-    -- Python
-    "venv", ".venv", "env", ".env", "__pycache__", ".pytest_cache",
-    "site-packages", ".tox", ".coverage", "htmlcov", "build", "dist",
-    "*.egg-info", ".mypy_cache", ".ruff_cache",
-    -- Node.js
-    "node_modules", ".npm", ".yarn",
-    -- General
-    ".git", ".svn", ".hg", ".bzr",
-    -- IDEs
-    ".vscode", ".idea", ".vs",
-    -- Build/Cache
-    "target", "build", "dist", ".cache", "tmp", "temp",
-    -- OS
-    ".DS_Store", "Thumbs.db",
-  }
 
   -- Projektspezifische Ausschlüsse hinzufügen
   local size_exclude_dirs = vim.deepcopy(default_exclude_dirs)
-  if _G.velocitynvim_lsp_exclude_dirs then
-    vim.list_extend(size_exclude_dirs, _G.velocitynvim_lsp_exclude_dirs)
+  local custom_excludes = rawget(_G, "velocitynvim_lsp_exclude_dirs")
+  if custom_excludes and type(custom_excludes) == "table" then
+    vim.list_extend(size_exclude_dirs, custom_excludes)
   end
 
   -- Erstelle du exclude-Pattern für alle exclude_dirs
@@ -551,8 +603,9 @@ local function scan_workspace_files(client)
     end
   end
 
-  local dir_size_check =
-    vim.fn.system(string.format("du -sb%s '%s' 2>/dev/null | cut -f1", exclude_pattern, client.config.root_dir))
+  local dir_size_check = vim.fn.system(
+    string.format("du -sb%s '%s' 2>/dev/null | cut -f1", exclude_pattern, client.config.root_dir)
+  )
   if vim.v.shell_error == 0 then
     local size_bytes = tonumber(dir_size_check)
     if size_bytes and size_bytes > 10 * 1024 * 1024 * 1024 then -- 10GB
@@ -626,55 +679,15 @@ local function scan_workspace_files(client)
     return
   end
 
-  -- Definiere Standard-Ausschlussverzeichnisse
-  local default_exclude_dirs = {
-    -- Python
-    "venv",
-    ".venv",
-    "env",
-    ".env",
-    "__pycache__",
-    ".pytest_cache",
-    "site-packages",
-    ".tox",
-    ".coverage",
-    "htmlcov",
-    "build",
-    "dist",
-    "*.egg-info",
-    ".mypy_cache",
-    ".ruff_cache",
-    -- Node.js
-    "node_modules",
-    ".npm",
-    ".yarn",
-    -- General
-    ".git",
-    ".svn",
-    ".hg",
-    ".bzr",
-    -- IDEs
-    ".vscode",
-    ".idea",
-    ".vs",
-    -- Build/Cache
-    "target",
-    "build",
-    "dist",
-    ".cache",
-    "tmp",
-    "temp",
-    -- OS
-    ".DS_Store",
-    "Thumbs.db",
-  }
+  -- Verwende globale Standard-Ausschlussverzeichnisse
 
   -- Projektspezifische Ausschlüsse (aus .gitignore oder custom config)
   local exclude_dirs = vim.deepcopy(default_exclude_dirs)
 
   -- Füge projektspezifische Ausschlüsse hinzu (falls definiert)
-  if _G.velocitynvim_lsp_exclude_dirs then
-    vim.list_extend(exclude_dirs, _G.velocitynvim_lsp_exclude_dirs)
+  local custom_excludes_2 = rawget(_G, "velocitynvim_lsp_exclude_dirs")
+  if custom_excludes_2 and type(custom_excludes_2) == "table" then
+    vim.list_extend(exclude_dirs, custom_excludes_2)
   end
 
   -- DEAKTIVIERT: .gitignore-Parsing für exclude_dirs (verhindert LSP-Meldungen)
@@ -738,8 +751,8 @@ local function scan_workspace_files(client)
 
             -- LSP-Attach mit Fehlerbehandlung
             if client and vim.api.nvim_buf_is_valid(bufnr) then
-              local ok, err = pcall(vim.lsp.buf_attach_client, bufnr, client.id)
-              if not ok then
+              local attach_ok = pcall(vim.lsp.buf_attach_client, bufnr, client.id)
+              if not attach_ok then
                 -- Buffer bei LSP-Fehler wieder entladen
                 vim.api.nvim_buf_delete(bufnr, { force = true })
               end
