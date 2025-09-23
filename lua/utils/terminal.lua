@@ -78,8 +78,8 @@ function M.toggle_horizontal_terminal()
     terminals.horizontal = nil
   else
     -- Terminal öffnen
-    vim.cmd("botright 12split")
-    vim.cmd("terminal")
+    vim.api.nvim_command("botright 12split")
+    vim.api.nvim_command("terminal")
 
     local buf = api.nvim_get_current_buf()
     local win = api.nvim_get_current_win()
@@ -88,7 +88,7 @@ function M.toggle_horizontal_terminal()
     configure_terminal_buffer(buf, win)
 
     -- Starte im Terminal-Modus
-    vim.cmd("startinsert")
+    vim.api.nvim_command("startinsert")
   end
 end
 
@@ -103,8 +103,8 @@ function M.toggle_vertical_terminal()
     terminals.vertical = nil
   else
     -- Terminal öffnen
-    vim.cmd("vertical botright 80vsplit")
-    vim.cmd("terminal")
+    vim.api.nvim_command("vertical botright 80vsplit")
+    vim.api.nvim_command("terminal")
 
     local buf = api.nvim_get_current_buf()
     local win = api.nvim_get_current_win()
@@ -113,7 +113,7 @@ function M.toggle_vertical_terminal()
     configure_terminal_buffer(buf, win)
 
     -- Starte im Terminal-Modus
-    vim.cmd("startinsert")
+    vim.api.nvim_command("startinsert")
   end
 end
 
@@ -148,12 +148,12 @@ function M.toggle_floating_terminal()
     })
 
     -- Terminal erstellen
-    vim.cmd("terminal")
+    vim.api.nvim_command("terminal")
     terminals.floating = buf
     configure_terminal_buffer(buf, win)
 
     -- Starte im Terminal-Modus
-    vim.cmd("startinsert")
+    vim.api.nvim_command("startinsert")
   end
 end
 
@@ -293,7 +293,7 @@ function M.setup()
       -- Starte im Insert-Modus
       vim.schedule(function()
         if api.nvim_buf_is_valid(bufnr) then
-          vim.cmd("startinsert")
+          vim.api.nvim_command("startinsert")
         end
       end)
     end,
@@ -306,7 +306,7 @@ function M.setup()
     desc = "Auto insert in terminal buffers",
     callback = function()
       if vim.bo.buftype == "terminal" then
-        vim.cmd("startinsert")
+        vim.api.nvim_command("startinsert")
       end
     end,
   })

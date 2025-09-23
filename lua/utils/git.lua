@@ -272,7 +272,10 @@ end
 ---@return boolean
 function M.is_clean(path)
   local status = M.get_status(path)
-  return status and status.total == 0
+  if not status then
+    return false  -- If we can't get status, assume not clean
+  end
+  return status.total == 0
 end
 
 --- Get repository information summary

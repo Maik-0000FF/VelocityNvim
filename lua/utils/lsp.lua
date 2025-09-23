@@ -204,7 +204,7 @@ function M.get_symbol_at_cursor(bufnr)
 
   if #clients == 0 then return nil end
 
-  local params = vim.lsp.util.make_position_params(0, nil)
+  local params = vim.lsp.util.make_position_params(0, 'utf-8')
   local results = {}
 
   for _, client in ipairs(clients) do
@@ -263,7 +263,7 @@ function M.restart_clients(bufnr)
 
   -- Wait a bit then restart
   vim.defer_fn(function()
-    vim.cmd("edit") -- This will trigger LSP attach again
+    vim.api.nvim_command("edit") -- This will trigger LSP attach again
   end, 1000)
 
   return true
@@ -469,8 +469,8 @@ function M.show_diagnostics_fzf(workspace)
       ["ctrl-y"] = function()
         copy_all_to_clipboard()
         vim.schedule(function()
-          vim.cmd("echo 'yanked diagnostics'")
-          vim.defer_fn(function() vim.cmd("echo ''") end, 1500)
+          vim.api.nvim_command("echo 'yanked diagnostics'")
+          vim.defer_fn(function() vim.api.nvim_command("echo ''") end, 1500)
         end)
         return false  -- Keep FZF window open
       end,

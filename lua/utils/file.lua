@@ -3,15 +3,17 @@
 
 local M = {}
 
--- Compatibility layer
-local uv = vim.uv or vim.loop
+-- Sichere Cross-Version Kompatibilität
+local fs_stat_func = rawget(vim.uv, 'fs_stat') or rawget(vim.loop, 'fs_stat')
+local new_fs_event_func = rawget(vim.uv, 'new_fs_event') or rawget(vim.loop, 'new_fs_event')
 
 --- Check if file exists
 ---@param path string File path
 ---@return boolean
 function M.exists(path)
-  -- Use uv.fs_stat which is more reliable than vim.fs.exists (which doesn't exist in all versions)
-  local stat = uv.fs_stat(path)
+  -- Use fs_stat which is more reliable than vim.fs.exists (which doesn't exist in all versions)
+  if not fs_stat_func then return false end
+  local stat = fs_stat_func(path)
   return stat ~= nil
 end
 
@@ -19,7 +21,8 @@ end
 ---@param path string Directory path
 ---@return boolean
 function M.is_directory(path)
-  local stat = uv.fs_stat(path)
+  if not fs_stat_func then return false end
+  local stat = fs_stat_func(path)
   return stat ~= nil and stat.type == "directory"
 end
 
@@ -29,7 +32,8 @@ end
 function M.get_size(path)
   if not M.exists(path) then return nil end
 
-  local stat = uv.fs_stat(path)
+  if not fs_stat_func then return nil end
+  local stat = fs_stat_func(path)
   return stat and stat.size or nil
 end
 
@@ -39,7 +43,8 @@ end
 function M.get_mtime(path)
   if not M.exists(path) then return nil end
 
-  local stat = uv.fs_stat(path)
+  if not fs_stat_func then return nil end
+  local stat = fs_stat_func(path)
   return stat and stat.mtime.sec or nil
 end
 
@@ -81,9 +86,9 @@ end
 
 --- Get relative path (relative to cwd)
 ---@param path string File path
----@return string Relative path
+---@return string|nil Relative path
 function M.get_relative_path(path)
-  return vim.fs.relpath(path)  -- Native vim.fs function (much simpler!)
+  return vim.fs.relpath(path, vim.fn.getcwd())  -- Native vim.fs function (much simpler!)
 end
 
 --- Create directory (mkdir -p)
@@ -304,7 +309,8 @@ end
 function M.get_info(path)
   if not M.exists(path) then return nil end
 
-  local stat = uv.fs_stat(path)
+  if not fs_stat_func then return nil end
+  local stat = fs_stat_func(path)
   if not stat then return nil end
 
   return {
@@ -368,7 +374,8 @@ end
 function M.watch_file(path, callback)
   if not M.exists(path) then return nil end
 
-  local handle = uv.new_fs_event()
+  if not new_fs_event_func then return nil end
+  local handle = new_fs_event_func()
   if not handle then return nil end
 
   local ok = handle:start(path, {}, function(err, filename, events)

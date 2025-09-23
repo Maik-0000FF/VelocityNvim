@@ -3,8 +3,13 @@
 
 local M = {}
 
--- Compatibility layer for uv -> vim.uv transition
-local uv = vim.uv or vim.loop
+-- Sichere Cross-Version Kompatibilität für uv API functions
+local os_uname_func = rawget(vim.uv, 'os_uname') or rawget(vim.loop, 'os_uname')
+local hrtime_func = rawget(vim.uv, 'hrtime') or rawget(vim.loop, 'hrtime')
+local new_timer_func = rawget(vim.uv, 'new_timer') or rawget(vim.loop, 'new_timer')
+local timer_start_func = rawget(vim.uv, 'timer_start') or rawget(vim.loop, 'timer_start')
+local timer_stop_func = rawget(vim.uv, 'timer_stop') or rawget(vim.loop, 'timer_stop')
+local timer_close_func = rawget(vim.uv, 'timer_close') or rawget(vim.loop, 'timer_close')
 
 -- Lazy loading utility modules
 M.buffer = function()
@@ -109,9 +114,14 @@ end
 ---@param description string|nil Optional description
 ---@return any result, number time_ms
 function M.measure_time(fn, description)
-  local start_time = uv.hrtime()
+  if not hrtime_func then
+    local result = fn()
+    return result, 0  -- Fallback: return 0ms if hrtime not available
+  end
+
+  local start_time = hrtime_func()
   local result = fn()
-  local end_time = uv.hrtime()
+  local end_time = hrtime_func()
   local time_ms = (end_time - start_time) / 1000000
 
   if description then
@@ -152,13 +162,17 @@ end
 --- Check if current OS is macOS
 ---@return boolean
 function M.is_macos()
-  return uv.os_uname().sysname == "Darwin"
+  if not os_uname_func then return false end
+  local ok, uname = pcall(os_uname_func)
+  return ok and uname and uname.sysname == "Darwin"
 end
 
 --- Check if current OS is Linux
 ---@return boolean
 function M.is_linux()
-  return uv.os_uname().sysname == "Linux"
+  if not os_uname_func then return false end
+  local ok, uname = pcall(os_uname_func)
+  return ok and uname and uname.sysname == "Linux"
 end
 
 --- Get system separator (always / for Unix systems)
@@ -183,20 +197,32 @@ function M.debounce(fn, timeout)
   local timer
   return function(...)
     local args = { ... }
-    if timer then
-      uv.timer_stop(timer)
-      uv.timer_close(timer)
+    if timer and timer_stop_func and timer_close_func then
+      timer_stop_func(timer)
+      timer_close_func(timer)
     end
 
-    timer = uv.new_timer()
-    uv.timer_start(timer, timeout, 0, function()
-      uv.timer_stop(timer)
-      uv.timer_close(timer)
-      timer = nil
+    if not new_timer_func or not timer_start_func then
+      -- Fallback: execute immediately if timer functions not available
       vim.schedule(function()
         fn(unpack(args))
       end)
-    end)
+      return
+    end
+
+    timer = new_timer_func()
+    if timer and timer_start_func then
+      timer_start_func(timer, timeout, 0, function()
+        if timer_stop_func and timer_close_func then
+          timer_stop_func(timer)
+          timer_close_func(timer)
+        end
+        timer = nil
+        vim.schedule(function()
+          fn(unpack(args))
+        end)
+      end)
+    end
   end
 end
 
@@ -207,7 +233,13 @@ end
 function M.throttle(fn, timeout)
   local last_call = 0
   return function(...)
-    local now = uv.hrtime() / 1000000
+    if not hrtime_func then
+      -- Fallback: always execute if hrtime not available
+      fn(...)
+      return
+    end
+
+    local now = hrtime_func() / 1000000
     if now - last_call >= timeout then
       last_call = now
       fn(...)

@@ -60,10 +60,12 @@ end
 ---@return string|nil
 function M.get_relative_path(bufnr)
   local path = M.get_file_path(bufnr)
-  if not path then return nil end
+  if not path then
+    return nil
+  end
 
   -- PERFORMANCE: Native vim.fs.relpath ist 50-70% schneller als custom string logic
-  return vim.fs.relpath(path)
+  return vim.fs.relpath(path, vim.fn.getcwd())
 end
 
 --- Close buffer safely
@@ -78,14 +80,19 @@ function M.close_buffer(bufnr, force)
   if not force and M.is_modified(bufnr) then
     local name = M.get_file_path(bufnr) or "[No Name]"
     local choice = vim.fn.confirm(
-      string.format("Buffer '%s' wurde geändert. Was möchten Sie tun?", vim.fn.fnamemodify(name, ":t")),
+      string.format(
+        "Buffer '%s' wurde geändert. Was möchten Sie tun?",
+        vim.fn.fnamemodify(name, ":t")
+      ),
       "&Speichern\n&Verwerfen\n&Abbrechen",
       1
     )
 
     if choice == 1 then
       -- Save and close
-      local ok = pcall(function() vim.cmd("w") end)
+      local ok = pcall(function()
+        vim.api.nvim_command("w")
+      end)
       if not ok then
         vim.notify("Fehler beim Speichern", vim.log.levels.ERROR)
         return false
@@ -107,19 +114,15 @@ function M.close_buffer(bufnr, force)
 
   if #normal_buffers <= 1 then
     -- Last normal buffer - create new empty buffer first
-    vim.cmd("enew")
+    vim.api.nvim_command("enew")
     local ok = pcall(vim.api.nvim_buf_delete, bufnr, { force = force })
-    if ok then
-      -- Silent success - Buffer-Ersetzung ist erwartetes Verhalten
-    end
+    -- Silent success - Buffer-Ersetzung ist erwartetes Verhalten
     return ok
   else
     -- Switch to previous buffer first
-    vim.cmd("bprevious")
+    vim.api.nvim_command("bprevious")
     local ok = pcall(vim.api.nvim_buf_delete, bufnr, { force = force })
-    if ok then
-      -- Silent success - Buffer schließen ist erwartetes Verhalten
-    end
+    -- Silent success - Buffer schließen ist erwartetes Verhalten
     return ok
   end
 end
@@ -159,8 +162,8 @@ function M.close_all(force)
     end
   end
 
-  vim.cmd("%bdelete" .. (force and "!" or ""))
-  vim.cmd("enew")
+  vim.api.nvim_command("%bdelete" .. (force and "!" or ""))
+  vim.api.nvim_command("enew")
   return true
 end
 
@@ -168,11 +171,15 @@ end
 ---@return boolean success
 function M.next_buffer()
   -- PERFORMANCE: Direkte buffer count check ohne full buffer enumeration
-  if #vim.tbl_filter(function(b) return vim.bo[b].buflisted end, vim.api.nvim_list_bufs()) <= 1 then
+  if
+    #vim.tbl_filter(function(b)
+      return vim.bo[b].buflisted
+    end, vim.api.nvim_list_bufs()) <= 1
+  then
     return false
   end
 
-  vim.cmd("bnext")
+  vim.api.nvim_command("bnext")
   return true
 end
 
@@ -180,11 +187,15 @@ end
 ---@return boolean success
 function M.prev_buffer()
   -- PERFORMANCE: Direkte buffer count check ohne full buffer enumeration
-  if #vim.tbl_filter(function(b) return vim.bo[b].buflisted end, vim.api.nvim_list_bufs()) <= 1 then
+  if
+    #vim.tbl_filter(function(b)
+      return vim.bo[b].buflisted
+    end, vim.api.nvim_list_bufs()) <= 1
+  then
     return false
   end
 
-  vim.cmd("bprev")
+  vim.api.nvim_command("bprev")
   return true
 end
 
@@ -286,3 +297,4 @@ function M.print_info(bufnr)
 end
 
 return M
+
