@@ -44,7 +44,7 @@ function M.resize(direction, amount)
     return false
   end
 
-  vim.cmd(cmd)
+  vim.api.nvim_command(cmd)
   return true
 end
 
@@ -67,7 +67,7 @@ function M.split(direction, size)
   end
 
   local size_cmd = size and tostring(size) .. cmd or cmd
-  vim.cmd(size_cmd)
+  vim.api.nvim_command(size_cmd)
   return vim.api.nvim_get_current_win()
 end
 
@@ -150,13 +150,13 @@ function M.toggle_zoom(winid)
 
   if is_zoomed then
     -- Restore
-    vim.cmd("wincmd =")
+    vim.api.nvim_command("wincmd =")
     vim.w[winid].zoomed = nil
     -- Silent success - window operations sind erwartetes Verhalten
   else
     -- Maximize
-    vim.cmd("wincmd |")
-    vim.cmd("wincmd _")
+    vim.api.nvim_command("wincmd |")
+    vim.api.nvim_command("wincmd _")
     vim.w[winid].zoomed = true
     -- Silent success - window operations sind erwartetes Verhalten
   end

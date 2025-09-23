@@ -3,8 +3,11 @@
 
 local M = {}
 
--- Compatibility layer für verschiedene Neovim-Versionen
-local uv = vim.uv or vim.loop
+-- Sichere Cross-Version Kompatibilität für uv API functions
+local fs_stat_func = rawget(vim.uv, 'fs_stat') or rawget(vim.loop, 'fs_stat')
+local fs_mkdir_func = rawget(vim.uv, 'fs_mkdir') or rawget(vim.loop, 'fs_mkdir')
+local fs_unlink_func = rawget(vim.uv, 'fs_unlink') or rawget(vim.loop, 'fs_unlink')
+local fs_symlink_func = rawget(vim.uv, 'fs_symlink') or rawget(vim.loop, 'fs_symlink')
 
 -- Rust-basierte Tools Checker
 M.rust_tools = {
@@ -67,8 +70,8 @@ function M.get_performance_status()
   print("")
 
   -- Blink.cmp Status
-  local blink_status = "❓ Unbekannt"
-  local ok, blink_config = pcall(require, "blink.cmp")
+  local blink_status = icons.status.info .. " Unbekannt"
+  local ok, _ = pcall(require, "blink.cmp")
   if ok then
     -- Versuche Konfiguration zu lesen (kann je nach Version variieren)
     blink_status = icons.status.success .. " Rust FZF aktiv"
@@ -103,7 +106,7 @@ function M.build_blink_rust()
   local blink_path = vim.fn.stdpath("data") .. "/site/pack/user/start/blink.cmp"
   local icons = require("core.icons")
 
-  if not uv.fs_stat(blink_path) then
+  if not (fs_stat_func and fs_stat_func(blink_path)) then
     print(icons.status.error .. " Blink.cmp Plugin nicht gefunden!")
     return false
   end
@@ -118,13 +121,13 @@ function M.build_blink_rust()
 
   -- In blink.cmp Verzeichnis wechseln und bauen
   local old_cwd = vim.fn.getcwd()
-  vim.cmd("cd " .. blink_path)
+  vim.api.nvim_command("cd " .. blink_path)
 
   local build_cmd = "cargo build --profile ultra"
   local output = vim.fn.system(build_cmd)
   local exit_code = vim.v.shell_error
 
-  vim.cmd("cd " .. old_cwd)
+  vim.api.nvim_command("cd " .. old_cwd)
 
   if exit_code == 0 then
     print(icons.status.success .. " Rust-Binary erfolgreich kompiliert!")
@@ -133,16 +136,23 @@ function M.build_blink_rust()
     local ultra_path = blink_path .. "/target/ultra/libblink_cmp_fuzzy.so"
     local release_path = blink_path .. "/target/release/libblink_cmp_fuzzy.so"
 
-    if uv.fs_stat(ultra_path) then
+    if fs_stat_func and fs_stat_func(ultra_path) then
       -- Erstelle release-Verzeichnis falls es nicht existiert
       local release_dir = blink_path .. "/target/release"
-      if not uv.fs_stat(release_dir) then
-        uv.fs_mkdir(release_dir, 493) -- 0755 permissions
+      if not (fs_stat_func and fs_stat_func(release_dir)) then
+        if fs_mkdir_func then
+          fs_mkdir_func(release_dir, 493) -- 0755 permissions
+        end
       end
 
       -- Entferne alten Symlink und erstelle neuen
-      pcall(uv.fs_unlink, release_path)
-      local link_ok, link_err = uv.fs_symlink(ultra_path, release_path)
+      if fs_unlink_func then
+        pcall(fs_unlink_func, release_path)
+      end
+      local link_ok, link_err
+      if fs_symlink_func then
+        link_ok, link_err = fs_symlink_func(ultra_path, release_path)
+      end
 
       if link_ok then
         print(icons.performance.fast .. " Ultra-Profile Binary zu release verlinkt!")
@@ -248,7 +258,6 @@ end
 
 -- ERWEITERTE Performance-Analyse
 function M.analyze_rust_ecosystem()
-  local icons = require("core.icons")
   local analysis = {
     toolchain = {},
     project_health = {},
@@ -407,7 +416,7 @@ function M.ultimate_setup()
   -- 3. blink.cmp Rust Status
   print("\n3. " .. icons.performance.benchmark .. " blink.cmp Rust:")
   local blink_path = vim.fn.stdpath("data") .. "/site/pack/user/start/blink.cmp"
-  local has_blink_rust = uv.fs_stat(blink_path .. "/target/release") ~= nil
+  local has_blink_rust = fs_stat_func and fs_stat_func(blink_path .. "/target/release") ~= nil
   if has_blink_rust then
     print("  " .. icons.status.success .. " Rust-Binaries kompiliert")
   else
@@ -495,7 +504,6 @@ function M.optimize_for_rust()
 
   -- Empfehlungen ausgeben
   print("")
-  local icons = require("core.icons")
   print(icons.status.rocket .. " Performance-Empfehlungen:")
   print("  1. Nutze native fzf: " .. (status.available.fzf and icons.status.success or icons.status.error .. " cargo install fzf"))
   print("  2. Nutze ripgrep: " .. (status.available.rg and icons.status.success or icons.status.error .. " cargo install ripgrep"))
@@ -523,7 +531,7 @@ function M.ultimate_benchmark()
 
   -- 1. Fuzzy Matching Benchmark (blink.cmp vs alternatives)
   local blink_path = vim.fn.stdpath("data") .. "/site/pack/user/start/blink.cmp"
-  if uv.fs_stat(blink_path .. "/target/ultra/libblink_cmp_fuzzy.so") then
+  if fs_stat_func and fs_stat_func(blink_path .. "/target/ultra/libblink_cmp_fuzzy.so") then
     print("  " .. icons.status.success .. " Fuzzy Matching: Ultra-Performance Rust Binary")
     print("    " .. icons.performance.fast .. " Implementation: Native Rust (10-50x vs Lua)")
     print("    " .. icons.performance.benchmark .. " Profile: Ultra (Fat-LTO + native CPU)")
@@ -579,7 +587,7 @@ function M.ultimate_benchmark()
   local max_score = 100
 
   -- Fuzzy Matching (25 points)
-  local fuzzy_score = uv.fs_stat(blink_path .. "/target/ultra/libblink_cmp_fuzzy.so") and 25 or 0
+  local fuzzy_score = (fs_stat_func and fs_stat_func(blink_path .. "/target/ultra/libblink_cmp_fuzzy.so")) and 25 or 0
   total_score = total_score + fuzzy_score
   print(string.format("  " .. icons.performance.fast .. " Fuzzy Matching: %d/25 points", fuzzy_score))
 
