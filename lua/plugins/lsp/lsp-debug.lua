@@ -18,7 +18,8 @@ local function show_diagnostics_float()
   end
 
   -- Native Float-Window mit verbesserter Formatierung
-  vim.diagnostic.open_float(buf, {
+  vim.diagnostic.open_float({
+    bufnr = buf,
     header = string.format("%s LSP Diagnostics (%s)", icons.status.stats, vim.fn.expand("%:t")),
     source = "if_many",  -- Zeige Source nur wenn mehrere LSP-Server
     scope = "buffer",    -- Nur aktueller Buffer

@@ -4,10 +4,6 @@
 -- Icons laden
 local icons = require("core.icons")
 
--- Compatibility layer
-local uv = vim.uv or vim.loop
-
-
 -- Python venv Anzeigefunktion
 local function python_venv()
   local venv = os.getenv("VIRTUAL_ENV")
@@ -26,7 +22,15 @@ local function file_protection_status()
   end
 
   -- Prüfe, ob aktuelle Datei eine Datei auf dem Dateisystem ist
-  local stats = uv.fs_stat(filepath)
+  -- Sichere fs_stat Funktion für Cross-Version Kompatibilität
+  local fs_stat_func = rawget(vim.uv, "fs_stat") or rawget(vim.loop, "fs_stat")
+  local stats = nil
+  if fs_stat_func then
+    local ok, stat = pcall(fs_stat_func, filepath)
+    if ok and stat then
+      stats = stat
+    end
+  end
   if not stats then
     return "" -- Keine Datei (z.B. NeoTree-Buffer)
   end
@@ -96,7 +100,6 @@ local function file_protection_status()
   -- Andernfalls zeige Status mit den Berechtigungen
   return (emoji_map[status] or "") .. current_mode
 end
-
 
 -- Statusline wieder einschalten für lualine
 vim.opt.laststatus = 3
@@ -194,3 +197,4 @@ require("lualine").setup({
   tabline = {},
   extensions = { "neo-tree" },
 })
+

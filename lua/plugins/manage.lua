@@ -3,8 +3,8 @@
 
 local M = {}
 
--- Compatibility layer
-local uv = vim.uv or vim.loop
+-- Sichere fs_stat Funktion für Cross-Version Kompatibilität
+local fs_stat_func = rawget(vim.uv, 'fs_stat') or rawget(vim.loop, 'fs_stat')
 
 -- Eine einfache Liste für alle deine Plugins
 M.plugins = {
@@ -47,14 +47,14 @@ M.plugins = {
 
 function M.sync()
   local pack_dir = vim.fn.stdpath("data") .. "/site/pack/user/start/"
-  if not uv.fs_stat(pack_dir) then
+  if not (fs_stat_func and fs_stat_func(pack_dir)) then
     vim.fn.mkdir(pack_dir, "p") -- Erstellt den Ordner, falls er nicht existiert
   end
   local icons = require("core.icons")
   print(icons.status.sync .. " Plugin-Synchronisation wird gestartet...")
   for name, url in pairs(M.plugins) do
     local plugin_path = pack_dir .. name
-    if not uv.fs_stat(plugin_path) then
+    if not (fs_stat_func and fs_stat_func(plugin_path)) then
       print("Installiere " .. name .. "...")
       vim.fn.system({ "git", "clone", "--depth", "1", url, plugin_path })
     else

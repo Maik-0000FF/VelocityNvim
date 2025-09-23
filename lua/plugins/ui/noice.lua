@@ -306,7 +306,7 @@ require("noice").setup({
 vim.api.nvim_create_autocmd("VimEnter", {
   callback = function()
     vim.defer_fn(function()
-      vim.cmd("messages clear")
+      vim.api.nvim_command("messages clear")
     end, 100)
   end,
   once = true,

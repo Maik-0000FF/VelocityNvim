@@ -25,7 +25,7 @@ require("bufferline").setup({
     diagnostics = "nvim_lsp",
     diagnostics_update_in_insert = false,
     -- Standard Multi-Level Diagnostic Indicator (aus offizieller Dokumentation)
-    diagnostics_indicator = function(count, level, diagnostics_dict, context)
+    diagnostics_indicator = function(_, _, diagnostics_dict, _)
       local s = " "
       for e, n in pairs(diagnostics_dict) do
         local sym = e == "error" and " " or (e == "warning" and " " or " ")
