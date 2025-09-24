@@ -1,5 +1,6 @@
 -- ~/.config/VelocityNvim/lua/plugins/native-lsp.lua
--- Native LSP Setup mit modernen Neovim 0.11+ APIs
+-- Modern LSP Setup with NvChad-style vim.lsp.config API + VelocityNvim features
+-- Uses global configuration pattern for better performance and cleaner code
 
 local icons = require("core.icons")
 
@@ -124,6 +125,51 @@ vim.diagnostic.config({
   },
 })
 
+-- MODERN LSP API: Global configuration for all servers (NvChad style)
+-- Performance-optimized capabilities with completion support
+local function setup_global_lsp_config()
+  local capabilities = vim.lsp.protocol.make_client_capabilities()
+
+  -- Enhanced completion capabilities (NvChad style)
+  capabilities.textDocument.completion.completionItem = {
+    documentationFormat = { "markdown", "plaintext" },
+    snippetSupport = true,
+    preselectSupport = true,
+    insertReplaceSupport = true,
+    labelDetailsSupport = true,
+    deprecatedSupport = true,
+    commitCharactersSupport = true,
+    tagSupport = { valueSet = { 1 } },
+    resolveSupport = {
+      properties = {
+        "documentation",
+        "detail",
+        "additionalTextEdits",
+      },
+    },
+  }
+
+  -- Global LSP configuration for ALL servers
+  vim.lsp.config("*", {
+    capabilities = capabilities,
+    on_init = function(client, _)
+      -- PERFORMANCE: Disable semantic tokens for better responsiveness (NvChad optimization)
+      if vim.fn.has("nvim-0.11") ~= 1 then
+        if client.supports_method("textDocument/semanticTokens") then
+          client.server_capabilities.semanticTokensProvider = nil
+        end
+      else
+        if client:supports_method("textDocument/semanticTokens") then
+          client.server_capabilities.semanticTokensProvider = nil
+        end
+      end
+    end,
+  })
+end
+
+-- Call global setup
+setup_global_lsp_config()
+
 -- Intelligente Lua-Bibliothek-Erkennung (Performance-Optimierung)
 local function get_targeted_lua_libraries()
   local libraries = {}
@@ -217,8 +263,10 @@ local function get_targeted_lua_libraries()
   return libraries
 end
 
--- LSP Konfigurationen definieren
-vim.lsp.config.luals = {
+-- MODERN LSP CONFIG: Server-specific settings only (global config applied automatically)
+-- NvChad style: Only settings, cmd, filetypes, root_markers - capabilities/on_init are global
+
+vim.lsp.config("luals", {
   cmd = { "lua-language-server" },
   filetypes = { "lua" },
   root_markers = { ".luarc.json", ".luarc.jsonc", ".git" },
@@ -227,24 +275,24 @@ vim.lsp.config.luals = {
       runtime = { version = "LuaJIT" },
       diagnostics = {
         globals = { "vim" },
-        workspaceDelay = 200, -- Längere Delay für weniger frequent updates
+        workspaceDelay = 200, -- Performance: Längere Delay für weniger frequent updates
       },
       workspace = {
-        library = get_targeted_lua_libraries(), -- INTELLIGENTE Library-Erkennung statt >2000 Dateien!
+        library = get_targeted_lua_libraries(), -- VelocityNvim: Intelligente Library-Erkennung
         checkThirdParty = false,
-        maxPreload = 1500, -- Optimiert: Reduziert von 3000 (weniger relevante Dateien)
-        preloadFileSize = 3000, -- Optimiert: Reduziert von 5000 (kleinere Files zuerst)
-        useGitIgnore = false, -- DEAKTIVIERT .gitignore-Filtering → Keine "filtering directories" Meldungen
+        maxPreload = 1500, -- Performance: Optimiert von 3000
+        preloadFileSize = 3000, -- Performance: Optimiert von 5000
+        useGitIgnore = false, -- Performance: Keine "filtering directories" Meldungen
       },
       telemetry = { enable = false },
     },
   },
-}
+})
 
-vim.lsp.config.pyright = {
+vim.lsp.config("pyright", {
   cmd = { "pyright-langserver", "--stdio" },
   filetypes = { "python" },
-  root_markers = { "pyproject.toml", "setup.py", "requirements.txt", ".git" },
+  root_markers = { "pyproject.toml", "setup.py", "requirements.txt", ".git" }, -- VelocityNvim: Superior Python project detection
   settings = {
     python = {
       analysis = {
@@ -255,12 +303,12 @@ vim.lsp.config.pyright = {
       },
     },
   },
-}
+})
 
-vim.lsp.config.texlab = {
+vim.lsp.config("texlab", {
   cmd = { "texlab" },
   filetypes = { "tex", "bib", "plaintex" },
-  root_markers = { ".latexmkrc", ".git", "main.tex", "document.tex" },
+  root_markers = { ".latexmkrc", ".git", "main.tex", "document.tex" }, -- VelocityNvim: LaTeX-specific project detection
   settings = {
     texlab = {
       build = {
@@ -280,13 +328,12 @@ vim.lsp.config.texlab = {
       latexindent = { modifyLineBreaks = false },
     },
   },
-}
+})
 
--- HTML LSP
-vim.lsp.config.htmlls = {
+vim.lsp.config("htmlls", {
   cmd = { "vscode-html-language-server", "--stdio" },
   filetypes = { "html", "templ" },
-  root_markers = { "package.json", ".git", "index.html" },
+  root_markers = { "package.json", ".git", "index.html" }, -- VelocityNvim: Web project detection
   init_options = {
     configurationSection = { "html", "css", "javascript" },
     embeddedLanguages = {
@@ -305,13 +352,12 @@ vim.lsp.config.htmlls = {
       },
     },
   },
-}
+})
 
--- CSS LSP
-vim.lsp.config.cssls = {
+vim.lsp.config("cssls", {
   cmd = { "vscode-css-language-server", "--stdio" },
   filetypes = { "css", "scss", "less" },
-  root_markers = { "package.json", ".git", "style.css", "styles.css" },
+  root_markers = { "package.json", ".git", "style.css", "styles.css" }, -- VelocityNvim: CSS naming conventions
   settings = {
     css = {
       validate = true,
@@ -332,10 +378,9 @@ vim.lsp.config.cssls = {
       },
     },
   },
-}
+})
 
--- TypeScript/JavaScript LSP (Performance-optimiert)
-vim.lsp.config.ts_ls = {
+vim.lsp.config("ts_ls", {
   cmd = { "typescript-language-server", "--stdio" },
   filetypes = { "javascript", "javascriptreact", "typescript", "typescriptreact" },
   root_markers = { "package.json", "tsconfig.json", ".git", "node_modules" },
@@ -408,9 +453,8 @@ vim.lsp.config.ts_ls = {
       },
     },
   },
-}
+})
 
--- Rust LSP
 -- ADAPTIVE Rust-Analyzer Configuration (VelocityNvim Ultimate Performance 2025)
 local function get_adaptive_rust_config()
   local rust_perf = require("utils.rust-performance")
@@ -524,17 +568,16 @@ local function get_adaptive_rust_config()
   return base_config
 end
 
-vim.lsp.config.rust_analyzer = {
+vim.lsp.config("rust_analyzer", {
   cmd = { "rust-analyzer" },
   filetypes = { "rust" },
   root_markers = { "Cargo.toml", ".git" },
   settings = {
-    ["rust-analyzer"] = get_adaptive_rust_config(),
+    ["rust-analyzer"] = get_adaptive_rust_config(), -- VelocityNvim: Adaptive memory-based configuration
   },
-}
+})
 
--- JSON LSP
-vim.lsp.config.jsonls = {
+vim.lsp.config("jsonls", {
   cmd = { "vscode-json-language-server", "--stdio" },
   filetypes = { "json", "jsonc" },
   root_markers = { "package.json", ".git" },
@@ -546,7 +589,7 @@ vim.lsp.config.jsonls = {
       validate = { enable = true },
     },
   },
-}
+})
 
 -- Cache für bereits gescannte Workspaces
 local scanned_workspaces = {}
@@ -873,14 +916,20 @@ vim.api.nvim_create_autocmd("LspAttach", {
   end,
 })
 
--- LSPs aktivieren
-vim.lsp.enable("luals")
-vim.lsp.enable("pyright")
-vim.lsp.enable("texlab")
--- Web Development LSPs
-vim.lsp.enable("htmlls")
-vim.lsp.enable("cssls")
-vim.lsp.enable("ts_ls")
-vim.lsp.enable("jsonls")
+-- MODERN LSP ACTIVATION: NvChad-style batch enable (cleaner & faster)
+-- Single call activates all configured servers with global settings applied
+local servers = {
+  "luals",      -- Lua with intelligent library detection
+  "pyright",    -- Python with superior project detection
+  "texlab",     -- LaTeX with specialized root markers
+  "htmlls",     -- HTML with web project detection
+  "cssls",      -- CSS with naming convention support
+  "ts_ls",      -- TypeScript with comprehensive configuration
+  "jsonls",     -- JSON for package.json and config files
+  "rust_analyzer", -- Rust with adaptive memory configuration (if available)
+}
+
+-- Batch activation - modern vim.lsp.enable() API
+vim.lsp.enable(servers)
 
 -- LspStatus Command wird jetzt in core/commands.lua behandelt

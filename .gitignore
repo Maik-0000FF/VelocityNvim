@@ -101,3 +101,6 @@ DEBUG_*.md
 *_DEBUG.md
 debug-*.md
 DEBUGGING.md
+
+# NvChad LSP system documentation (internal analysis only)
+docs/NVCHAD_LSP_COMPLETE_ARCHITECTURE.md
