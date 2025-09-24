@@ -1,18 +1,26 @@
 # VelocityNvim ⚡
 
-> Community Preview: Native vim.pack Neovim distribution for developers and enthusiasts
+> Modern LSP Performance Edition: Native vim.pack Neovim distribution with cutting-edge features
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Neovim](https://img.shields.io/badge/Neovim-0.10+-green.svg)](https://neovim.io)
+[![Neovim](https://img.shields.io/badge/Neovim-0.11+-green.svg)](https://neovim.io)
 [![Native](https://img.shields.io/badge/Plugin_Manager-vim.pack-brightgreen.svg)](#-native-architecture-benefits)
 [![Performance](https://img.shields.io/badge/Performance-Ultra_Fast-orange.svg)](#-performance-characteristics)
-[![Stability](https://img.shields.io/badge/Status-Community_Preview-orange.svg)](#-testing--quality)
+[![LSP](https://img.shields.io/badge/LSP-vim.lsp.config_API-blue.svg)](#-modern-lsp-integration)
+[![Stability](https://img.shields.io/badge/Status-Stable_Beta-blue.svg)](#-testing--quality)
 
 ## 🎯 What is VelocityNvim?
 
-**A modern Neovim distribution built entirely on native vim.pack architecture.**
+**A modern Neovim distribution built entirely on native vim.pack architecture with cutting-edge LSP integration.**
 
-VelocityNvim leverages Neovim's built-in plugin system for enhanced performance, stability, and simplicity.
+VelocityNvim leverages Neovim's built-in plugin system and **modern vim.lsp.config API** for enhanced performance, stability, and simplicity.
+
+### 🔧 NEW in Modern LSP Performance Edition (v1.0.0)
+- **Modern vim.lsp.config API**: Latest Neovim 0.11+ LSP architecture
+- **Global LSP Configuration**: Improved patterns with enhanced capabilities
+- **Performance Optimized**: Semantic tokens disabled for responsive navigation
+- **Rust Integration**: Fast tools where beneficial (blink.cmp, fzf-lua)
+- **Stable & Tested**: Comprehensive testing and reliable performance
 
 ![VelocityNvim Dashboard](./VelocityNvim_Dashboard_Screenshot.png)
 
@@ -113,7 +121,7 @@ This approach provides direct control over plugin management using standard Git 
 Before installing VelocityNvim, make sure you have:
 
 ### Required
-- **Neovim >= 0.10.0** - [Installation Guide](https://github.com/neovim/neovim/blob/master/INSTALL.md)
+- **Neovim >= 0.11.0** - [Installation Guide](https://github.com/neovim/neovim/blob/master/INSTALL.md) *(Required for modern vim.lsp.config API)*
 - **Git** - Version control system
 - **Terminal** - Modern terminal emulator
 
@@ -312,13 +320,14 @@ rm -rf plugin       # Remove
 
 | Component           | Implementation               | Characteristics                     |
 | ------------------- | ---------------------------- | ----------------------------------- |
-| **Startup Time**    | ~1.0s (tested configuration) | Fast initialization with 24 plugins |
+| **Startup Time**    | ~0.5s avg (~0.16s warm)     | Solid performance with 24 plugins  |
 | **Plugin Loading**  | Direct vim.pack integration  | No additional abstraction layers    |
+| **LSP Performance** | Modern vim.lsp.config API    | Global configuration, optimized    |
 | **Memory Usage**    | Optimized settings           | Efficient resource utilization      |
-| **Fuzzy Search**    | Rust-native with blink.cmp   | High-performance text matching      |
+| **Fuzzy Search**    | Rust-native with blink.cmp   | Fast text matching                  |
 | **File Operations** | Native Neovim APIs           | Leverages built-in optimizations    |
 
-_Performance tested on modern hardware with Neovim 0.10+_
+_Performance tested on modern hardware with Neovim 0.11+_
 
 ## 🔧 Included Tools & Plugins
 

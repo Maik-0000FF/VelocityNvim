@@ -104,3 +104,9 @@ DEBUGGING.md
 
 # NvChad LSP system documentation (internal analysis only)
 docs/NVCHAD_LSP_COMPLETE_ARCHITECTURE.md
+
+# New specialized documentation files (development only, not for public release)
+docs/PLUGINS.md
+docs/DEVELOPMENT.md
+docs/ARCHITECTURE-DETAILS.md
+docs/SOLUTIONS.md

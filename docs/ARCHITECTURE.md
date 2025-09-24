@@ -22,11 +22,12 @@
 
 ## Overview
 
-VelocityNvim is a comprehensive Neovim configuration built around **native vim.pack** plugin management, avoiding external plugin managers like Packer, lazy.nvim, or vim-plug. The configuration is designed with modularity, maintainability, and performance in mind, featuring NerdFont icons, intelligent LSP workspace scanning, and comprehensive diagnostic integration.
+VelocityNvim is a comprehensive Neovim configuration built around **native vim.pack** plugin management, avoiding external plugin managers like Packer, lazy.nvim, or vim-plug. The configuration is designed with modularity, maintainability, and performance in mind, featuring **modern vim.lsp.config API**, NerdFont icons, intelligent LSP workspace scanning, and comprehensive diagnostic integration.
 
 ### Core Philosophy
 - **Native First**: Use Neovim's built-in features wherever possible
-- **Performance Optimized**: NerdFont icons over Unicode emojis for better performance
+- **Modern APIs**: Latest vim.lsp.config API with global configuration patterns
+- **Performance Optimized**: NerdFont icons over Unicode emojis, semantic tokens disabled
 - **Modular Design**: Each component is self-contained and reusable
 - **Version Tracking**: Full version management with migration support
 - **Error Recovery**: Comprehensive health checks and diagnostics
@@ -198,8 +199,8 @@ print(icons.status.success .. " Operation completed")
 ## Version Management
 
 ### Current Version: 1.0.0
-- Configuration name: "VelocityNvim - Native vim.pack Distribution"
-- Last updated: 2025-09-05 (GitHub Release Version)
+- Configuration name: "VelocityNvim Native - Modern LSP Performance"
+- Last updated: 2025-09-24 (Modern LSP API Integration)
 - Version tracking with automatic migration support
 
 ### Version Change Detection
@@ -265,6 +266,32 @@ M.plugins = {
 - **Tools**: Development utilities (gitsigns, conform, fzf)
 
 ## LSP Integration
+
+### Modern vim.lsp.config API (2025-09-24 Update)
+VelocityNvim uses the **modern vim.lsp.config API** with **NvChad-inspired patterns**:
+
+#### Global LSP Configuration
+```lua
+-- GLOBAL Configuration for all LSP servers - reduces code duplication
+vim.lsp.config("*", {
+  capabilities = enhanced_capabilities,  -- Optimized blink.cmp integration
+  on_init = function(client, _)
+    -- PERFORMANCE: Semantic tokens disabled for better responsiveness
+    if client:supports_method("textDocument/semanticTokens") then
+      client.server_capabilities.semanticTokensProvider = nil
+    end
+  end,
+})
+```
+
+#### Server-Specific Configurations
+```lua
+-- Modern vim.lsp.config() syntax for each server:
+vim.lsp.config.luals({ settings = lua_settings })
+vim.lsp.config.pyright({ settings = python_settings })
+vim.lsp.config.rust_analyzer({ settings = get_adaptive_rust_config() })
+-- Additional servers: texlab, htmlls, cssls, ts_ls, jsonls
+```
 
 ### Intelligent Workspace Scanning
 The LSP system features smart file filtering to improve performance:
@@ -715,14 +742,15 @@ end
 - **Quality**: Health checks, error handling, safe module loading
 
 ### 🔄 Current Version (GitHub Release)
-- **Version**: 1.0.0 (First GitHub Release)
-- **Last Updated**: 2025-09-05
+- **Version**: 1.0.0 (Modern LSP Performance Edition)
+- **Last Updated**: 2025-09-24
 - **Architecture**: Native vim.pack based, modular and maintainable
+- **NEW Features**: Modern vim.lsp.config API, global LSP configuration, NvChad-inspired optimizations
+- **Performance**: Semantic tokens disabled, enhanced capabilities, Rust-optimized components
 - **Plugin Collection**: 24 carefully selected plugins for complete IDE experience
-- **Performance**: Rust-optimized components with fallback systems
 - **Quality**: Comprehensive health checks and error handling
 - **Documentation**: Complete architecture and development guidelines
-- **Compatibility**: Neovim 0.10+ with cross-platform support
+- **Compatibility**: Neovim 0.11+ with cross-platform support
 
 ### 🏆 Quality Metrics (v1.0.0 Assessment)
 1. **Architecture & Design**: Excellent

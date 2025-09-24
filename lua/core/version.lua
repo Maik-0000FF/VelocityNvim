@@ -6,9 +6,9 @@ local icons = require("core.icons")
 
 -- VelocityNvim - Native vim.pack Architecture
 M.config_version = "1.0.0"
-M.config_name = "VelocityNvim - Native vim.pack Distribution"
+M.config_name = "VelocityNvim Native - Modern LSP Performance"
 M.config_author = "neo"
-M.last_updated = "2025-09-05"
+M.last_updated = "2025-09-24"
 
 -- Version components
 local function parse_version(version_string)
@@ -101,13 +101,14 @@ end
 M.version_history = {
   {
     version = "1.0.0",
-    date = "2025-09-05",
-    name = "VelocityNvim Launch Edition",
+    date = "2025-09-24",
+    name = "VelocityNvim Native - Modern LSP Performance",
     changes = {
-      "🚀 VelocityNvim Community Preview - Native vim.pack distribution",
+      "🚀 Modern LSP API Integration: vim.lsp.config with global configuration pattern",
+      "📊 NvChad-inspired optimizations while preserving VelocityNvim features",
+      "⚡ Performance optimization: Semantic tokens disabled, enhanced capabilities",
       "📦 Pure vim.pack architecture - no lazy.nvim, no packer, no abstractions",
-      "⚡ Ultra-responsive performance with Rust-powered tools",
-      "🔧 100% stable configuration with automated testing",
+      "🔧 Code quality: Reduced redundancy, improved maintainability",
       "🌍 Cross-platform installation (macOS + Linux)",
       "🎯 Zero external plugin manager dependencies",
       "🔒 Future-proof design using only Neovim native APIs",
