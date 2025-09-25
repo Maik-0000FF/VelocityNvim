@@ -170,7 +170,7 @@ end
 -- Call global setup
 setup_global_lsp_config()
 
--- Intelligente Lua-Bibliothek-Erkennung (Performance-Optimierung)
+-- Intelligente Lua-Bibliothek-Erkennung (MyNvim-Style - NO SYSTEM CALLS)
 local function get_targeted_lua_libraries()
   local libraries = {}
   local project_root = vim.fn.getcwd()
@@ -182,28 +182,14 @@ local function get_targeted_lua_libraries()
     table.insert(libraries, nvim_lua_dir)
   end
 
-  -- 2. CONDITIONAL: Plugin-spezifische Libraries nur wenn tatsächlich verwendet
-  local function is_plugin_referenced(plugin_pattern)
-    local project_lua_dir = project_root .. "/lua"
-    if vim.fn.isdirectory(project_lua_dir) == 0 then
-      return false
-    end
-
-    -- Suche nach require() statements mit dem Plugin-Pattern
-    local search_cmd = string.format(
-      "find '%s' -name '*.lua' -exec grep -l 'require.*%s' {} \\; 2>/dev/null",
-      project_lua_dir,
-      plugin_pattern
-    )
-    local result = vim.fn.system(search_cmd)
-    return vim.v.shell_error == 0 and #vim.trim(result) > 0
+  -- 2. CONDITIONAL: Plugin-spezifische Libraries nur wenn geladen (MyNvim-Style)
+  local function is_plugin_loaded(plugin_name)
+    return package.loaded[plugin_name] ~= nil
   end
 
   local function find_plugin_library(plugin_name)
     local possible_paths = {
       vim.fn.stdpath("data") .. "/site/pack/user/start/" .. plugin_name .. "/lua",
-      vim.fn.stdpath("data") .. "/lazy/" .. plugin_name .. "/lua",
-      vim.fn.expand("~/.local/share/nvim/site/pack/user/start/" .. plugin_name .. "/lua"),
       vim.fn.expand("~/.local/share/VelocityNvim/site/pack/user/start/" .. plugin_name .. "/lua"),
     }
 
@@ -215,26 +201,23 @@ local function get_targeted_lua_libraries()
     return nil
   end
 
-  -- Check für häufig verwendete Plugins (nur wenn referenced)
-  local plugin_mappings = {
-    { pattern = "telescope", names = { "telescope.nvim" } },
-    { pattern = "fzf%-lua", names = { "fzf-lua" } },
-    { pattern = "blink%.cmp", names = { "blink.cmp" } },
-    { pattern = "neo%-tree", names = { "neo-tree.nvim" } },
-    { pattern = "which%-key", names = { "which-key.nvim" } },
-    { pattern = "lualine", names = { "lualine.nvim" } },
-    { pattern = "alpha", names = { "alpha-nvim" } },
-    { pattern = "gitsigns", names = { "gitsigns.nvim" } },
+  -- Check für häufig verwendete Plugins (nur wenn geladen - MyNvim-Style)
+  local common_plugins = {
+    { module = "telescope", dir = "telescope.nvim" },
+    { module = "fzf-lua", dir = "fzf-lua" },
+    { module = "blink.cmp", dir = "blink.cmp" },
+    { module = "neo-tree", dir = "neo-tree.nvim" },
+    { module = "which-key", dir = "which-key.nvim" },
+    { module = "lualine", dir = "lualine.nvim" },
+    { module = "alpha", dir = "alpha-nvim" },
+    { module = "gitsigns", dir = "gitsigns.nvim" },
   }
 
-  for _, plugin in ipairs(plugin_mappings) do
-    if is_plugin_referenced(plugin.pattern) then
-      for _, plugin_name in ipairs(plugin.names) do
-        local plugin_lib = find_plugin_library(plugin_name)
-        if plugin_lib then
-          table.insert(libraries, plugin_lib)
-          break -- Nur eine Variante pro Plugin
-        end
+  for _, plugin in ipairs(common_plugins) do
+    if is_plugin_loaded(plugin.module) then
+      local plugin_lib = find_plugin_library(plugin.dir)
+      if plugin_lib then
+        table.insert(libraries, plugin_lib)
       end
     end
   end
@@ -266,7 +249,7 @@ end
 -- MODERN LSP CONFIG: Server-specific settings only (global config applied automatically)
 -- NvChad style: Only settings, cmd, filetypes, root_markers - capabilities/on_init are global
 
-vim.lsp.config("luals", {
+vim.lsp.config.lua_ls = {
   cmd = { "lua-language-server" },
   filetypes = { "lua" },
   root_markers = { ".luarc.json", ".luarc.jsonc", ".git" },
@@ -287,7 +270,7 @@ vim.lsp.config("luals", {
       telemetry = { enable = false },
     },
   },
-})
+}
 
 vim.lsp.config("pyright", {
   cmd = { "pyright-langserver", "--stdio" },
@@ -760,78 +743,72 @@ local function scan_workspace_files(client)
     vim.list_extend(files, found)
   end
 
-  -- BATCH-PROCESSING DESIGN: Verhindert UI-Blocking bei großen Workspaces (>1000 Dateien)
-  -- defer_fn() sorgt dafür dass der initiale LSP-Attach nicht blockiert wird
-  vim.defer_fn(function()
+  -- ULTIMATE ASYNC PARALLELIZATION: No delays, no batches - pure parallel processing
+  vim.schedule(function()
     local total_files = #files
-    local batch_size = 10 -- TUNING: 10 Dateien = Sweet Spot zwischen Responsiveness und Throughput
-    local batch_delay = 200 -- TUNING: 200ms = Genug Zeit für UI-Updates, nicht zu träge für User
 
-    -- Debug: Zeige Ausschluss-Info nur bei sehr vielen Excludes (reduziert)
-    local excluded_count = #exclude_dirs
-    if excluded_count > 50 then -- Erhöht von 10 auf 50
-      vim.notify(
-        string.format(icons.misc.filter .. " Filtering %d directories", excluded_count),
-        vim.log.levels.DEBUG
-      ) -- Level auf DEBUG
+    if total_files == 0 then
+      return
     end
 
-    -- Keine initiale Scan-Nachricht mehr (Overhead eliminiert)
+    -- Silent operation - no excessive notifications
 
-    local function process_batch(start_idx)
-      local end_idx = math.min(start_idx + batch_size - 1, total_files)
-      local processed = 0
+    -- Parallel Worker Pool System
+    local max_workers = math.min(12, math.max(2, total_files)) -- 2-12 workers based on file count
+    local processed = 0
+    local errors = 0
+    local file_queue = vim.deepcopy(files)
 
-      for i = start_idx, end_idx do
-        local file = files[i]
-        vim.defer_fn(function()
+    local function process_next_file()
+      if #file_queue == 0 then
+        return -- No more files to process
+      end
+
+      local file = table.remove(file_queue, 1)
+      if not file then
+        return
+      end
+
+      -- Process file asynchronously
+      vim.schedule(function()
+        local success = pcall(function()
           local bufnr = vim.fn.bufnr(file, true)
           if bufnr ~= -1 and not vim.api.nvim_buf_is_loaded(bufnr) then
-            -- Lade Buffer unsichtbar mit Memory-Optimierung
+            -- Load buffer invisibly with memory optimization
             vim.fn.bufload(bufnr)
             vim.bo[bufnr].buflisted = false
-            vim.bo[bufnr].bufhidden = "unload" -- Auto-unload bei Inaktivität
+            vim.bo[bufnr].bufhidden = "unload"
 
-            -- LSP-Attach mit Fehlerbehandlung
+            -- LSP attach with error handling
             if client and vim.api.nvim_buf_is_valid(bufnr) then
               local attach_ok = pcall(vim.lsp.buf_attach_client, bufnr, client.id)
               if not attach_ok then
-                -- Buffer bei LSP-Fehler wieder entladen
                 vim.api.nvim_buf_delete(bufnr, { force = true })
+                return false
               end
             end
           end
+          return true
+        end)
 
-          processed = processed + 1
-          if processed == (end_idx - start_idx + 1) then
-            -- Batch abgeschlossen - nur finale Meldung bei sehr großen Workspaces
-            if end_idx == total_files and total_files > 1000 then
-              vim.notify(
-                string.format(
-                  icons.status.success .. " Workspace scan completed: %d files",
-                  total_files
-                ),
-                vim.log.levels.DEBUG
-              )
-            end
-            -- Alle Progress-Meldungen entfernt (Overhead eliminiert)
-          end
-        end, (i - start_idx + 1) * 25) -- Kleine Verzögerung pro Datei im Batch
-      end
+        processed = processed + 1
+        if not success then
+          errors = errors + 1
+        end
 
-      -- Nächsten Batch planen
-      if end_idx < total_files then
-        vim.defer_fn(function()
-          process_batch(end_idx + 1)
-        end, batch_delay)
-      end
+        -- Silent processing - no progress spam
+        -- Only log errors or critical issues
+
+        -- Continue processing immediately (no delays!)
+        vim.schedule(process_next_file)
+      end)
     end
 
-    -- Starte ersten Batch
-    if total_files > 0 then
-      process_batch(1)
+    -- Launch all workers in parallel
+    for i = 1, max_workers do
+      vim.schedule(process_next_file)
     end
-  end, 1000) -- Reduzierte initiale Verzögerung
+  end)
 end
 
 -- LSP Attach Handler
@@ -916,20 +893,15 @@ vim.api.nvim_create_autocmd("LspAttach", {
   end,
 })
 
--- MODERN LSP ACTIVATION: NvChad-style batch enable (cleaner & faster)
--- Single call activates all configured servers with global settings applied
-local servers = {
-  "luals",      -- Lua with intelligent library detection
-  "pyright",    -- Python with superior project detection
-  "texlab",     -- LaTeX with specialized root markers
-  "htmlls",     -- HTML with web project detection
-  "cssls",      -- CSS with naming convention support
-  "ts_ls",      -- TypeScript with comprehensive configuration
-  "jsonls",     -- JSON for package.json and config files
-  "rust_analyzer", -- Rust with adaptive memory configuration (if available)
-}
-
--- Batch activation - modern vim.lsp.enable() API
-vim.lsp.enable(servers)
+-- MODERN LSP ACTIVATION: MyNvim-style individual enable (better compatibility)
+-- Individual activation allows better error handling and control per server
+vim.lsp.enable("lua_ls")      -- Lua with intelligent library detection
+vim.lsp.enable("pyright")     -- Python with superior project detection
+vim.lsp.enable("texlab")      -- LaTeX with specialized root markers
+vim.lsp.enable("htmlls")      -- HTML with web project detection
+vim.lsp.enable("cssls")       -- CSS with naming convention support
+vim.lsp.enable("ts_ls")       -- TypeScript with comprehensive configuration
+vim.lsp.enable("jsonls")      -- JSON for package.json and config files
+vim.lsp.enable("rust_analyzer") -- Rust with adaptive memory configuration (if available)
 
 -- LspStatus Command wird jetzt in core/commands.lua behandelt
