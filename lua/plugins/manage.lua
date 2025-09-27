@@ -43,6 +43,32 @@ M.plugins = {
   ["render-markdown.nvim"] = "https://github.com/MeanderingProgrammer/render-markdown.nvim",
 }
 
+-- Automatische blink.cmp Rust-Kompilierung nach Updates
+local function auto_build_blink_rust(pack_dir)
+  local blink_path = pack_dir .. "blink.cmp"
+  if fs_stat_func and fs_stat_func(blink_path .. "/Cargo.toml") then
+    local icons = require("core.icons")
+    print(icons.status.sync .. " Kompiliere blink.cmp Rust-Binaries...")
+
+    -- Cross-Platform Script Detection
+    local config_path = vim.fn.stdpath("config") .. "/scripts/setup/"
+    local script_name = "blink-cmp-rust-builder-linux.sh"
+
+    -- macOS Detection
+    if vim.fn.has("mac") == 1 or vim.fn.has("macunix") == 1 then
+      script_name = "blink-cmp-rust-builder-macos.sh"
+    end
+
+    local script_path = config_path .. script_name
+    if fs_stat_func and fs_stat_func(script_path) then
+      vim.fn.system({ "bash", script_path })
+      print(icons.status.success .. " blink.cmp Rust-Performance aktiviert!")
+    else
+      print(icons.status.warn .. " Build-Script nicht gefunden: " .. script_name)
+    end
+  end
+end
+
 -- Funktion zum Installieren und Aktualisieren
 
 function M.sync()
@@ -52,17 +78,32 @@ function M.sync()
   end
   local icons = require("core.icons")
   print(icons.status.sync .. " Plugin-Synchronisation wird gestartet...")
+
+  local blink_updated = false
   for name, url in pairs(M.plugins) do
     local plugin_path = pack_dir .. name
     if not (fs_stat_func and fs_stat_func(plugin_path)) then
       print("Installiere " .. name .. "...")
       vim.fn.system({ "git", "clone", "--depth", "1", url, plugin_path })
+      if name == "blink.cmp" then
+        blink_updated = true
+      end
     else
       print("Aktualisiere " .. name .. "...")
       vim.fn.system({ "git", "-C", plugin_path, "pull" })
+      if name == "blink.cmp" then
+        blink_updated = true
+      end
     end
   end
+
   vim.cmd.packloadall() -- Optional, da 'start'-Plugins beim Neustart automatisch geladen werden
+
+  -- Automatische Rust-Kompilierung nach blink.cmp Updates
+  if blink_updated then
+    auto_build_blink_rust(pack_dir)
+  end
+
   print(
     icons.status.success
       .. " Plugin-Synchronisation abgeschlossen! Starte Neovim neu, um neue Plugins zu laden."
