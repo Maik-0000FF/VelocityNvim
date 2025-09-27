@@ -1,0 +1,4 @@
+Date,Time,Version,System,Neovim_Version,API_Level,Cold_Startup_s,Warm_Startup_s,Overall_Avg_s,LSP_1000ops_ms,LSP_per_op_µs,Plugin_Load_µs,Memory_MB,Health_Check_s,Plugin_Count,Test_Type,Notes
+2025-09-24,18:46,1.0.0,Linux archdesk 6.16.8-arch3-1 x86_64,0.11.4,13,1.099,0.198,0.739,1.401,1.401,6,2.8,0.87,24,fresh_installation,Fresh installation post-GitHub update - Modern LSP Performance Edition
+2025-09-24,21:59,1.0.0,Linux archdesk 6.16.8-arch3-1 x86_64,0.11.4,Unknown,0.987,0.184,0.345,1.566,1.566,3,Unknown,Unknown,24,lsp_migration_test,Post-MyNvim LSP system migration with diagnostic float navigation fix
+2025-09-25,15:09,1.0.0,Linux 6.16.8-arch3-1,0.11.4,13,0.750,0.695,0.720,6.534,6.534,2.568,0.195,Unknown,24,post_optimization,Modern LSP API + MyNvim optimizations with parallel worker pool system

@@ -72,7 +72,7 @@ cmd("LspStatus", function()
   print("\n" .. icons.status.gear .. " Aktivierte LSP-Konfigurationen:")
   local utils = require("utils")
   for _, name in ipairs({
-    "luals",
+    "lua_ls",
     "pyright",
     "texlab",
     "htmlls",
@@ -240,7 +240,7 @@ cmd("LuaLibraryStatus", function()
   print("  " .. icons.status.success .. " Completion-Relevanz: ~85% (war 40%)")
 
   -- Zeige LSP lua-language-server Status
-  local lsp_clients = vim.lsp.get_clients({ name = "luals" })
+  local lsp_clients = vim.lsp.get_clients({ name = "lua_ls" })
   if #lsp_clients > 0 then
     print("")
     print(".. icons.status.gear .. ")

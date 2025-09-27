@@ -11,8 +11,8 @@ dashboard.section.header.val = icons.alpha.header
 -- Menü-Buttons
 dashboard.section.buttons.val = {
   dashboard.button("e", icons.status.file .. " New file", "<cmd>ene <BAR> startinsert <CR>"),
-  dashboard.button("f", icons.status.find_file .. " Find file", "<cmd>Neotree reveal<CR>"),
-  dashboard.button("r", icons.status.recent_file .. " Recent files", "<cmd>FzfLua oldfiles<CR>"),
+  dashboard.button("f", icons.status.find_file .. " Find file", "<cmd>FzfLua files<CR>"),
+  dashboard.button("t", icons.misc.folder .. " Neo-tree", "<cmd>Neotree reveal<CR>"),
   dashboard.button("c", icons.status.gear .. " Configuration", "<cmd>e $MYVIMRC<CR>"),
   dashboard.button("I", icons.status.info .. " Info & Version", "<cmd>VelocityInfo<CR>"),
   dashboard.button("h", icons.status.health .. " Health Check", "<cmd>checkhealth<CR>"),
@@ -32,16 +32,12 @@ local function get_footer()
     plugin_count = vim.tbl_count(manage.plugins)
   end
 
-  -- LSP-Client Anzahl
-  local lsp_count = #vim.lsp.get_clients()
-
   local footer = {
     "                                   ",
     "    " .. icons.status.rocket .. " " .. version.config_name .. " v" .. version.config_version,
     "    " .. icons.status.update .. " Updated: " .. version.last_updated,
     "    " .. icons.status.neovim .. " Neovim: " .. nvim_ver.string,
     "    " .. icons.misc.plugin .. " Plugins: " .. plugin_count .. " configured",
-    "    " .. icons.status.gear .. " LSP: " .. lsp_count .. " active clients",
     "                                   ",
   }
 
