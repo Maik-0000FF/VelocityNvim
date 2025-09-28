@@ -142,7 +142,7 @@ VelocityNvim works best with these Rust-powered tools:
 
 ## ⚠️ Important Warnings
 
-> **🚧 PREVIEW STATUS**: VelocityNvim is currently in Community Preview. The repository is private and some features (like the one-click installer) will be available after the public release.
+> **🚀 BETA STATUS**: VelocityNvim is currently in Stable Beta. Core features are stable and tested, with ongoing refinements and feature additions based on community feedback.
 
 > **🚨 BACKUP WARNING**: VelocityNvim will replace your existing `~/.config/nvim` configuration. Make sure to backup your current setup!
 
@@ -419,7 +419,7 @@ VelocityNvim includes comprehensive testing:
 
 ### System Requirements
 
-- **Neovim**: >= 0.10.0
+- **Neovim**: >= 0.11.0
 - **Git**: For plugin management
 - **Font**: NerdFont (MesloLGS recommended)
 

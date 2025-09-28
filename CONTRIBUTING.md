@@ -1,6 +1,6 @@
 # Contributing to VelocityNvim ⚡
 
-Thank you for your interest in contributing to VelocityNvim! As a community preview of a native vim.pack Neovim distribution, we welcome contributions that align with our core philosophy of simplicity, performance, and native architecture.
+Thank you for your interest in contributing to VelocityNvim! As a stable beta native vim.pack Neovim distribution, we welcome contributions that align with our core philosophy of simplicity, performance, and native architecture.
 
 ## 🎯 Our Philosophy
 
@@ -16,7 +16,7 @@ Before contributing, please understand VelocityNvim's core principles:
 ## 🚀 Quick Start for Contributors
 
 ### Prerequisites
-- **Neovim**: >= 0.10.0
+- **Neovim**: >= 0.11.0 (required for modern vim.lsp.config API)
 - **Git**: For repository management
 - **Rust/Cargo**: For performance optimizations (optional)
 - **Basic Neovim knowledge**: Understanding of vim.pack and native APIs

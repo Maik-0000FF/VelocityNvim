@@ -1,6 +1,6 @@
 #!/bin/bash
 # VelocityNvim Cross-Platform Installer
-# VelocityNvim Community Preview - Native vim.pack Neovim distribution
+# VelocityNvim Stable Beta - Native vim.pack Neovim distribution
 
 set -e  # Exit on any error
 
@@ -23,7 +23,7 @@ echo "  ████   ███████ ███████  ████
 echo -e "${NC}"
 echo -e "${CYAN}        Ultra-Responsive • Rust-Powered • Native vim.pack${NC}"
 echo "=================================================================="
-echo -e "${BLUE}🚀 VelocityNvim Community Preview - Native vim.pack distribution${NC}"
+echo -e "${BLUE}🚀 VelocityNvim Stable Beta - Native vim.pack distribution${NC}"
 echo ""
 
 # Detect OS and architecture
