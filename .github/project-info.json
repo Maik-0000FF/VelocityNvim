@@ -1,0 +1,86 @@
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareSourceCode",
+  "name": "VelocityNvim",
+  "description": "Fastest Native vim.pack Neovim Distribution - Zero Plugin Manager Required, 0.16s startup time with Rust-powered performance",
+  "applicationCategory": "DeveloperApplication",
+  "operatingSystem": ["Linux", "macOS", "WSL2"],
+  "programmingLanguage": ["Lua", "Vim script"],
+  "runtimePlatform": "Neovim 0.11+",
+  "license": "MIT",
+  "version": "1.0.0",
+  "releaseNotes": "Stable Beta - Core features stable and tested",
+  "developmentStatus": "Stable Beta",
+  "isPartOf": {
+    "@type": "SoftwareApplication",
+    "name": "Neovim",
+    "applicationCategory": "TextEditor"
+  },
+  "author": {
+    "@type": "Person",
+    "name": "Maik",
+    "url": "https://github.com/Maik-0000FF"
+  },
+  "codeRepository": "https://github.com/Maik-0000FF/VelocityNvim",
+  "downloadUrl": "https://github.com/Maik-0000FF/VelocityNvim/archive/refs/heads/main.zip",
+  "installUrl": "https://github.com/Maik-0000FF/VelocityNvim#-installation",
+  "keywords": [
+    "neovim",
+    "neovim-distribution",
+    "vim-pack",
+    "native-neovim",
+    "fast-startup",
+    "rust-performance",
+    "lsp-integration",
+    "no-plugin-manager",
+    "stable-beta"
+  ],
+  "features": [
+    "Native vim.pack architecture (no plugin manager required)",
+    "0.16s startup time with performance optimization",
+    "Modern LSP integration with vim.lsp.config API",
+    "Rust-powered tools (fzf, ripgrep, delta)",
+    "24 curated plugins for complete IDE experience",
+    "Cross-platform support (Linux, macOS, WSL2)"
+  ],
+  "targetAudience": {
+    "@type": "Audience",
+    "audienceType": "Developers using Neovim"
+  },
+  "dateCreated": "2025-09-28",
+  "dateModified": "2025-09-28",
+  "datePublished": "2025-09-28",
+  "discussionUrl": "https://github.com/Maik-0000FF/VelocityNvim/discussions",
+  "issueTracker": "https://github.com/Maik-0000FF/VelocityNvim/issues",
+  "funding": "https://github.com/Maik-0000FF/VelocityNvim#-support-velocitynvim",
+  "hasOfferCatalog": {
+    "@type": "OfferCatalog",
+    "name": "VelocityNvim Features",
+    "itemListElement": [
+      {
+        "@type": "Offer",
+        "itemOffered": {
+          "@type": "Service",
+          "name": "Native vim.pack Plugin Management",
+          "description": "No external plugin manager required - uses Neovim's built-in system"
+        }
+      },
+      {
+        "@type": "Offer",
+        "itemOffered": {
+          "@type": "Service",
+          "name": "Performance Optimization",
+          "description": "0.16s startup time with Rust-powered tools"
+        }
+      },
+      {
+        "@type": "Offer",
+        "itemOffered": {
+          "@type": "Service",
+          "name": "Modern LSP Integration",
+          "description": "Latest vim.lsp.config API for enhanced development experience"
+        }
+      }
+    ]
+  }
+}
