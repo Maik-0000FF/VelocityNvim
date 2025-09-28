@@ -1,6 +1,8 @@
-# VelocityNvim ⚡
+# VelocityNvim ⚡ - Fastest Native vim.pack Neovim Distribution
 
-> Modern LSP Performance Edition: Native vim.pack Neovim distribution with cutting-edge features
+> **Zero Plugin Manager Required** | **0.16s Startup Time** | **Modern LSP Integration** | **Rust-Powered Performance**
+
+**The only Neovim distribution that teaches you real Neovim skills while delivering enterprise-grade performance.**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![GitHub stars](https://img.shields.io/github/stars/Maik-0000FF/VelocityNvim?style=social)](https://github.com/Maik-0000FF/VelocityNvim/stargazers)
@@ -552,6 +554,29 @@ VelocityNvim's approach of using native vim.pack reflects our respect for the th
 **Native Icons Philosophy**: VelocityNvim uses NerdFont symbols instead of emojis throughout the interface. This ensures consistent visual representation across all terminals and systems, while maintaining the professional appearance that developers expect. NerdFont symbols are designed specifically for code editors and integrate seamlessly with syntax highlighting and terminal color schemes.
 
 Every plugin in VelocityNvim was chosen not just for its functionality, but for the quality and dedication of its maintainers. Their contributions to the Neovim ecosystem make projects like VelocityNvim possible.
+
+## 🔍 **Frequently Asked Questions (FAQ)**
+
+### **Q: Why choose VelocityNvim over LazyVim or NvChad?**
+**A:** VelocityNvim is the only distribution using native vim.pack - no plugin manager overhead means faster startup (~0.16s vs 0.5s+) and you learn real Neovim skills, not abstractions.
+
+### **Q: Does VelocityNvim work with Neovim 0.10?**
+**A:** VelocityNvim requires Neovim 0.11+ for modern vim.lsp.config API. This ensures cutting-edge LSP performance and stability.
+
+### **Q: How fast is VelocityNvim compared to other distributions?**
+**A:** Startup time: ~0.16s (VelocityNvim) vs ~0.5s+ (LazyVim/NvChad). Zero plugin manager overhead = maximum performance.
+
+### **Q: Can I migrate from LazyVim/NvChad to VelocityNvim?**
+**A:** Yes! VelocityNvim includes migration guides and maintains familiar keybindings while teaching you native vim.pack concepts.
+
+### **Q: What programming languages does VelocityNvim support?**
+**A:** Full LSP integration for Rust, Python, JavaScript/TypeScript, Lua, Go, C/C++, and more via modern vim.lsp.config API.
+
+---
+
+## 🏷️ **Keywords & Tags**
+
+**Neovim Distribution** | **vim.pack Native** | **No Plugin Manager** | **Fast Startup** | **Modern LSP** | **Rust Performance** | **Neovim 0.11** | **Terminal Editor** | **Developer Tools** | **Configuration Management** | **Text Editor** | **Code Editor** | **Vim Alternative**
 
 ---
 
