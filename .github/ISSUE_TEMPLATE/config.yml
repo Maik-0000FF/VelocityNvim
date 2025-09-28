@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 📚 Documentation
+    url: https://github.com/Maik-0000FF/VelocityNvim/blob/main/README.md
+    about: Check the comprehensive documentation first
+  - name: 💬 GitHub Discussions
+    url: https://github.com/Maik-0000FF/VelocityNvim/discussions
+    about: Ask questions and discuss VelocityNvim with the community
+  - name: 🔍 Search Issues
+    url: https://github.com/Maik-0000FF/VelocityNvim/issues?q=is%3Aissue
+    about: Search existing issues before creating a new one

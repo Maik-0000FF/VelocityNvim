@@ -3,11 +3,17 @@
 > Modern LSP Performance Edition: Native vim.pack Neovim distribution with cutting-edge features
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![GitHub stars](https://img.shields.io/github/stars/Maik-0000FF/VelocityNvim?style=social)](https://github.com/Maik-0000FF/VelocityNvim/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/Maik-0000FF/VelocityNvim?style=social)](https://github.com/Maik-0000FF/VelocityNvim/network/members)
+[![GitHub issues](https://img.shields.io/github/issues/Maik-0000FF/VelocityNvim)](https://github.com/Maik-0000FF/VelocityNvim/issues)
+
 [![Neovim](https://img.shields.io/badge/Neovim-0.11+-green.svg)](https://neovim.io)
-[![Native](https://img.shields.io/badge/Plugin_Manager-vim.pack-brightgreen.svg)](#-native-architecture-benefits)
-[![Performance](https://img.shields.io/badge/Performance-Ultra_Fast-orange.svg)](#-performance-characteristics)
+[![Startup Time](https://img.shields.io/badge/Startup-~0.16s-brightgreen.svg)](#-performance-characteristics)
+[![Plugin Manager](https://img.shields.io/badge/Plugin_Manager-None_Required-red.svg)](#-native-architecture-benefits)
+[![Native vim.pack](https://img.shields.io/badge/Architecture-Native_vim.pack-brightgreen.svg)](#-native-architecture-benefits)
 [![LSP](https://img.shields.io/badge/LSP-vim.lsp.config_API-blue.svg)](#-modern-lsp-integration)
-[![Stability](https://img.shields.io/badge/Status-Stable_Beta-blue.svg)](#-testing--quality)
+[![Status](https://img.shields.io/badge/Status-Stable_Beta-blue.svg)](#-testing--quality)
+[![Rust Powered](https://img.shields.io/badge/Performance-Rust_Powered-orange.svg)](#-performance-characteristics)
 
 ## 🎯 What is VelocityNvim?
 

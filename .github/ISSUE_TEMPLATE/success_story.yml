@@ -1,0 +1,99 @@
+name: 🎉 Success Story
+description: Share your positive experience with VelocityNvim
+title: "[Success]: "
+labels: ["success-story", "community"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        We love hearing about your positive experiences with VelocityNvim!
+        Your story helps others discover the benefits of native vim.pack architecture.
+
+  - type: dropdown
+    id: user-type
+    attributes:
+      label: User Background
+      options:
+        - New to Neovim
+        - Migrated from Vim
+        - Migrated from VSCode/IDE
+        - Migrated from other Neovim distribution
+        - Experienced Neovim user
+    validations:
+      required: true
+
+  - type: input
+    id: previous-setup
+    attributes:
+      label: Previous Setup
+      description: What were you using before VelocityNvim?
+      placeholder: "e.g., LazyVim, NvChad, custom config, VSCode"
+
+  - type: textarea
+    id: success-description
+    attributes:
+      label: Your Success Story
+      description: Tell us about your positive experience with VelocityNvim
+      placeholder: |
+        What made you choose VelocityNvim?
+        What improvements did you notice?
+        What do you love most about it?
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: benefits-experienced
+    attributes:
+      label: Benefits You've Experienced
+      description: Which benefits have you noticed? (Select all that apply)
+      options:
+        - label: Faster startup times
+        - label: Better performance during coding
+        - label: Learned more about Neovim internals
+        - label: Easier plugin management
+        - label: More stable configuration
+        - label: Better LSP experience
+        - label: Improved workflow efficiency
+        - label: Reduced complexity
+
+  - type: dropdown
+    id: recommend-rating
+    attributes:
+      label: Recommendation Rating
+      description: How likely are you to recommend VelocityNvim to others?
+      options:
+        - "10 - Extremely likely"
+        - "9 - Very likely"
+        - "8 - Likely"
+        - "7 - Somewhat likely"
+        - "6 - Neutral"
+        - "5 - Somewhat unlikely"
+        - "4 - Unlikely"
+        - "3 - Very unlikely"
+        - "2 - Extremely unlikely"
+        - "1 - Would not recommend"
+    validations:
+      required: true
+
+  - type: textarea
+    id: specific-use-case
+    attributes:
+      label: Specific Use Case
+      description: What do you primarily use VelocityNvim for?
+      placeholder: "e.g., Rust development, Python data science, web development, system administration"
+
+  - type: checkboxes
+    id: sharing-permission
+    attributes:
+      label: Sharing Permission
+      description: Can we share your story?
+      options:
+        - label: You may quote this story in VelocityNvim documentation/marketing
+        - label: You may include my GitHub username when sharing
+        - label: You may contact me for follow-up questions
+
+  - type: textarea
+    id: additional-feedback
+    attributes:
+      label: Additional Feedback
+      description: Any other feedback or suggestions for improvement?
