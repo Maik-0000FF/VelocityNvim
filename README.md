@@ -4,7 +4,7 @@
 
 > **Zero Plugin Manager Required** | **0.16s Startup Time** | **Modern LSP Integration** | **Rust-Powered Performance**
 
-**The only Neovim distribution that teaches you real Neovim skills while delivering enterprise-grade performance.**
+**A Neovim distribution that teaches you real Neovim skills while delivering solid performance through native architecture.**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![GitHub stars](https://img.shields.io/github/stars/Maik-0000FF/VelocityNvim?style=social)](https://github.com/Maik-0000FF/VelocityNvim/stargazers)
@@ -282,6 +282,8 @@ nvim --version
 
 ## 🗑️ Uninstallation
 
+### Standard Installation (replaced ~/.config/nvim)
+
 ```bash
 # Remove VelocityNvim
 rm -rf ~/.config/nvim
@@ -293,6 +295,26 @@ rm -rf ~/.cache/nvim
 
 # Restore backup (if available)
 [ -d ~/.config/nvim.backup.* ] && mv ~/.config/nvim.backup.* ~/.config/nvim
+```
+
+### Parallel Installation (NVIM_APPNAME=VelocityNvim)
+
+```bash
+# Remove VelocityNvim configuration
+rm -rf ~/.config/VelocityNvim
+
+# Remove VelocityNvim-specific plugin data
+rm -rf ~/.local/share/VelocityNvim
+rm -rf ~/.local/state/VelocityNvim
+rm -rf ~/.cache/VelocityNvim
+
+# Remove alias from shell config (if added)
+sed -i '/alias velocity="NVIM_APPNAME=VelocityNvim nvim"/d' ~/.bashrc
+# For zsh users:
+# sed -i '/alias velocity="NVIM_APPNAME=VelocityNvim nvim"/d' ~/.zshrc
+
+# Reload shell config
+source ~/.bashrc  # or source ~/.zshrc for zsh
 ```
 
 ## 📦 Plugin Management - The Native Way
@@ -568,13 +590,13 @@ Every plugin in VelocityNvim was chosen not just for its functionality, but for 
 ## 🔍 **Frequently Asked Questions (FAQ)**
 
 ### **Q: Why choose VelocityNvim over LazyVim or NvChad?**
-**A:** VelocityNvim is the only distribution using native vim.pack - no plugin manager overhead means faster startup (~0.16s vs 0.5s+) and you learn real Neovim skills, not abstractions.
+**A:** VelocityNvim offers a different approach using native vim.pack architecture. This means no plugin manager dependencies, direct Git-based management, and you learn transferable Neovim skills. It provides solid performance and deeper understanding of Neovim's internals.
 
 ### **Q: Does VelocityNvim work with Neovim 0.10?**
 **A:** VelocityNvim requires Neovim 0.11+ for modern vim.lsp.config API. This ensures cutting-edge LSP performance and stability.
 
-### **Q: How fast is VelocityNvim compared to other distributions?**
-**A:** Startup time: ~0.16s (VelocityNvim) vs ~0.5s+ (LazyVim/NvChad). Zero plugin manager overhead = maximum performance.
+### **Q: How fast is VelocityNvim?**
+**A:** Startup time averages ~0.16s under optimal conditions with modern hardware. The native vim.pack approach eliminates plugin manager overhead, providing efficient performance.
 
 ### **Q: Can I migrate from LazyVim/NvChad to VelocityNvim?**
 **A:** Yes! VelocityNvim includes migration guides and maintains familiar keybindings while teaching you native vim.pack concepts.
@@ -590,7 +612,7 @@ Every plugin in VelocityNvim was chosen not just for its functionality, but for 
 
 ---
 
-**VelocityNvim: Native vim.pack. Native performance. Native simplicity.**
+**VelocityNvim: Learn Neovim's native architecture through hands-on experience.**
 
-_Finally, a Neovim distribution that doesn't fight against Neovim._
+_A distribution focused on education, transparency, and solid performance._
 
