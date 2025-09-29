@@ -167,7 +167,7 @@ cmd("LspRefresh", function()
   -- Clear den Workspace-Cache um Re-Scan zu ermöglichen
   -- Zugriff auf die private scanned_workspaces Variable durch Module-Reload
   package.loaded["plugins.lsp.native-lsp"] = nil
-  local native_lsp = require("plugins.lsp.native-lsp")
+  local _ = require("plugins.lsp.native-lsp")  -- Module reload to clear cache
 
   -- Triggere für jeden Client den Workspace-Scan direkt
   for _, client in ipairs(clients) do
@@ -266,7 +266,7 @@ end, {
 
 -- Diagnostic Icons Test & Status (NEU - Productivity Enhancement)
 cmd("DiagnosticTest", function()
-  local icons = require("core.icons")
+  -- Use global icons from top of file
   print(
     ".. icons.status.gear .. "
       .. icons.diagnostics.error
@@ -281,25 +281,25 @@ cmd("DiagnosticTest", function()
     "  "
       .. icons.status.success
       .. " Virtual Text: "
-      .. (config.virtual_text and "✓ Aktiv mit Icons" or "✗ Deaktiviert")
+      .. (config and config.virtual_text and "✓ Aktiv mit Icons" or "✗ Deaktiviert")
   )
   print(
     "  "
       .. icons.status.success
       .. " Signs: "
-      .. (config.signs and "✓ Aktiv in Signcolumn" or "✗ Deaktiviert")
+      .. (config and config.signs and "✓ Aktiv in Signcolumn" or "✗ Deaktiviert")
   )
   print(
     "  "
       .. icons.status.success
       .. " Underline: "
-      .. (config.underline and "✓ Aktiv" or "✗ Deaktiviert")
+      .. (config and config.underline and "✓ Aktiv" or "✗ Deaktiviert")
   )
   print(
     "  "
       .. icons.status.success
       .. " Float Windows: "
-      .. (config.float and "✓ Aktiv mit Icons" or "✗ Deaktiviert")
+      .. (config and config.float and "✓ Aktiv mit Icons" or "✗ Deaktiviert")
   )
 
   print("")
@@ -377,7 +377,7 @@ end, {
 
 -- Performance vs Diagnostics Compatibility Test (NEU - Cursor Movement Fix)
 cmd("PerformanceDiagnosticTest", function()
-  local icons = require("core.icons")
+  -- Use global icons from top of file
   local perf = require("core.performance")
 
   print(
@@ -398,10 +398,10 @@ cmd("PerformanceDiagnosticTest", function()
   local config = vim.diagnostic.config()
   print("")
   print(".. icons.status.gear .. ")
-  print("  Virtual Text: " .. (config.virtual_text and "✓ AKTIV" or "✗ DEAKTIVIERT"))
-  print("  Signs: " .. (config.signs and "✓ AKTIV" or "✗ DEAKTIVIERT"))
+  print("  Virtual Text: " .. (config and config.virtual_text and "✓ AKTIV" or "✗ DEAKTIVIERT"))
+  print("  Signs: " .. (config and config.signs and "✓ AKTIV" or "✗ DEAKTIVIERT"))
   print(
-    "  Update in Insert: " .. (config.update_in_insert and "✓ JA" or "✗ NEIN (Performance)")
+    "  Update in Insert: " .. (config and config.update_in_insert and "✓ JA" or "✗ NEIN (Performance)")
   )
 
   -- Test ob Icons korrekt definiert sind
@@ -416,7 +416,7 @@ cmd("PerformanceDiagnosticTest", function()
     for _, sign in ipairs(sign_groups) do
       if sign.name == sign_name then
         found = true
-        local priority_info = sign.priority and (" (Priorität: " .. sign.priority .. ")")
+        local priority_info = rawget(sign, 'priority') and (" (Priorität: " .. rawget(sign, 'priority') .. ")")
           or " (keine Priorität)"
         print(
           "  "
@@ -450,7 +450,7 @@ cmd("PerformanceDiagnosticTest", function()
     print("  " .. icons.status.success .. " Performance-System im Standard-Modus - keine Konflikte")
   end
 
-  if not config.virtual_text then
+  if not (config and config.virtual_text) then
     print("  " .. icons.status.error .. " KRITISCHES PROBLEM: Virtual Text ist deaktiviert!")
     print("    → Das ist wahrscheinlich die Ursache für verschwindende Meldungen")
   else
@@ -461,7 +461,7 @@ cmd("PerformanceDiagnosticTest", function()
     )
   end
 
-  if not config.signs then
+  if not (config and config.signs) then
     print("  " .. icons.status.error .. " KRITISCHES PROBLEM: Signs sind deaktiviert!")
     print("    → Icons in der Signcolumn werden nicht angezeigt")
   else
@@ -477,7 +477,7 @@ cmd("PerformanceDiagnosticTest", function()
   print(".. icons.misc.flash .. ")
   local has_priorities = false
   for _, sign in ipairs(sign_groups) do
-    if sign.name and sign.name:match("Diagnostic") and sign.priority then
+    if sign.name and sign.name:match("Diagnostic") and rawget(sign, 'priority') then
       has_priorities = true
       break
     end
@@ -509,13 +509,13 @@ end, {
 
 -- Bufferline Diagnostic Icons Test (NEU - Bufferline Integration)
 cmd("BufferlineDiagnosticTest", function()
-  local icons = require("core.icons")
+  -- Use global icons from top of file
 
   print(".. icons.status.stats .. " .. icons.status.success .. " Bufferline Diagnostic Icons Test:")
   print("")
 
   -- Bufferline Konfiguration prüfen
-  local bufferline_ok, bufferline = pcall(require, "bufferline")
+  local bufferline_ok, _ = pcall(require, "bufferline")
   if not bufferline_ok then
     print(".. icons.status.error .. ")
     return
@@ -854,7 +854,7 @@ end, {
 })
 
 cmd("VelocityHealth", function()
-  vim.cmd("checkhealth velocitynvim")
+  vim.api.nvim_command("checkhealth velocitynvim")
 end, {
   desc = "Run VelocityNvim health check",
 })
@@ -891,7 +891,7 @@ end, {
 cmd("RustAnalyzeEcosystem", function()
   local rust_perf = require("utils.rust-performance")
   local analysis = rust_perf.analyze_rust_ecosystem()
-  local icons = require("core.icons")
+  -- Use global icons from top of file
 
   print(icons.performance.benchmark .. " Rust Ecosystem Analysis:")
   print("  " .. icons.misc.gear .. " CPU: " .. analysis.toolchain.cpu_target)
@@ -937,8 +937,8 @@ end, {
 
 -- Color Highlighting Commands
 cmd("ColorizerStatus", function()
-  local icons = require("core.icons")
-  local ok, colorizer = pcall(require, "colorizer")
+  -- Use global icons from top of file
+  local ok, _ = pcall(require, "colorizer")
   if ok then
     print(icons.status.success .. " nvim-colorizer.lua: Aktiv und bereit!")
     print(icons.misc.info .. " Unterstützte Formate: #RGB, #RRGGBB, rgb(), hsl(), CSS-Namen")
@@ -1052,7 +1052,7 @@ end, {
 
 -- Development Commands
 cmd("EditConfig", function()
-  vim.cmd("edit " .. vim.fn.stdpath("config") .. "/init.lua")
+  vim.api.nvim_command("edit " .. vim.fn.stdpath("config") .. "/init.lua")
 end, {
   desc = "Open init.lua",
 })
@@ -1066,7 +1066,7 @@ cmd("ReloadConfig", function()
   end
 
   -- Reload configuration
-  vim.cmd("source " .. vim.fn.stdpath("config") .. "/init.lua")
+  vim.api.nvim_command("source " .. vim.fn.stdpath("config") .. "/init.lua")
   vim.notify(icons.status.sync .. " Konfiguration neu geladen", vim.log.levels.INFO)
 end, {
   desc = "Reload Neovim configuration",
@@ -1083,7 +1083,7 @@ end, {
 cmd("GitStatus", function()
   local utils = require("utils")
   if utils.git().is_available() then
-    vim.cmd("FzfLua git_status")
+    vim.api.nvim_command("FzfLua git_status")
   else
     utils.notify("Git is not available", vim.log.levels.ERROR)
   end
@@ -1094,7 +1094,7 @@ end, {
 cmd("GitLog", function()
   local utils = require("utils")
   if utils.git().is_available() then
-    vim.cmd("FzfLua git_commits")
+    vim.api.nvim_command("FzfLua git_commits")
   else
     utils.notify("Git is not available", vim.log.levels.ERROR)
   end
