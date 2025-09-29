@@ -94,19 +94,24 @@ ARCH_INSTALLATION.md
 TEST_*.md
 
 # Performance benchmarks (machine-specific, not for repository)
-BENCHMARKS.md
+# BENCHMARKS.md - NOW PUBLIC FOR SEO
 
 # Internal debugging reports (development only)
 DEBUG_*.md
 *_DEBUG.md
 debug-*.md
-DEBUGGING.md
+# DEBUGGING.md - NOW PUBLIC FOR SEO
 
 # NvChad LSP system documentation (internal analysis only)
 docs/NVCHAD_LSP_COMPLETE_ARCHITECTURE.md
 
 # New specialized documentation files (development only, not for public release)
-docs/PLUGINS.md
+# docs/PLUGINS.md - NOW PUBLIC FOR SEO
 docs/DEVELOPMENT.md
 docs/ARCHITECTURE-DETAILS.md
 docs/SOLUTIONS.md
+
+# SEO strategy files (keep private - internal planning)
+SEO_OPTIMIZATION_RECOMMENDATIONS.md
+GOOGLE_SEARCH_CONSOLE_SETUP.md
+URL_SUBMISSION_CHECKLIST.md

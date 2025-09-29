@@ -14,7 +14,7 @@ Allow: /.github/
 Disallow: /.git/
 
 # Sitemap location
-Sitemap: https://github.com/Maik-0000FF/VelocityNvim/blob/main/sitemap.xml
+Sitemap: https://maik-0000ff.github.io/VelocityNvim/sitemap.xml
 
 # Repository information for crawlers
 # Project: VelocityNvim

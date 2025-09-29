@@ -1,0 +1,37 @@
+name: SEO Automation
+on:
+  push:
+    branches: [ main ]
+  release:
+    types: [ published ]
+
+jobs:
+  update-sitemap-and-submit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Update sitemap timestamp
+        run: |
+          sed -i "s/<lastmod>.*<\/lastmod>/<lastmod>$(date +%Y-%m-%d)<\/lastmod>/g" sitemap.xml
+
+      - name: Commit updated sitemap
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add sitemap.xml
+          git diff --staged --quiet || git commit -m "Auto-update sitemap timestamps"
+          git push
+
+      - name: Submit sitemap to Google
+        run: |
+          curl -s "https://www.google.com/ping?sitemap=https://maik-0000ff.github.io/VelocityNvim/sitemap.xml"
+
+      - name: Submit sitemap to Bing
+        run: |
+          curl -s "https://www.bing.com/ping?sitemap=https://maik-0000ff.github.io/VelocityNvim/sitemap.xml"
+
+      - name: Manual indexing requests
+        run: |
+          echo "Auto-submitted sitemap to search engines on $(date)"
