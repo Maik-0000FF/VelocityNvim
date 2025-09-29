@@ -4,3 +4,4 @@ Date,Time,Version,System,Neovim_Version,API_Level,Cold_Startup_s,Warm_Startup_s,
 2025-09-25,15:09,1.0.0,Linux 6.16.8-arch3-1,0.11.4,13,0.750,0.695,0.720,6.534,6.534,2.568,0.195,Unknown,24,post_optimization,Modern LSP API + MyNvim optimizations with parallel worker pool system
 2025-09-29,11:51,1.0.0,Linux 6.16.8-arch3-1,0.11.4,13,0.631,0.758,0.675,13.437,13.437,3,2.8,0.746,24,lsp_debugging_fix,LSP warnings eliminated - type conversion and unused variable fixes
 2025-09-29,12:39,1.0.0,Linux 6.16.8-arch3-1,0.11.4,13,0.567,0.639,0.603,6.103,6.103,3,2.9,0.705,24,commands_lsp_cleanup,commands.lua LSP cleanup - 25 warnings eliminated
+2025-09-29,13:11,1.0.0,Linux 6.16.8-arch3-1,0.11.4,13,0.564,0.620,0.597,1.160,1.160,3,2.9,0.722,24,first_run_lsp_cleanup,first-run.lua LSP cleanup - 15 warnings eliminated + DEBUGGING.md methodology

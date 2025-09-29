@@ -36,10 +36,10 @@ local function create_progress_ui()
 
   -- Create dedicated buffer for progress
   state.ui_buffer = vim.api.nvim_create_buf(false, true)
-  vim.api.nvim_buf_set_option(state.ui_buffer, 'bufhidden', 'wipe')
-  vim.api.nvim_buf_set_option(state.ui_buffer, 'buftype', 'nofile')
-  vim.api.nvim_buf_set_option(state.ui_buffer, 'swapfile', false)
-  vim.api.nvim_buf_set_option(state.ui_buffer, 'modifiable', false)
+  vim.bo[state.ui_buffer].bufhidden = 'wipe'
+  vim.bo[state.ui_buffer].buftype = 'nofile'
+  vim.bo[state.ui_buffer].swapfile = false
+  vim.bo[state.ui_buffer].modifiable = false
 
   -- Create centered floating window (wider for progress bars)
   local width = 90
@@ -60,9 +60,9 @@ local function create_progress_ui()
   })
 
   -- Set window options
-  vim.api.nvim_win_set_option(state.ui_window, 'cursorline', false)
-  vim.api.nvim_win_set_option(state.ui_window, 'number', false)
-  vim.api.nvim_win_set_option(state.ui_window, 'relativenumber', false)
+  vim.wo[state.ui_window].cursorline = false
+  vim.wo[state.ui_window].number = false
+  vim.wo[state.ui_window].relativenumber = false
 end
 
 -- STABLE progress update - no race conditions
@@ -111,12 +111,12 @@ local function update_progress_ui(message, phase_progress)
   end
 
   -- Update buffer content atomically
-  vim.api.nvim_buf_set_option(state.ui_buffer, 'modifiable', true)
+  vim.bo[state.ui_buffer].modifiable = true
   vim.api.nvim_buf_set_lines(state.ui_buffer, 0, -1, false, lines)
-  vim.api.nvim_buf_set_option(state.ui_buffer, 'modifiable', false)
+  vim.bo[state.ui_buffer].modifiable = false
 
   -- Force redraw only once
-  vim.cmd('redraw')
+  vim.api.nvim_command('redraw')
 end
 
 -- Clean up UI
@@ -394,7 +394,7 @@ local function phase_health(callback)
 
   -- Run health check asynchronously
   vim.defer_fn(function()
-    local health_results = {}
+    local _ = {}  -- Health results collection placeholder
 
     -- Capture health check results
     local success = pcall(function()
@@ -455,10 +455,10 @@ local function phase_welcome(callback)
 
       -- Update UI with final summary
       if state.ui_buffer and vim.api.nvim_buf_is_valid(state.ui_buffer) then
-        vim.api.nvim_buf_set_option(state.ui_buffer, 'modifiable', true)
+        vim.bo[state.ui_buffer].modifiable = true
         vim.api.nvim_buf_set_lines(state.ui_buffer, 0, -1, false, summary_lines)
-        vim.api.nvim_buf_set_option(state.ui_buffer, 'modifiable', false)
-        vim.cmd('redraw')
+        vim.bo[state.ui_buffer].modifiable = false
+        vim.api.nvim_command('redraw')
       end
 
       -- Wait for user input or timeout
@@ -473,7 +473,7 @@ local function phase_welcome(callback)
 
         -- Auto-exit after delay
         vim.defer_fn(function()
-          vim.cmd("qall!")
+          vim.api.nvim_command("qall!")
         end, 2000)
       end, 3000)
     end, 800)
@@ -562,7 +562,7 @@ function M.quick_check()
     local pack_dir = vim.fn.stdpath("data") .. "/site/pack/user/start/"
     local missing = false
 
-    for name, url in pairs(manage.plugins) do
+    for name, _ in pairs(manage.plugins) do
       if vim.fn.isdirectory(pack_dir .. name) == 0 then
         missing = true
         break
