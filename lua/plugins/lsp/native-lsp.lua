@@ -805,7 +805,7 @@ local function scan_workspace_files(client)
     end
 
     -- Launch all workers in parallel
-    for i = 1, max_workers do
+    for _ = 1, max_workers do
       vim.schedule(process_next_file)
     end
   end)

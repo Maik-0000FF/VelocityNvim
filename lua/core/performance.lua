@@ -1,4 +1,3 @@
-local icons = require("core.icons")
 -- ~/core/performance.lua
 -- ULTIMATE Performance Mode - Cursor-responsive wie reines Neovim
 
@@ -16,7 +15,7 @@ local function disable_ui_updates()
   if performance_mode.ultra_active then return end
 
   performance_mode.ultra_active = true
-  performance_mode.original_updatetime = vim.opt.updatetime:get()
+  performance_mode.original_updatetime = vim.o.updatetime
 
   -- Drastisch reduzierte Update-Frequenz während Navigation
   vim.opt.updatetime = 2000  -- 2 Sekunden statt 250ms
@@ -79,7 +78,7 @@ end
 function M.status()
   return {
     ultra_active = performance_mode.ultra_active,
-    updatetime = vim.opt.updatetime:get(),
+    updatetime = vim.o.updatetime,
     original_updatetime = performance_mode.original_updatetime,
   }
 end
@@ -88,10 +87,10 @@ end
 function M.toggle()
   if performance_mode.ultra_active then
     enable_ui_updates()
-    print(".. icons.misc.flash .. ")
+    print("Ultra Performance Mode DEAKTIVIERT")
   else
     disable_ui_updates()
-    print(".. icons.status.rocket .. ")
+    print("Ultra Performance Mode AKTIVIERT")
   end
 end
 

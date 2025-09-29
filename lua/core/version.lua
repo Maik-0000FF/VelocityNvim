@@ -31,8 +31,8 @@ function M.get_nvim_version()
   local api_level = "Unknown"
   if vim.api.nvim__api_info then
     local ok, api_info = pcall(vim.api.nvim__api_info)
-    if ok and api_info then
-      api_level = api_info.api_level
+    if ok and api_info and api_info.api_level then
+      api_level = tostring(api_info.api_level)
     end
   end
 
@@ -362,7 +362,7 @@ function M.print_version_info()
   local nvim_ver = M.get_nvim_version()
   local compat, compat_msg = M.check_nvim_compatibility()
 
-  local icons = require("core.icons")
+  -- Use global icons from top of file
   print(icons.status.rocket .. " " .. M.config_name .. " Version Information:")
   print("  Configuration: " .. M.config_version .. " (updated " .. M.last_updated .. ")")
   print("  Author: " .. M.config_author)
@@ -427,7 +427,7 @@ function M.init()
   local change_type = M.check_version_change()
 
   if change_type == "upgrade" then
-    local stored = M.get_stored_version()
+    local _ = M.get_stored_version()  -- Version check, result unused
 
     vim.defer_fn(function()
       vim.notify(
