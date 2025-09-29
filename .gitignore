@@ -84,8 +84,8 @@ CLAUDE.md
 *debug*.log
 VIDEO-GUIDE.md
 
-# Internal documentation (not for public release)
-GITHUB-SETUP.md
+# Internal setup and deployment documentation (not for public release)
+setup/
 docs/EMOJI_POLICY.md
 
 # Test and installation documentation (not for repository)
@@ -112,6 +112,4 @@ docs/ARCHITECTURE-DETAILS.md
 docs/SOLUTIONS.md
 
 # SEO strategy files (keep private - internal planning)
-SEO_OPTIMIZATION_RECOMMENDATIONS.md
-GOOGLE_SEARCH_CONSOLE_SETUP.md
-URL_SUBMISSION_CHECKLIST.md
+seo/strategy/
