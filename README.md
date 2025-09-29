@@ -1,3 +1,5 @@
+<meta name="google-site-verification" content="8XRpBMC4x_PDgBgZKLyXT5EqzicJxIhRm9qNUoBZUHM" />
+
 # VelocityNvim ⚡ - Fastest Native vim.pack Neovim Distribution
 
 > **Zero Plugin Manager Required** | **0.16s Startup Time** | **Modern LSP Integration** | **Rust-Powered Performance**
