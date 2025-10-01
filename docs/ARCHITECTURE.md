@@ -250,7 +250,8 @@ M.plugins = {
   ["blink.cmp"] = "https://github.com/Saghen/blink.cmp",
   ["fzf-lua"] = "https://github.com/ibhagwan/fzf-lua",
   ["gitsigns.nvim"] = "https://github.com/lewis6991/gitsigns.nvim",
-  -- ... 24 total plugins
+  ["vim-startuptime"] = "https://github.com/dstein64/vim-startuptime",
+  -- ... 25 total plugins
 }
 ```
 
@@ -747,7 +748,7 @@ end
 - **Architecture**: Native vim.pack based, modular and maintainable
 - **NEW Features**: Modern vim.lsp.config API, global LSP configuration, NvChad-inspired optimizations
 - **Performance**: Semantic tokens disabled, enhanced capabilities, Rust-optimized components
-- **Plugin Collection**: 24 carefully selected plugins for complete IDE experience
+- **Plugin Collection**: 25 carefully selected plugins for complete IDE experience
 - **Quality**: Comprehensive health checks and error handling
 - **Documentation**: Complete architecture and development guidelines
 - **Compatibility**: Neovim 0.11+ with cross-platform support
@@ -760,11 +761,11 @@ end
    - Clean directory structure for easy maintenance
 
 2. **Plugin Collection**: Comprehensive
-   - 24 carefully selected plugins covering all IDE needs
+   - 25 carefully selected plugins covering all IDE needs
    - UI: alpha, bufferline, lualine, tokyonight, noice, nvim-colorizer
    - Editor: treesitter, neo-tree, which-key, hop, mini-pairs, german-chars
    - LSP: native-lsp, blink.cmp with Rust optimization, lsp-debug
-   - Tools: gitsigns, conform, fzf-lua, suda
+   - Tools: gitsigns, conform, fzf-lua, suda, vim-startuptime
    - Specialized: render-markdown, window-picker, hlchunk
 
 3. **Performance**: Optimized

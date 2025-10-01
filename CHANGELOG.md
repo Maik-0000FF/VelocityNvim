@@ -13,7 +13,7 @@
 - Modern LSP integration with vim.lsp.config API (Neovim 0.11+)
 - Rust-powered performance tools (fzf, ripgrep, delta)
 - 0.16s average startup time
-- 24 curated plugins for complete IDE experience
+- 25 curated plugins for complete IDE experience
 - Cross-platform support (Linux, macOS, WSL2)
 
 ### 🔧 **Technical Improvements**

@@ -50,15 +50,15 @@ done
 
 # Berechne Cold (1-3) und Warm (4-5) Durchschnitte
 COLD_SUM=$(echo "${STARTUP_TIMES[0]} + ${STARTUP_TIMES[1]} + ${STARTUP_TIMES[2]}" | bc)
-COLD_AVG=$(echo "scale=3; $COLD_SUM / 3 / 1000" | bc) # Convert to seconds
+COLD_AVG=$(echo "scale=3; $COLD_SUM / 3 / 1000" | bc -l | awk '{printf "%.3f", $0}')
 echo -e "${GREEN}✓${NC} Cold Avg (Runs 1-3): ${COLD_AVG}s"
 
 WARM_SUM=$(echo "${STARTUP_TIMES[3]} + ${STARTUP_TIMES[4]}" | bc)
-WARM_AVG=$(echo "scale=3; $WARM_SUM / 2 / 1000" | bc) # Convert to seconds
+WARM_AVG=$(echo "scale=3; $WARM_SUM / 2 / 1000" | bc -l | awk '{printf "%.3f", $0}')
 echo -e "${GREEN}✓${NC} Warm Avg (Runs 4-5): ${WARM_AVG}s"
 
 OVERALL_SUM=$(echo "$COLD_SUM + $WARM_SUM" | bc)
-OVERALL_AVG=$(echo "scale=3; $OVERALL_SUM / 5 / 1000" | bc) # Convert to seconds
+OVERALL_AVG=$(echo "scale=3; $OVERALL_SUM / 5 / 1000" | bc -l | awk '{printf "%.3f", $0}')
 echo -e "${GREEN}✓${NC} Overall Avg: ${OVERALL_AVG}s"
 
 echo

@@ -125,6 +125,14 @@ Diese Datei dokumentiert alle Plugin-Interdependenzen in VelocityNvim zur besser
 - Keine Plugin-Dependencies
 - Nutzt native Vim-Commands (:w, :e)
 
+### vim-startuptime (Performance Profiling)
+**Abhängigkeiten:** Keine
+**Interaktionen:**
+- Integriert mit Dashboard (`:StartupTime` / `b` key)
+- Nutzt natives `--startuptime` Flag
+- Unabhängiges Profiling-Tool
+- Commands: `:StartupTime`, `:BenchmarkStartup`
+
 ### hop.nvim (Cursor Navigation)
 **Abhängigkeiten:** Keine (Pure Lua Implementation)
 **Optionale Integrationen:**
@@ -197,6 +205,7 @@ Native LSP → conform.nvim → Formatting-Fallback
 3. `conform.nvim` (Formatting)
 4. `gitsigns.nvim` (Git-Integration)
 5. `suda.vim` (Sudo-Editing)
+6. `vim-startuptime` (Performance Profiling)
 
 ### Phase 5: UI Polish
 1. `alpha-nvim` (Dashboard)

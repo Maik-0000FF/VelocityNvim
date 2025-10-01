@@ -360,7 +360,7 @@ rm -rf plugin       # Remove
 
 | Component           | Implementation               | Characteristics                     |
 | ------------------- | ---------------------------- | ----------------------------------- |
-| **Startup Time**    | ~0.5s avg (~0.16s warm)     | Solid performance with 24 plugins  |
+| **Startup Time**    | ~0.17s avg                   | Solid performance with 25 plugins  |
 | **Plugin Loading**  | Direct vim.pack integration  | No additional abstraction layers    |
 | **LSP Performance** | Modern vim.lsp.config API    | Global configuration, optimized    |
 | **Memory Usage**    | Optimized settings           | Efficient resource utilization      |
@@ -562,6 +562,7 @@ VelocityNvim integrates carefully selected plugins from talented developers:
 - [conform.nvim](https://github.com/stevearc/conform.nvim) by **@stevearc** - Code formatting
 - [gitsigns.nvim](https://github.com/lewis6991/gitsigns.nvim) by **@lewis6991** - Git integration
 - [hlchunk.nvim](https://github.com/shellRaining/hlchunk.nvim) by **@shellRaining** - Code block highlighting
+- [vim-startuptime](https://github.com/dstein64/vim-startuptime) by **@dstein64** - Startup profiling
 
 **Navigation & Utilities:**
 

@@ -39,7 +39,7 @@
 - **Efficient memory usage** - No plugin manager memory footprint
 
 ### **Developer Experience**
-- **24 curated plugins** - Complete IDE experience out of the box
+- **25 curated plugins** - Complete IDE experience out of the box
 - **Professional documentation** - Comprehensive guides and troubleshooting
 - **Health monitoring** - `:VelocityHealth` for system diagnostics
 - **Cross-platform** - Linux, macOS, WSL2 support

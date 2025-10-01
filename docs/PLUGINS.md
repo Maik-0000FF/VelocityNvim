@@ -487,6 +487,107 @@ formatters = {
 
 ---
 
+### vim-startuptime Implementation - Startup Profiling & Benchmarking
+
+**Problem**: Schwierig, Plugin-spezifische Startup-Performance zu analysieren und Bottlenecks zu identifizieren.
+
+**Lösung**: `vim-startuptime` - Detailliertes Startup-Profiling mit interaktivem UI.
+
+#### Warum vim-startuptime gewählt wurde:
+- ✅ **Detaillierte Plugin-Breakdown** - Zeigt exakte Ladezeiten pro Plugin
+- ✅ **Interactive UI** - Navigierbare Ansicht mit Sortierung
+- ✅ **Native Integration** - Nutzt Neovims `--startuptime` Flag
+- ✅ **Dashboard Integration** - Direkt aus Alpha Dashboard aufrufbar
+- ✅ **No Dependencies** - Standalone Profiling-Tool
+- ✅ **Keyboard Navigation** - Press `K` für Details, `gf` für Source-Files
+
+#### Installation & Konfiguration:
+```lua
+-- lua/plugins/manage.lua
+M.plugins["vim-startuptime"] = "https://github.com/dstein64/vim-startuptime"
+
+-- lua/plugins/tools/vim-startuptime.lua
+local M = {}
+
+function M.setup()
+  local icons = require("core.icons")
+
+  -- Command für schnellen Zugriff
+  vim.api.nvim_create_user_command("BenchmarkStartup", function()
+    vim.cmd("StartupTime")
+  end, {
+    desc = "Analyze VelocityNvim startup performance (detailed plugin breakdown)",
+  })
+
+  -- Keybinding
+  vim.keymap.set("n", "<leader>bs", "<cmd>StartupTime<CR>", {
+    desc = icons.status.stats .. " Startup Benchmark",
+    silent = true,
+  })
+end
+
+return M
+```
+
+#### Dashboard Integration:
+```lua
+-- lua/plugins/ui/alpha.lua - Button hinzufügen
+dashboard.button("b", icons.performance.benchmark .. " Startup Benchmark", "<cmd>StartupTime<CR>"),
+```
+
+#### Native Startup Tracking:
+```lua
+-- init.lua - Für präzise Zeitmessung
+vim.g.velocitynvim_start_time = vim.loop.hrtime()
+
+-- Dashboard Footer - Startup-Zeit anzeigen
+local startup_time = "N/A"
+if vim.g.velocitynvim_start_time then
+  local elapsed_ns = vim.loop.hrtime() - vim.g.velocitynvim_start_time
+  local elapsed_ms = elapsed_ns / 1000000
+  startup_time = string.format("%.2fms", elapsed_ms)
+end
+```
+
+#### Keybindings:
+- `<leader>bs` - Open startup profiler
+- Dashboard `b` key - Quick access
+- `:StartupTime` - Main command
+- `:BenchmarkStartup` - Alias command
+
+#### Usage Examples:
+```vim
+" Detaillierte Plugin-Analyse
+:StartupTime
+
+" Keyboard navigation in UI:
+" K - Show event details
+" gf - Open source file in split
+" Sortierung nach Zeit verfügbar
+```
+
+#### Performance Analysis Workflow:
+1. **Baseline messen**: `:StartupTime` nach Installation
+2. **Plugin hinzufügen**: Neue Plugins installieren
+3. **Vergleich**: Erneut `:StartupTime` ausführen
+4. **Optimieren**: Langsame Plugins identifizieren
+5. **Dokumentieren**: Ergebnisse in benchmark_results.csv
+
+#### Integration mit Benchmark System:
+```bash
+# Automatisiertes Benchmarking
+./scripts/collect_benchmark_data.sh
+
+# Sammelt automatisch:
+# - Native startup time (hrtime-basiert)
+# - Plugin count
+# - Memory usage
+# - LSP performance
+# - Alle 16 CSV-Metriken
+```
+
+---
+
 ## 📋 **COMMANDS REFERENCE**
 
 ### Health & Diagnostics
@@ -510,6 +611,12 @@ formatters = {
 - `:LuaLibraryStatus` - Show Lua library optimization metrics (75% faster startup!)
 - `:DiagnosticTest` - Show diagnostic icons configuration and navigation shortcuts
 - `:FormatInfo` - Show formatter status
+
+### Performance & Benchmarking (NEW - 2025-10-01)
+- `:StartupTime` - Detailed plugin-by-plugin startup analysis
+- `:BenchmarkStartup` - Alias for `:StartupTime`
+- `<leader>bs` - Quick access to startup profiler
+- Dashboard `b` key - Launch benchmark from dashboard
 
 ### Window Management (NEW - 2025-08-31)
 - `<leader>wp` - **Pick Window** (interaktive Auswahl mit großen Buchstaben)
