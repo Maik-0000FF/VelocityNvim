@@ -288,11 +288,85 @@
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(0,0,0,0.3);
         }
+        .support-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 25px;
+        }
+        .support-item {
+            background: rgba(255,255,255,0.15);
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            transition: all 0.3s;
+            border: 2px solid rgba(255,255,255,0.2);
+        }
+        .support-item:hover {
+            background: rgba(255,255,255,0.25);
+            transform: translateY(-3px);
+        }
+        .support-item .emoji {
+            font-size: 2.5em;
+            display: block;
+            margin-bottom: 10px;
+        }
+        .support-item h3 {
+            color: white;
+            font-size: 1.1em;
+            margin: 10px 0;
+            border: none;
+            padding: 0;
+        }
+        .support-item p {
+            font-size: 0.9em;
+            opacity: 0.95;
+            margin: 0;
+        }
+        .support-item a {
+            color: white;
+            text-decoration: none;
+        }
+        .lang-switch {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        .lang-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.3);
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s;
+        }
+        .lang-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        .lang-btn.active {
+            background: rgba(255,255,255,0.9);
+            color: #0366d6;
+            font-weight: 600;
+        }
+        .lang-content {
+            display: none;
+        }
+        .lang-content.active {
+            display: block;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="header">
+        <div class="header" style="position: relative;">
+            <div class="lang-switch">
+                <button class="lang-btn active" onclick="switchLanguage('de')">🇩🇪 DE</button>
+                <button class="lang-btn" onclick="switchLanguage('en')">🇬🇧 EN</button>
+            </div>
             <h1>VelocityNvim</h1>
             <p class="subtitle">Native vim.pack Neovim Distribution</p>
         </div>
@@ -374,21 +448,118 @@ source ~/.bashrc</code>
                 </div>
             </div>
 
-            <div class="donation-section">
+            <!-- German Donation Section -->
+            <div class="donation-section lang-content de active">
+                <h2>☕ Unterstütze VelocityNvim</h2>
+                <p style="font-size: 1.1em; margin-bottom: 10px;">
+                    Wenn dir VelocityNvim gefällt, unterstütze das Projekt!
+                </p>
+
+                <div class="support-grid">
+                    <div class="support-item">
+                        <span class="emoji">₿</span>
+                        <h3>Bitcoin Spende</h3>
+                        <p>Unterstütze mit Kryptowährung</p>
+                        <div class="bitcoin-address" style="margin-top: 15px; font-size: 0.75em;">
+                            bc1q6gmpgfn4wx2hx2c3njgpep9tl00etma9k7w6d4
+                        </div>
+                    </div>
+
+                    <div class="support-item">
+                        <a href="https://github.com/Maik-0000FF/VelocityNvim">
+                            <span class="emoji">⭐</span>
+                            <h3>Repository starren</h3>
+                            <p>Zeig deine Wertschätzung</p>
+                        </a>
+                    </div>
+
+                    <div class="support-item">
+                        <a href="https://github.com/Maik-0000FF/VelocityNvim/issues">
+                            <span class="emoji">🐛</span>
+                            <h3>Bugs melden</h3>
+                            <p>Hilf Fehler zu finden</p>
+                        </a>
+                    </div>
+
+                    <div class="support-item">
+                        <a href="https://github.com/Maik-0000FF/VelocityNvim/fork">
+                            <span class="emoji">🤝</span>
+                            <h3>Code beitragen</h3>
+                            <p>Pull Requests willkommen</p>
+                        </a>
+                    </div>
+
+                    <div class="support-item">
+                        <span class="emoji">📢</span>
+                        <h3>Projekt teilen</h3>
+                        <p>Erzähl anderen davon</p>
+                    </div>
+
+                    <div class="support-item">
+                        <a href="https://github.com/Maik-0000FF/VelocityNvim/blob/main/README.md">
+                            <span class="emoji">📖</span>
+                            <h3>Docs verbessern</h3>
+                            <p>Dokumentation erweitern</p>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- English Donation Section -->
+            <div class="donation-section lang-content en">
                 <h2>☕ Support VelocityNvim</h2>
-                <p style="font-size: 1.1em; margin-bottom: 20px;">
-                    Wenn dir VelocityNvim gefällt, unterstütze die Entwicklung mit Bitcoin!
+                <p style="font-size: 1.1em; margin-bottom: 10px;">
+                    If you like VelocityNvim, support the project!
                 </p>
-                <div class="bitcoin-address">
-                    bc1q6gmpgfn4wx2hx2c3njgpep9tl00etma9k7w6d4
+
+                <div class="support-grid">
+                    <div class="support-item">
+                        <span class="emoji">₿</span>
+                        <h3>Bitcoin Donation</h3>
+                        <p>Support with cryptocurrency</p>
+                        <div class="bitcoin-address" style="margin-top: 15px; font-size: 0.75em;">
+                            bc1q6gmpgfn4wx2hx2c3njgpep9tl00etma9k7w6d4
+                        </div>
+                    </div>
+
+                    <div class="support-item">
+                        <a href="https://github.com/Maik-0000FF/VelocityNvim">
+                            <span class="emoji">⭐</span>
+                            <h3>Star Repository</h3>
+                            <p>Show your appreciation</p>
+                        </a>
+                    </div>
+
+                    <div class="support-item">
+                        <a href="https://github.com/Maik-0000FF/VelocityNvim/issues">
+                            <span class="emoji">🐛</span>
+                            <h3>Report Bugs</h3>
+                            <p>Help find issues</p>
+                        </a>
+                    </div>
+
+                    <div class="support-item">
+                        <a href="https://github.com/Maik-0000FF/VelocityNvim/fork">
+                            <span class="emoji">🤝</span>
+                            <h3>Contribute Code</h3>
+                            <p>Pull requests welcome</p>
+                        </a>
+                    </div>
+
+                    <div class="support-item">
+                        <span class="emoji">📢</span>
+                        <h3>Share Project</h3>
+                        <p>Tell others about it</p>
+                    </div>
+
+                    <div class="support-item">
+                        <a href="https://github.com/Maik-0000FF/VelocityNvim/blob/main/README.md">
+                            <span class="emoji">📖</span>
+                            <h3>Improve Docs</h3>
+                            <p>Enhance documentation</p>
+                        </a>
+                    </div>
                 </div>
-                <div class="donation-buttons">
-                    <a href="bitcoin:bc1q6gmpgfn4wx2hx2c3njgpep9tl00etma9k7w6d4" class="donate-btn">🔗 Bitcoin Wallet öffnen</a>
-                    <a href="https://github.com/Maik-0000FF/VelocityNvim" class="donate-btn">⭐ Repository starren</a>
-                </div>
-                <p style="margin-top: 20px; font-size: 0.95em; opacity: 0.9;">
-                    Andere Unterstützungsmöglichkeiten: Issues melden, Code beitragen, oder das Projekt teilen!
-                </p>
             </div>
 
             <h2>Links</h2>
@@ -421,6 +592,44 @@ source ~/.bashrc</code>
             // Add active class to clicked tab
             event.target.classList.add('active');
         }
+
+        function switchLanguage(lang) {
+            // Hide all language content
+            const langContents = document.querySelectorAll('.lang-content');
+            langContents.forEach(content => content.classList.remove('active'));
+
+            // Remove active class from all language buttons
+            const langBtns = document.querySelectorAll('.lang-btn');
+            langBtns.forEach(btn => btn.classList.remove('active'));
+
+            // Show selected language content
+            const selectedContents = document.querySelectorAll('.lang-content.' + lang);
+            selectedContents.forEach(content => content.classList.add('active'));
+
+            // Add active class to clicked button
+            event.target.classList.add('active');
+
+            // Save language preference
+            localStorage.setItem('velocityLang', lang);
+        }
+
+        // Load saved language preference on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedLang = localStorage.getItem('velocityLang');
+            if (savedLang && savedLang === 'en') {
+                // Simulate click on English button
+                const enBtn = document.querySelector('.lang-btn:not(.active)');
+                if (enBtn) {
+                    // Hide German content
+                    document.querySelectorAll('.lang-content.de').forEach(el => el.classList.remove('active'));
+                    // Show English content
+                    document.querySelectorAll('.lang-content.en').forEach(el => el.classList.add('active'));
+                    // Update buttons
+                    document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+                    enBtn.classList.add('active');
+                }
+            }
+        });
     </script>
 </body>
 </html>
