@@ -15,7 +15,7 @@
 [![Startup Time](https://img.shields.io/badge/Startup-~0.16s-brightgreen.svg)](#-performance-characteristics)
 [![Plugin Manager](https://img.shields.io/badge/Plugin_Manager-None_Required-red.svg)](#-native-architecture-benefits)
 [![Native vim.pack](https://img.shields.io/badge/Architecture-Native_vim.pack-brightgreen.svg)](#-native-architecture-benefits)
-[![LSP](https://img.shields.io/badge/LSP-vim.lsp.config_API-blue.svg)](#-modern-lsp-integration)
+[![LSP](https://img.shields.io/badge/LSP-vim.lsp.config_API-blue.svg)](#-new-in-modern-lsp-performance-edition-v100)
 [![Status](https://img.shields.io/badge/Status-Stable_Beta-blue.svg)](#-testing--quality)
 [![Rust Powered](https://img.shields.io/badge/Performance-Rust_Powered-orange.svg)](#-performance-characteristics)
 
@@ -479,11 +479,11 @@ sudo pacman -S fzf ripgrep fd git-delta ruff # Arch Linux
 
 ## 📖 Documentation
 
-- **[Architecture Guide](docs/ARCHITECTURE.md)** - Technical deep dive
-- **[Native Advantages](docs/NATIVE-ADVANTAGES.md)** - vim.pack benefits
-- **[Migration Guide](docs/MIGRATION.md)** - Moving from other distributions
-- **[Plugin Development](docs/PLUGINS.md)** - Adding custom plugins
-- **[Troubleshooting](docs/TROUBLESHOOTING.md)** - Common issues
+- **[Architecture Details](docs/ARCHITECTURE-DETAILS.md)** - Complete system architecture and technical details
+- **[Plugin Management](docs/PLUGINS.md)** - Advanced plugin solutions and management
+- **[Development Guide](docs/DEVELOPMENT.md)** - Development workflow and guidelines
+- **[Debugging & Troubleshooting](docs/DEBUGGING.md)** - Performance issues and solutions
+- **[Benchmarks & Testing](docs/BENCHMARKS.md)** - Performance testing and benchmarks
 
 ## 🤝 Contributing
 
