@@ -10,6 +10,8 @@
 # Sicherheitsrelevante Konfigurationen
 /.github/CODEOWNERS @Maik-0000FF
 /.github/workflows/*.yml @Maik-0000FF
+/.gitignore @Maik-0000FF
+/SECURITY.md @Maik-0000FF
 
 # Core-Konfiguration
 /lua/core/version.lua @Maik-0000FF
