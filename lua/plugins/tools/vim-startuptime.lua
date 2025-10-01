@@ -8,7 +8,7 @@ function M.setup()
 
   -- Command für schnellen Zugriff auf detaillierte Startup-Analyse
   vim.api.nvim_create_user_command("BenchmarkStartup", function()
-    vim.cmd("StartupTime")
+    vim.cmd.StartupTime()
   end, {
     desc = "Analyze VelocityNvim startup performance (detailed plugin breakdown)",
   })
