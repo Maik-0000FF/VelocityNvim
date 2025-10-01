@@ -15,6 +15,7 @@ dashboard.section.buttons.val = {
   dashboard.button("t", icons.misc.folder .. " Neo-tree", "<cmd>Neotree reveal<CR>"),
   dashboard.button("c", icons.status.gear .. " Configuration", "<cmd>e $MYVIMRC<CR>"),
   dashboard.button("I", icons.status.info .. " Info & Version", "<cmd>VelocityInfo<CR>"),
+  dashboard.button("b", icons.performance.benchmark .. " Startup Benchmark", "<cmd>StartupTime<CR>"),
   dashboard.button("h", icons.status.health .. " Health Check", "<cmd>checkhealth<CR>"),
   dashboard.button("q", icons.status.quit .. " Quit", "<cmd>qa<CR>"),
 }
@@ -32,12 +33,21 @@ local function get_footer()
     plugin_count = vim.tbl_count(manage.plugins)
   end
 
+  -- Native Startup-Zeit berechnen (vom init.lua Start bis jetzt)
+  local startup_time = "N/A"
+  if vim.g.velocitynvim_start_time then
+    local elapsed_ns = vim.loop.hrtime() - vim.g.velocitynvim_start_time
+    local elapsed_ms = elapsed_ns / 1000000
+    startup_time = string.format("%.2fms", elapsed_ms)
+  end
+
   local footer = {
     "                                   ",
     "    " .. icons.status.rocket .. " " .. version.config_name .. " v" .. version.config_version,
     "    " .. icons.status.update .. " Updated: " .. version.last_updated,
     "    " .. icons.status.neovim .. " Neovim: " .. nvim_ver.string,
     "    " .. icons.misc.plugin .. " Plugins: " .. plugin_count .. " configured",
+    "    " .. icons.performance.fast .. " Startup: " .. startup_time,
     "                                   ",
   }
 

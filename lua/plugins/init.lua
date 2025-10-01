@@ -83,6 +83,7 @@ vim.defer_fn(function()
   safe_require("plugins.tools.conform")
   safe_require("plugins.tools.gitsigns")
   safe_require("plugins.tools.suda")
+  safe_require("plugins.tools.vim-startuptime")
 end, 100) -- 100ms delay für development tools
 
 -- PluginSync Command wird jetzt in core/commands.lua behandelt

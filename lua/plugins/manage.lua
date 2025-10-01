@@ -41,6 +41,8 @@ M.plugins = {
   ["nvim-colorizer.lua"] = "https://github.com/norcalli/nvim-colorizer.lua",
   -- Ultra-performantes Markdown Rendering (löst Treesitter Performance-Probleme)
   ["render-markdown.nvim"] = "https://github.com/MeanderingProgrammer/render-markdown.nvim",
+  -- Startup Time Profiling und Benchmark-Analyse
+  ["vim-startuptime"] = "https://github.com/dstein64/vim-startuptime",
 }
 
 -- Automatische blink.cmp Rust-Kompilierung nach Updates

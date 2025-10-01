@@ -291,16 +291,38 @@ Performance settings modified:
 ---
 
 **Benchmarking Guidelines:**
-1. Always test on fresh installation to avoid cached data
-2. Run multiple iterations for statistical significance
-3. Document hardware/software environment changes
-4. Include both absolute values and relative improvements
-5. Track code complexity alongside performance metrics
+1. **Use automated benchmark script** (`scripts/collect_benchmark_data.sh`)
+2. Always test on fresh installation to avoid cached data
+3. Run multiple iterations for statistical significance (script does 5 runs)
+4. Document hardware/software environment changes
+5. Include both absolute values and relative improvements
 6. Test both cold start and warm cache scenarios
 7. **Follow BENCHMARKS.md standards** - no ad-hoc testing
-8. **Update this file** when introducing new benchmarks
+8. **Update benchmark_results.csv** with all 16 data points
 9. **Compare with historical data** before declaring improvements
 10. **Document methodology changes** for reproducibility
+
+### 🚀 **Automated Benchmark Collection**
+
+VelocityNvim includes a comprehensive benchmark collection script:
+
+```bash
+# Run complete benchmark suite and append to CSV
+./scripts/collect_benchmark_data.sh
+
+# Manual benchmark commands (for individual metrics)
+# See "Konsistente Messungen" section below
+```
+
+**Script collects all 16 CSV columns:**
+1. Date, Time, Version, System, Neovim_Version, API_Level
+2. Cold_Startup_s, Warm_Startup_s, Overall_Avg_s (5 runs, native hrtime)
+3. LSP_1000ops_ms, LSP_per_op_µs (1000 iterations)
+4. Plugin_Load_µs (require time)
+5. Memory_MB (resident set size)
+6. Health_Check_s (test suite runtime)
+7. Plugin_Count (from manage.lua)
+8. Test_Type, Notes (manual input)
 
 This benchmark file enables precise performance tracking and regression detection across VelocityNvim development.
 
@@ -312,47 +334,95 @@ This benchmark file enables precise performance tracking and regression detectio
 
 ### ✅ **BENCHMARK-STANDARDS (ZWINGEND EINHALTEN)**
 
-**1. Konsistente Messungen:**
+**1. Automatisierte Benchmark-Collection (EMPFOHLEN):**
 ```bash
-# IMMER diese Standardtests verwenden für Vergleichbarkeit:
-# Startup Performance (5x gemittelt)
-for i in {1..5}; do time NVIM_APPNAME=VelocityNvim nvim --headless -c "qall"; done
+# Vollständige Benchmark-Suite mit allen 16 Metriken
+./scripts/collect_benchmark_data.sh
 
-# LSP Performance (1000 Iterationen)
-NVIM_APPNAME=VelocityNvim nvim --headless -c "lua local lsp = require('utils.lsp'); local start = vim.fn.reltime(); for i=1,1000 do lsp.get_workspace_diagnostics(); end; print('1000 ops: ' .. vim.fn.reltimestr(vim.fn.reltime(start)))" -c "qall"
-
-# Plugin Loading Time
-NVIM_APPNAME=VelocityNvim nvim --headless -c "lua local start = vim.fn.reltime(); require('core'); require('plugins'); print('Load time: ' .. vim.fn.reltimestr(vim.fn.reltime(start)))" -c "qall"
+# Automatisch erfasst:
+# - Date, Time, Version, System, Neovim_Version, API_Level
+# - Cold/Warm/Overall Startup (5 runs mit native hrtime)
+# - LSP Performance (1000 iterations)
+# - Plugin Load Time (native hrtime)
+# - Memory Usage (RSS in MB)
+# - Health Check Runtime
+# - Plugin Count
+# + manuelle Eingabe: Test_Type, Notes
 ```
 
-**2. BENCHMARKS.md Integration:**
+**2. Manuelle Einzelmessungen (für Debugging):**
+```bash
+# Startup Performance mit nativer Zeitmessung (5x gemittelt)
+for i in {1..5}; do NVIM_APPNAME=VelocityNvim nvim --headless -c "lua local elapsed = (vim.loop.hrtime() - vim.g.velocitynvim_start_time) / 1e6; print(string.format('Run %d: %.2fms', $i, elapsed))" -c "qall"; done
+
+# LSP Performance (1000 Iterationen, native hrtime)
+NVIM_APPNAME=VelocityNvim nvim --headless -c "lua local lsp = require('utils.lsp'); local start = vim.loop.hrtime(); for i=1,1000 do lsp.get_workspace_diagnostics(); end; local elapsed = (vim.loop.hrtime() - start) / 1e6; print(string.format('LSP 1000 ops: %.3fms', elapsed))" -c "qall"
+
+# Plugin Loading Time (native hrtime)
+NVIM_APPNAME=VelocityNvim nvim --headless -c "lua local start = vim.loop.hrtime(); require('core'); require('plugins'); local elapsed = (vim.loop.hrtime() - start) / 1000; print(string.format('Plugin load: %.3fµs', elapsed))" -c "qall"
+
+# Memory Usage
+NVIM_APPNAME=VelocityNvim nvim --headless -c "lua local mem = vim.loop.resident_set_memory() / 1024 / 1024; print(string.format('Memory: %.1fMB', mem))" -c "qall"
+```
+
+**3. BENCHMARKS.md Integration:**
 - ✅ **Vor Tests**: Aktuelle Benchmarks aus BENCHMARKS.md lesen
-- ✅ **Nach Tests**: Ergebnisse mit Historical Data vergleichen
-- ✅ **Bei Optimierungen**: Neue Benchmarks zu BENCHMARKS.md hinzufügen
+- ✅ **Nach Tests**: Ergebnisse mit Historical Data vergleichen (benchmark_results.csv)
+- ✅ **Bei Optimierungen**: Script ausführen und zu CSV hinzufügen
 - ✅ **Bei Regressionen**: Schwellenwerte aus BENCHMARKS.md prüfen
 
-**3. Einheitliche Bewertungskriterien:**
+**4. Einheitliche Bewertungskriterien (aktualisiert 2025-10-01):**
 ```
-✅ EXCELLENT: Startup <2.0s, LSP <0.001s, Memory <100MB
-⚠️ WARNING: Startup 2.0-3.0s, LSP 0.001-0.01s, Memory 100-200MB
-❌ REGRESSION: Startup >3.0s, LSP >0.01s, Memory >200MB
+✅ EXCELLENT: Startup <0.2s, LSP <10µs, Memory <20MB
+⚠️ WARNING: Startup 0.2-0.5s, LSP 10-50µs, Memory 20-50MB
+❌ REGRESSION: Startup >0.5s, LSP >50µs, Memory >50MB
+
+Hinweis: Schwellenwerte basieren auf Native Startup Tracking (seit 2025-10-01)
 ```
 
-**4. Mandatory Test Commands:**
+**5. Dashboard Integration:**
+```vim
+# Startup-Zeit wird automatisch im Alpha Dashboard angezeigt
+# Native hrtime-Messung von init.lua bis Dashboard-Render
+
+# Detaillierte Plugin-Analyse
+:StartupTime          # oder :BenchmarkStartup
+<leader>bs           # Keymap für Benchmark-Analyse
+Press 'b' im Dashboard
+```
+
+**6. Mandatory Test Commands:**
 ```vim
 :VelocityTest performance  # Vollständige Benchmark-Suite
+:StartupTime              # Detaillierte Plugin-Breakdown (vim-startuptime)
 ```
 
 ### 🔧 **PERFORMANCE TESTING WORKFLOW**
 
 **Bei JEDER Performance-Analyse:**
 1. **Read BENCHMARKS.md**: Aktuelle Baseline verstehen
-2. **Run Standard Tests**: Konsistente Messmethoden verwenden
-3. **Compare Results**: Mit Historical Data abgleichen
-4. **Update BENCHMARKS.md**: Neue Daten dokumentieren
-5. **Flag Regressions**: Schwellenwerte überwachen
+2. **Run Automated Script**: `./scripts/collect_benchmark_data.sh`
+3. **Compare Results**: Mit benchmark_results.csv abgleichen
+4. **Verify Plausibility**: Startup-Zeit im Dashboard prüfen
+5. **Update CSV**: Script fügt automatisch neue Zeile hinzu
+6. **Flag Regressions**: Schwellenwerte überwachen (siehe Bewertungskriterien)
 
 **NIEMALS ad-hoc Performance-Tests ohne BENCHMARKS.md Referenz durchführen!**
+
+### 📊 **Native Startup Tracking (seit 2025-10-01)**
+
+**VelocityNvim verfügt über integrierte Startup-Zeit-Messung:**
+
+- ✅ **Native hrtime Tracking**: `vim.g.velocitynvim_start_time` in init.lua
+- ✅ **Dashboard Integration**: Startup-Zeit im Alpha Dashboard Footer
+- ✅ **Benchmark Button**: Detaillierte Plugin-Analyse via `:StartupTime`
+- ✅ **Automated Collection**: Script nutzt native Tracking für präzise Messungen
+
+**Vorteile:**
+- Genauer als externe `time`-Kommandos
+- Misst echte Neovim-Ladezeit (nicht Shell-Overhead)
+- Konsistent über alle Benchmarks hinweg
+- Keine Dependencies außer vim.loop.hrtime()
 
 ---
 
