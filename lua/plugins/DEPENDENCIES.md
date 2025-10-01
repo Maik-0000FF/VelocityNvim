@@ -45,6 +45,7 @@ Diese Datei dokumentiert alle Plugin-Interdependenzen in VelocityNvim zur besser
 
 **Optionale Enhancements:**
 - `gitsigns.nvim` (Git-Status Integration)
+- `nvim-lsp-file-operations` (Automatische Import-Updates bei Datei-Operationen)
 
 ### bufferline.nvim (Tab-Bar)
 **Abhängigkeiten:**
@@ -148,6 +149,16 @@ Diese Datei dokumentiert alle Plugin-Interdependenzen in VelocityNvim zur besser
 - `neo-tree.nvim` (Window-Auswahl beim Datei-Öffnen)
 - `tokyonight.nvim` (Highlight-Colors angepasst)
 
+### nvim-lsp-file-operations (LSP File Operations)
+**Abhängigkeiten:**
+- `plenary.nvim` (Async File-Operationen)
+- Native LSP (willRenameFiles/willCreateFiles/willDeleteFiles)
+
+**Integrationen:**
+- `neo-tree.nvim` (Automatische Import-Updates bei Rename/Move/Delete)
+
+**Impact:** Automatisches Update von Imports wenn Dateien verschoben/umbenannt werden
+
 ## Dependency Chain Analysis
 
 ### Kritische Kette (Startup-Blocker)
@@ -201,11 +212,12 @@ Native LSP → conform.nvim → Formatting-Fallback
 
 ### Phase 4: Tools
 1. `neo-tree.nvim` (File-Explorer)
-2. `fzf-lua` (Fuzzy-Finder)
-3. `conform.nvim` (Formatting)
-4. `gitsigns.nvim` (Git-Integration)
-5. `suda.vim` (Sudo-Editing)
-6. `vim-startuptime` (Performance Profiling)
+2. `nvim-lsp-file-operations` (LSP File Ops - NACH neo-tree)
+3. `fzf-lua` (Fuzzy-Finder)
+4. `conform.nvim` (Formatting)
+5. `gitsigns.nvim` (Git-Integration)
+6. `suda.vim` (Sudo-Editing)
+7. `vim-startuptime` (Performance Profiling)
 
 ### Phase 5: UI Polish
 1. `alpha-nvim` (Dashboard)

@@ -82,7 +82,7 @@ awk -F, 'NR>1 {print $2, $7}' docs/benchmark_results.csv | sort
 - **Measurement**: Average of 5 runs for startup, 1000 iterations for micro-benchmarks
 
 ### Key Metrics
-- **Startup Time**: Full Neovim initialization with all 25 plugins
+- **Startup Time**: Full Neovim initialization with all 26 plugins
 - **LSP Performance**: Diagnostic operations (native API vs custom code)
 - **Plugin Loading**: Internal module loading time
 - **Memory Usage**: Peak memory consumption during operations

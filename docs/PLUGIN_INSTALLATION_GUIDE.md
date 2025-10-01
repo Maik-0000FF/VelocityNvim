@@ -119,6 +119,8 @@ Commands Reference aktualisieren.
 
 #### 3.4 docs/ARCHITECTURE.md
 - Plugin Registry Beispiel (count aktualisieren)
+- **Ordnerstruktur**: Plugin in korrekten Baum einfügen (`lua/plugins/[category]/plugin-name.lua`)
+- **Plugin Collection Liste**: Plugin zu kategorie hinzufügen (UI/Editor/LSP/Tools)
 - Quality Metrics (count + Plugin-Name)
 
 #### 3.5 docs/BENCHMARKS.md (bei Performance-Plugins)
@@ -181,7 +183,7 @@ Akzeptable Werte:
 - [ ] README.md (Performance Table + Acknowledgments)
 - [ ] docs/PLUGINS.md (Plugin-Sektion + Commands)
 - [ ] lua/plugins/DEPENDENCIES.md
-- [ ] docs/ARCHITECTURE.md (2 Stellen)
+- [ ] docs/ARCHITECTURE.md (Plugin Count + Ordnerstruktur + Plugin Collection Liste)
 - [ ] CHANGELOG.md
 - [ ] INSTALLATION.md (2 Stellen)
 - [ ] docs/BENCHMARKS.md (falls relevant)
@@ -206,8 +208,11 @@ Documentation:
 - docs/PLUGINS.md: Plugin documentation
 - lua/plugins/DEPENDENCIES.md: Dependencies
 - README.md: Updated acknowledgments + count (24 -> 25)
-- docs/ARCHITECTURE.md: Updated list (24 -> 25)
+- docs/ARCHITECTURE.md: Updated count + folder structure + plugin list (24 -> 25)
 - CHANGELOG.md: Added to unreleased
+- INSTALLATION.md: Updated count (2 locations)
+- RELEASE_NOTES_v1.0.0.md: Updated count (optional)
+- docs/BENCHMARKS.md: Updated count (optional)
 
 Performance Impact:
 - Startup: +Xms
@@ -253,7 +258,7 @@ if not ok then return end
 
 ```bash
 # Find plugin count references
-grep -rn "24 plugin\|24-plugin" . --include="*.md"
+grep -rn "25 plugin\|25 curated\|25 carefully" . --include="*.md" | grep -v CHANGELOG | grep -v "2025"
 
 # Check for emoji usage
 grep -rP "[\x{1F300}-\x{1F9FF}]" lua/ --include="*.lua"
@@ -262,7 +267,13 @@ grep -rP "[\x{1F300}-\x{1F9FF}]" lua/ --include="*.lua"
 grep -r '":.*<CR>' lua/plugins/ --include="*.lua"
 
 # Count installed plugins
-NVIM_APPNAME=VelocityNvim nvim --headless -c "lua print(vim.tbl_count(require('plugins.manage').plugins))" -c "qall"
+grep -c '^\s*\[' lua/plugins/manage.lua
+
+# Verify plugin in ARCHITECTURE.md folder structure
+grep "plugin-name.lua" docs/ARCHITECTURE.md
+
+# Verify plugin in ARCHITECTURE.md plugin list
+grep -A 5 "Plugin Collection:" docs/ARCHITECTURE.md | grep "plugin-name"
 ```
 
 ---

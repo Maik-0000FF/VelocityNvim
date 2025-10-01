@@ -362,7 +362,7 @@ rm -rf plugin       # Remove
 
 | Component           | Implementation               | Characteristics                     |
 | ------------------- | ---------------------------- | ----------------------------------- |
-| **Startup Time**    | ~0.17s avg                   | Solid performance with 25 plugins  |
+| **Startup Time**    | ~0.17s avg                   | Solid performance with 26 plugins  |
 | **Plugin Loading**  | Direct vim.pack integration  | No additional abstraction layers    |
 | **LSP Performance** | Modern vim.lsp.config API    | Global configuration, optimized    |
 | **Memory Usage**    | Optimized settings           | Efficient resource utilization      |
@@ -554,6 +554,7 @@ VelocityNvim integrates carefully selected plugins from talented developers:
 
 - [which-key.nvim](https://github.com/folke/which-key.nvim) by **@folke** - Keybinding help
 - [neo-tree.nvim](https://github.com/nvim-neo-tree/neo-tree.nvim) by **@nvim-neo-tree** - File explorer
+- [nvim-lsp-file-operations](https://github.com/antosha417/nvim-lsp-file-operations) by **@antosha417** - LSP file operations
 - [nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter) by **@nvim-treesitter** - Syntax highlighting
 - [blink.cmp](https://github.com/Saghen/blink.cmp) by **@Saghen** - Completion engine
 - [friendly-snippets](https://github.com/rafamadriz/friendly-snippets) by **@rafamadriz** - Snippet collection

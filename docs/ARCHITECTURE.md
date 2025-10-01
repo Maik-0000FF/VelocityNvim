@@ -95,6 +95,7 @@ Each module has a single, well-defined responsibility:
 │   │   │   ├── which-key.lua # Key binding helper
 │   │   │   ├── nvim-treesitter.lua # Syntax highlighting
 │   │   │   ├── neo-tree.lua  # File explorer
+│   │   │   ├── lsp-file-operations.lua # LSP file operations for import updates
 │   │   │   ├── nvim-window-picker.lua # Window selection
 │   │   │   ├── hlchunk.lua   # Code block highlighting
 │   │   │   ├── hop.lua       # Ultra-fast cursor navigation
@@ -111,7 +112,8 @@ Each module has a single, well-defined responsibility:
 │   │       ├── gitsigns.lua # Git integration
 │   │       ├── conform.lua  # Code formatting
 │   │       ├── fzf-lua.lua  # Fuzzy finder
-│   │       └── suda.lua     # Sudo file editing
+│   │       ├── suda.lua     # Sudo file editing
+│   │       └── vim-startuptime.lua # Startup profiling and benchmarking
 │   ├── utils/               # Utility modules (lazy-loaded)
 │   │   ├── init.lua        # Utility loader with lazy loading
 │   │   ├── buffer.lua      # Buffer operations
@@ -251,7 +253,7 @@ M.plugins = {
   ["fzf-lua"] = "https://github.com/ibhagwan/fzf-lua",
   ["gitsigns.nvim"] = "https://github.com/lewis6991/gitsigns.nvim",
   ["vim-startuptime"] = "https://github.com/dstein64/vim-startuptime",
-  -- ... 25 total plugins
+  -- ... 26 total plugins
 }
 ```
 
@@ -748,7 +750,7 @@ end
 - **Architecture**: Native vim.pack based, modular and maintainable
 - **NEW Features**: Modern vim.lsp.config API, global LSP configuration, NvChad-inspired optimizations
 - **Performance**: Semantic tokens disabled, enhanced capabilities, Rust-optimized components
-- **Plugin Collection**: 25 carefully selected plugins for complete IDE experience
+- **Plugin Collection**: 26 carefully selected plugins for complete IDE experience
 - **Quality**: Comprehensive health checks and error handling
 - **Documentation**: Complete architecture and development guidelines
 - **Compatibility**: Neovim 0.11+ with cross-platform support
@@ -761,9 +763,9 @@ end
    - Clean directory structure for easy maintenance
 
 2. **Plugin Collection**: Comprehensive
-   - 25 carefully selected plugins covering all IDE needs
+   - 26 carefully selected plugins covering all IDE needs
    - UI: alpha, bufferline, lualine, tokyonight, noice, nvim-colorizer
-   - Editor: treesitter, neo-tree, which-key, hop, mini-pairs, german-chars
+   - Editor: treesitter, neo-tree, lsp-file-operations, which-key, hop, mini-pairs, german-chars
    - LSP: native-lsp, blink.cmp with Rust optimization, lsp-debug
    - Tools: gitsigns, conform, fzf-lua, suda, vim-startuptime
    - Specialized: render-markdown, window-picker, hlchunk

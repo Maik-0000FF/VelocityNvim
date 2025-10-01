@@ -59,6 +59,7 @@ safe_require("plugins.editor.which-key") -- Which-key sofort für Keybinding-Hil
 vim.defer_fn(function()
   -- Weniger kritische Editor-Plugins nachgeladen
   safe_require("plugins.editor.neo-tree")
+  safe_require("plugins.editor.lsp-file-operations") -- LSP File Ops nach Neo-tree
   safe_require("plugins.editor.hlchunk")
   safe_require("plugins.editor.nvim-window-picker")
   safe_require("plugins.editor.hop")

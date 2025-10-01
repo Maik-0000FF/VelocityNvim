@@ -34,6 +34,8 @@ M.plugins = {
   ["gitsigns.nvim"] = "https://github.com/lewis6991/gitsigns.nvim",
   -- Ultra-performanter Window Picker (Pure Lua, <300 LoC)
   ["nvim-window-picker"] = "https://github.com/s1n7ax/nvim-window-picker",
+  -- LSP File Operations für automatische Import-Updates
+  ["nvim-lsp-file-operations"] = "https://github.com/antosha417/nvim-lsp-file-operations",
   -- SudaWrite für Sudo-Berechtigungen beim Schreiben
   ["suda.vim"] = "https://github.com/lambdalisue/suda.vim",
   -- Hop für ultra-schnelle Cursor-Navigation

@@ -15,6 +15,8 @@ local options = {
   enable_git_status = true,
   enable_diagnostics = true,
   sort_case_insensitive = true,
+  log_level = "info", -- Fix: String statt Zahl (trace|debug|info|warn|error|fatal)
+  log_to_file = false,
   -- Sources definieren
   sources = {
     "filesystem",

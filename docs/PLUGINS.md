@@ -142,6 +142,72 @@ window_picker.setup({
 
 ---
 
+### LSP File Operations Implementation - Automatic Import Updates
+
+**Problem**: Beim Umbenennen/Verschieben von Dateien brechen Imports in allen importierenden Dateien.
+
+**Lösung**: `nvim-lsp-file-operations` - Automatische Import-Updates via LSP:
+
+#### Warum LSP File Operations gewählt wurde:
+- ✅ **LSP-basiert** - Nutzt native LSP willRenameFiles/willCreateFiles/willDeleteFiles
+- ✅ **Language-agnostic** - Funktioniert mit allen LSP-fähigen Sprachen (TS, JS, Python, Rust, Go, etc.)
+- ✅ **Neo-tree Integration** - Transparente Integration mit File-Explorer
+- ✅ **Zero-Configuration** - Funktioniert automatisch im Hintergrund
+- ✅ **Plenary-based** - Nutzt bewährte Async-Operationen
+
+#### Installation & Konfiguration:
+```lua
+-- plugins/manage.lua
+["nvim-lsp-file-operations"] = "https://github.com/antosha417/nvim-lsp-file-operations",
+
+-- plugins/editor/lsp-file-operations.lua
+require("lsp-file-operations").setup({
+  debug = false,
+  timeout_ms = 10000,
+  operations = {
+    willRenameFiles = true,
+    willCreateFiles = true,
+    willDeleteFiles = true,
+  },
+})
+```
+
+#### Funktionsweise:
+1. **Datei umbenennen** in Neo-tree (`r` Taste)
+2. LSP wird **automatisch** benachrichtigt
+3. **Alle Imports werden aktualisiert** in allen betroffenen Dateien
+4. **Keine manuelle Suche/Ersetzen** mehr nötig
+
+#### Praktisches Beispiel:
+```typescript
+// Vorher:
+// utils.ts
+export const helper = () => console.log('test');
+
+// app.ts
+import { helper } from './utils';
+
+// Nach Rename: utils.ts → helpers.ts in Neo-tree
+// app.ts wird AUTOMATISCH:
+import { helper } from './helpers';  // ✅ Auto-updated!
+```
+
+#### Integration mit Neo-tree:
+- Funktioniert **transparent** bei allen Neo-tree Operationen:
+  - `r` → Rename (Updates imports)
+  - `m` → Move (Updates import paths)
+  - `d` → Delete (LSP-benachrichtigt)
+- **Keine zusätzlichen Keybindings** erforderlich
+
+#### Supported Languages:
+- ✅ TypeScript/JavaScript (tsserver)
+- ✅ Python (pyright, pylsp)
+- ✅ Rust (rust-analyzer)
+- ✅ Go (gopls)
+- ✅ Alle LSP-fähigen Sprachen mit willRenameFiles Support
+
+---
+
 ### SudaWrite Implementation - Sudo File Editing
 
 **Problem**: Bearbeitung von Systemdateien ohne Root-Rechte nicht möglich.

@@ -1,5 +1,16 @@
 # VelocityNvim Changelog
 
+## [Unreleased]
+
+### Added
+- **nvim-lsp-file-operations** - Automatic import updates when renaming/moving files via LSP
+  - Transparent Neo-tree integration for rename/move/delete operations
+  - Language-agnostic support (TypeScript, Python, Rust, Go, etc.)
+  - Zero-configuration background operation
+  - Plugin count: 25 → 26
+
+---
+
 ## v1.0.1 - Security Enhancements (October 1, 2025)
 
 ### 🔒 **Security Improvements**

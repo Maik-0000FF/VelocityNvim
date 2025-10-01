@@ -167,7 +167,7 @@ For maximum performance:
 
 After successful installation, available features:
 
-- **Complete IDE Experience** - 25 carefully selected plugins
+- **Complete IDE Experience** - 26 carefully selected plugins
 - **Rust-optimized components** - blink.cmp, fzf-lua with native performance
 - **Automatic plugin management** - `:PluginSync` and `:VelocityHealth`
 - **Native LSP integration** - Multiple language servers supported
@@ -181,7 +181,7 @@ After successful installation, available features:
 
 **GitHub Release Features:**
 - ✅ **Native vim.pack architecture** - No external plugin managers
-- ✅ **25 curated plugins** - Complete IDE experience
+- ✅ **26 curated plugins** - Complete IDE experience
 - ✅ **Rust performance optimization** - blink.cmp and fzf-lua
 - ✅ **Cross-platform support** - Linux, macOS, WSL2
 - ✅ **Professional documentation** - Complete setup and architecture guides
