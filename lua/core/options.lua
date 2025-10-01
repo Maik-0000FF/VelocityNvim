@@ -1,6 +1,18 @@
 -- ~/.config/VelocityNvim/lua/core/options.lua
 -- Native Neovim Options - Grundlegende Einstellungen
 
+-- PERFORMANCE: Deaktiviere unnötige Standard-Plugins (~7ms Einsparung)
+-- netrw: Alter Datei-Browser (ersetzt durch neo-tree)
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
+
+-- rplugin: Remote-Plugins Python/Node (VelocityNvim nutzt nur Lua/Rust)
+vim.g.loaded_remote_plugins = 1
+
+-- black.vim: Python Formatter (ersetzt durch conform.nvim + ruff)
+-- Ruff ist 10-100x schneller und Black-kompatibel
+vim.g.load_black = 1
+
 local opt = vim.opt
 local g = vim.g
 
