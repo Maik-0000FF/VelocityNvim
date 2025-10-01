@@ -200,6 +200,94 @@
             color: #586069;
             font-size: 0.9em;
         }
+        .install-section {
+            background: #f6f8fa;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 25px 0;
+        }
+        .install-section h3 {
+            color: #24292f;
+            margin: 0 0 15px 0;
+            padding: 0;
+            border: none;
+            font-size: 1.3em;
+        }
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e1e4e8;
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            font-size: 1em;
+            color: #586069;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        .tab:hover {
+            color: #0366d6;
+        }
+        .tab.active {
+            color: #0366d6;
+            border-bottom-color: #0366d6;
+            font-weight: 600;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .donation-section {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            padding: 40px;
+            border-radius: 12px;
+            margin: 30px 0;
+            text-align: center;
+            color: white;
+        }
+        .donation-section h2 {
+            color: white;
+            border: none;
+            margin: 0 0 15px 0;
+        }
+        .bitcoin-address {
+            background: rgba(255,255,255,0.2);
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 0.95em;
+            word-break: break-all;
+            margin: 20px 0;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+        .donation-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        .donate-btn {
+            background: rgba(255,255,255,0.9);
+            color: #f5576c;
+            padding: 12px 25px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .donate-btn:hover {
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
     </style>
 </head>
 <body>
@@ -228,9 +316,79 @@
                 <li>Umfangreiche Dokumentation</li>
             </ul>
 
-            <h2>Schnellstart</h2>
-            <div class="code-block">
-                <code>git clone https://github.com/Maik-0000FF/VelocityNvim.git ~/.config/VelocityNvim<br>NVIM_APPNAME=VelocityNvim nvim</code>
+            <h2>Installation</h2>
+            <div class="install-section">
+                <div class="tabs">
+                    <button class="tab active" onclick="switchTab('standalone')">Standalone Installation</button>
+                    <button class="tab" onclick="switchTab('parallel')">Parallel Installation</button>
+                </div>
+
+                <div id="standalone" class="tab-content active">
+                    <h3>Standalone Installation</h3>
+                    <p>Ersetzt deine bestehende ~/.config/nvim Konfiguration</p>
+                    <div class="code-block">
+                        <code># 1. Backup erstellen (WICHTIG!)<br>
+[ -d ~/.config/nvim ] && mv ~/.config/nvim ~/.config/nvim.backup.$(date +%Y%m%d_%H%M%S)<br><br>
+# 2. VelocityNvim installieren<br>
+git clone https://github.com/Maik-0000FF/VelocityNvim.git ~/.config/nvim<br><br>
+# 3. Neovim starten<br>
+nvim</code>
+                    </div>
+
+                    <h3 style="margin-top: 30px;">Deinstallation</h3>
+                    <div class="code-block">
+                        <code># VelocityNvim entfernen<br>
+rm -rf ~/.config/nvim<br>
+rm -rf ~/.local/share/nvim<br>
+rm -rf ~/.local/state/nvim<br>
+rm -rf ~/.cache/nvim<br><br>
+# Backup wiederherstellen (falls vorhanden)<br>
+mv ~/.config/nvim.backup.* ~/.config/nvim</code>
+                    </div>
+                </div>
+
+                <div id="parallel" class="tab-content">
+                    <h3>Parallel Installation</h3>
+                    <p>Installiert VelocityNvim neben deiner bestehenden Konfiguration</p>
+                    <div class="code-block">
+                        <code># 1. In separates Verzeichnis installieren<br>
+git clone https://github.com/Maik-0000FF/VelocityNvim.git ~/.config/VelocityNvim<br><br>
+# 2. Alias erstellen<br>
+echo 'alias velocity="NVIM_APPNAME=VelocityNvim nvim"' >> ~/.bashrc<br>
+source ~/.bashrc<br><br>
+# 3. VelocityNvim starten<br>
+velocity</code>
+                    </div>
+
+                    <h3 style="margin-top: 30px;">Deinstallation</h3>
+                    <div class="code-block">
+                        <code># VelocityNvim entfernen<br>
+rm -rf ~/.config/VelocityNvim<br>
+rm -rf ~/.local/share/VelocityNvim<br>
+rm -rf ~/.local/state/VelocityNvim<br>
+rm -rf ~/.cache/VelocityNvim<br><br>
+# Alias entfernen<br>
+sed -i '/alias velocity="NVIM_APPNAME=VelocityNvim nvim"/d' ~/.bashrc<br>
+source ~/.bashrc</code>
+                    </div>
+                </div>
+            </div>
+
+            <div class="donation-section">
+                <h2>☕ Support VelocityNvim</h2>
+                <p style="font-size: 1.1em; margin-bottom: 20px;">
+                    Wenn dir VelocityNvim gefällt, unterstütze die Entwicklung mit Bitcoin!
+                </p>
+                <div class="bitcoin-address">
+                    bc1q6gmpgfn4wx2hx2c3njgpep9tl00etma9k7w6d4
+                </div>
+                <div class="donation-buttons">
+                    <a href="bitcoin:bc1q6gmpgfn4wx2hx2c3njgpep9tl00etma9k7w6d4" class="donate-btn">🔗 Bitcoin Wallet öffnen</a>
+                    <a href="https://github.com/Maik-0000FF/VelocityNvim" class="donate-btn">⭐ Repository starren</a>
+                </div>
+                <p style="margin-top: 20px; font-size: 0.95em; opacity: 0.9;">
+                    Andere Unterstützungsmöglichkeiten: Issues melden, Code beitragen, oder das Projekt teilen!
+                </p>
             </div>
 
             <h2>Links</h2>
@@ -246,5 +404,23 @@
             <p>VelocityNvim - Native vim.pack Neovim Distribution | MIT License</p>
         </div>
     </div>
+
+    <script>
+        function switchTab(tabName) {
+            // Hide all tab contents
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(content => content.classList.remove('active'));
+
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+
+            // Show selected tab content
+            document.getElementById(tabName).classList.add('active');
+
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
+    </script>
 </body>
 </html>
