@@ -44,7 +44,7 @@ local mock_vim = {
       end
       return '"' .. tostring(t) .. '"'
     end,
-    decode = function(s)
+    decode = function()
       -- Simple JSON decode for testing
       return { version = "2.1.0", timestamp = 1000 }
     end,
@@ -268,10 +268,10 @@ local function test_performance_benchmarks()
   local start_time = os.clock()
 
   -- Simulate 100 version comparisons
-  for i = 1, 100 do
-    local major1, minor1, patch1 = string.match("2.1.0", "(%d+)%.(%d+)%.(%d+)")
-    local major2, minor2, patch2 = string.match("2.0.0", "(%d+)%.(%d+)%.(%d+)")
-    local result = tonumber(major1) > tonumber(major2)
+  for _ = 1, 100 do
+    local major1 = string.match("2.1.0", "(%d+)%.(%d+)%.(%d+)")
+    local major2 = string.match("2.0.0", "(%d+)%.(%d+)%.(%d+)")
+    _ = tonumber(major1) > tonumber(major2)
   end
 
   local elapsed_ms = (os.clock() - start_time) * 1000
@@ -421,7 +421,7 @@ function M.run_all()
   local total_categories = 0
   local passed_categories = 0
 
-  for category, passed in pairs(results) do
+  for _, passed in pairs(results) do
     total_categories = total_categories + 1
     if passed then
       passed_categories = passed_categories + 1

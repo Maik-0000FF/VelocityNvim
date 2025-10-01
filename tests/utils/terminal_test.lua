@@ -94,8 +94,6 @@ function M.test_dimension_caching()
   local terminal = setup_test_env()
 
   -- Call get_floating_dimensions multiple times to test caching
-  local start_time = vim.uv.hrtime()
-
   -- First call should calculate dimensions
   local w1, h1, r1, c1 =
     terminal.get_floating_dimensions and terminal.get_floating_dimensions() or 96, 24, 3, 12
@@ -123,16 +121,13 @@ end
 
 -- Test 3: Edge Case - Multiple Terminals
 function M.test_multiple_terminals_edge_case()
-  local terminal = setup_test_env()
+  setup_test_env()
 
   -- Mock scenario where we have many terminals
-  local mock_terminals = {}
-  for i = 1, 15 do
-    mock_terminals["term_" .. i] = i
-  end
-
   -- Test that close_all handles many terminals gracefully
   -- This should trigger the confirmation dialog for >10 terminals
+  -- Note: Currently a placeholder test - full implementation would require
+  -- injecting mock terminal state into the terminal module
 
   print(" Multiple terminals edge case test passed")
   teardown_test_env()
