@@ -372,16 +372,25 @@
         </div>
 
         <div class="content">
-            <p style="text-align: center; font-size: 1.2em; margin-bottom: 20px;">
+            <!-- German intro -->
+            <p class="lang-content de active" style="text-align: center; font-size: 1.2em; margin-bottom: 20px;">
                 Moderne, performante Neovim-Konfiguration ohne externe Plugin-Manager
+            </p>
+            <!-- English intro -->
+            <p class="lang-content en" style="text-align: center; font-size: 1.2em; margin-bottom: 20px;">
+                Modern, high-performance Neovim configuration without external plugin managers
             </p>
 
             <div style="text-align: center;">
-                <a href="https://github.com/Maik-0000FF/VelocityNvim" class="cta-button">Zum GitHub Repository →</a>
+                <a href="https://github.com/Maik-0000FF/VelocityNvim" class="cta-button lang-content de active">Zum GitHub Repository →</a>
+                <a href="https://github.com/Maik-0000FF/VelocityNvim" class="cta-button lang-content en">Go to GitHub Repository →</a>
             </div>
 
-            <h2>Features</h2>
-            <ul class="features">
+            <h2 class="lang-content de active">Features</h2>
+            <h2 class="lang-content en">Features</h2>
+
+            <!-- German Features -->
+            <ul class="features lang-content de active">
                 <li>Native vim.pack Integration - keine externen Plugin-Manager</li>
                 <li>Moderne LSP-Konfiguration mit vim.lsp.config</li>
                 <li>Treesitter für Syntax-Highlighting</li>
@@ -390,7 +399,18 @@
                 <li>Performance-optimiert für WezTerm</li>
             </ul>
 
-            <h2>Installation</h2>
+            <!-- English Features -->
+            <ul class="features lang-content en">
+                <li>Native vim.pack integration - no external plugin managers</li>
+                <li>Modern LSP configuration with vim.lsp.config</li>
+                <li>Treesitter for syntax highlighting</li>
+                <li>fzf-lua for fuzzy finding (Rust performance)</li>
+                <li>blink.cmp with Rust fuzzy matching</li>
+                <li>Performance-optimized for WezTerm</li>
+            </ul>
+
+            <h2 class="lang-content de active">Installation</h2>
+            <h2 class="lang-content en">Installation</h2>
             <div class="install-section">
                 <div class="tabs">
                     <button class="tab active" onclick="switchTab('standalone')">Standalone Installation</button>
