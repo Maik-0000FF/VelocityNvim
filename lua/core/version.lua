@@ -5,10 +5,10 @@ local M = {}
 local icons = require("core.icons")
 
 -- VelocityNvim - Native vim.pack Architecture
-M.config_version = "1.0.0"
-M.config_name = "VelocityNvim Native - Modern LSP Performance"
+M.config_version = "1.0.1"
+M.config_name = "VelocityNvim Native - Performance Profiling Edition"
 M.config_author = "neo"
-M.last_updated = "2025-09-24"
+M.last_updated = "2025-10-01"
 
 -- Version components
 local function parse_version(version_string)
@@ -99,6 +99,19 @@ end
 
 -- Configuration history and changes
 M.version_history = {
+  {
+    version = "1.0.1",
+    date = "2025-10-01",
+    name = "VelocityNvim Native - Performance Profiling Edition",
+    changes = {
+      "⏱️ vim-startuptime plugin for detailed startup profiling",
+      "📊 Native hrtime tracking for precise performance measurements",
+      "🎯 :StartupTime and :BenchmarkStartup commands",
+      "📈 Dashboard integration with startup metrics",
+      "⚡ 25 total plugins with optimized load order",
+      "🔧 Enhanced benchmark data collection with proper formatting",
+    },
+  },
   {
     version = "1.0.0",
     date = "2025-09-24",
