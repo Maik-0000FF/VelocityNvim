@@ -40,10 +40,10 @@ local function check_render_markdown_health()
     health.report_ok("render-markdown.nvim aktiv - Markdown Performance-Boost verfügbar")
 
     -- Performance-Settings Status
-    health.report_info("Max File Size: 5MB, Debounce: 50ms")
-    health.report_info("Render Modes: Normal, Command, Terminal (nicht Insert)")
-    health.report_info("Performance Features: Anti-Conceal, Smart Window-Rendering")
-    health.report_info("Deaktivierte Features: Tables, Callouts, Links (für Speed)")
+    health.report_info("Max File Size: 5MB, Buffer Update: 200ms")
+    health.report_info("Preset: Obsidian (Feature-reich, optimierte Defaults)")
+    health.report_info("LaTeX: Deaktiviert (utftex/latex2text nicht verfügbar)")
+    health.report_info("blink.cmp Integration: Aktiviert für VelocityNvim")
 
     -- Treesitter-Konflikte vermeiden
     health.report_ok("Anti-Conceal aktiv - verhindert Treesitter-Konflikte")
