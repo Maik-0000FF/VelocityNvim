@@ -21,17 +21,37 @@ require("bufferline").setup({
     numbers = "ordinal",
     -- Kürze lange Dateinamen
     truncate_names = true,
-    -- Standard Bufferline Diagnostics (einfach und performant)
+    -- PERFORMANCE: Alle Diagnostics mit Icons anzeigen (optimiert)
     diagnostics = "nvim_lsp",
     diagnostics_update_in_insert = false,
-    -- Standard Multi-Level Diagnostic Indicator (aus offizieller Dokumentation)
+    -- Zeige alle Diagnostic-Typen mit korrekten Icons aus core.icons
     diagnostics_indicator = function(_, _, diagnostics_dict, _)
-      local s = " "
-      for e, n in pairs(diagnostics_dict) do
-        local sym = e == "error" and " " or (e == "warning" and " " or " ")
-        s = s .. n .. sym
+      local result = {}
+
+      -- Errors
+      if diagnostics_dict.error and diagnostics_dict.error > 0 then
+        table.insert(result, icons.diagnostics.error .. " " .. diagnostics_dict.error)
       end
-      return s
+
+      -- Warnings
+      if diagnostics_dict.warning and diagnostics_dict.warning > 0 then
+        table.insert(result, icons.diagnostics.warn .. " " .. diagnostics_dict.warning)
+      end
+
+      -- Info
+      if diagnostics_dict.info and diagnostics_dict.info > 0 then
+        table.insert(result, icons.diagnostics.info .. " " .. diagnostics_dict.info)
+      end
+
+      -- Hints
+      if diagnostics_dict.hint and diagnostics_dict.hint > 0 then
+        table.insert(result, icons.diagnostics.hint .. " " .. diagnostics_dict.hint)
+      end
+
+      if #result > 0 then
+        return " " .. table.concat(result, " ") .. " "
+      end
+      return ""
     end,
     -- Buffer schließen
     close_command = "bdelete! %d",
