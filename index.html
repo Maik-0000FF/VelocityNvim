@@ -414,7 +414,9 @@
 
             <h2 class="lang-content de active">Installation</h2>
             <h2 class="lang-content en">Installation</h2>
-            <div class="install-section">
+
+            <!-- German Installation -->
+            <div class="install-section lang-content de active">
                 <div class="tabs">
                     <button class="tab active" onclick="switchTab('standalone')">Standalone Installation</button>
                     <button class="tab" onclick="switchTab('parallel')">Parallel Installation</button>
@@ -465,6 +467,64 @@ rm -rf ~/.local/share/VelocityNvim<br>
 rm -rf ~/.local/state/VelocityNvim<br>
 rm -rf ~/.cache/VelocityNvim<br><br>
 # Alias entfernen<br>
+sed -i '/alias velocity="NVIM_APPNAME=VelocityNvim nvim"/d' ~/.bashrc<br>
+source ~/.bashrc</code>
+                    </div>
+                </div>
+            </div>
+
+            <!-- English Installation -->
+            <div class="install-section lang-content en">
+                <div class="tabs">
+                    <button class="tab active" onclick="switchTab('standalone-en')">Standalone Installation</button>
+                    <button class="tab" onclick="switchTab('parallel-en')">Parallel Installation</button>
+                </div>
+
+                <div id="standalone-en" class="tab-content active">
+                    <h3>Standalone Installation</h3>
+                    <p>Replaces your existing ~/.config/nvim configuration</p>
+                    <div class="code-block">
+                        <code># 1. Create backup (IMPORTANT!)<br>
+[ -d ~/.config/nvim ] && mv ~/.config/nvim ~/.config/nvim.backup.$(date +%Y%m%d_%H%M%S)<br><br>
+# 2. Install VelocityNvim<br>
+git clone https://github.com/Maik-0000FF/VelocityNvim.git ~/.config/nvim<br><br>
+# 3. Start Neovim<br>
+nvim</code>
+                    </div>
+
+                    <h3 style="margin-top: 30px;">Uninstallation</h3>
+                    <div class="code-block">
+                        <code># Remove VelocityNvim<br>
+rm -rf ~/.config/nvim<br>
+rm -rf ~/.local/share/nvim<br>
+rm -rf ~/.local/state/nvim<br>
+rm -rf ~/.cache/nvim<br><br>
+# Restore backup (if available)<br>
+mv ~/.config/nvim.backup.* ~/.config/nvim</code>
+                    </div>
+                </div>
+
+                <div id="parallel-en" class="tab-content">
+                    <h3>Parallel Installation</h3>
+                    <p>Installs VelocityNvim alongside your existing configuration</p>
+                    <div class="code-block">
+                        <code># 1. Install to separate directory<br>
+git clone https://github.com/Maik-0000FF/VelocityNvim.git ~/.config/VelocityNvim<br><br>
+# 2. Create alias<br>
+echo 'alias velocity="NVIM_APPNAME=VelocityNvim nvim"' >> ~/.bashrc<br>
+source ~/.bashrc<br><br>
+# 3. Start VelocityNvim<br>
+velocity</code>
+                    </div>
+
+                    <h3 style="margin-top: 30px;">Uninstallation</h3>
+                    <div class="code-block">
+                        <code># Remove VelocityNvim<br>
+rm -rf ~/.config/VelocityNvim<br>
+rm -rf ~/.local/share/VelocityNvim<br>
+rm -rf ~/.local/state/VelocityNvim<br>
+rm -rf ~/.cache/VelocityNvim<br><br>
+# Remove alias<br>
 sed -i '/alias velocity="NVIM_APPNAME=VelocityNvim nvim"/d' ~/.bashrc<br>
 source ~/.bashrc</code>
                     </div>
@@ -585,17 +645,28 @@ source ~/.bashrc</code>
                 </div>
             </div>
 
-            <h2>Links</h2>
-            <ul class="links">
+            <!-- German Links -->
+            <h2 class="lang-content de active">Links</h2>
+            <ul class="links lang-content de active">
                 <li><a href="https://github.com/Maik-0000FF/VelocityNvim">📦 GitHub Repository</a></li>
                 <li><a href="https://github.com/Maik-0000FF/VelocityNvim/blob/main/README.md">📖 Dokumentation</a></li>
+                <li><a href="https://github.com/Maik-0000FF/VelocityNvim/issues">🐛 Issues & Support</a></li>
+                <li><a href="https://github.com/Maik-0000FF/VelocityNvim/discussions">💬 Discussions</a></li>
+            </ul>
+
+            <!-- English Links -->
+            <h2 class="lang-content en">Links</h2>
+            <ul class="links lang-content en">
+                <li><a href="https://github.com/Maik-0000FF/VelocityNvim">📦 GitHub Repository</a></li>
+                <li><a href="https://github.com/Maik-0000FF/VelocityNvim/blob/main/README.md">📖 Documentation</a></li>
                 <li><a href="https://github.com/Maik-0000FF/VelocityNvim/issues">🐛 Issues & Support</a></li>
                 <li><a href="https://github.com/Maik-0000FF/VelocityNvim/discussions">💬 Discussions</a></li>
             </ul>
         </div>
 
         <div class="footer">
-            <p>VelocityNvim - Native vim.pack Neovim Distribution | MIT License</p>
+            <p class="lang-content de active">VelocityNvim - Native vim.pack Neovim Distribution | MIT Lizenz</p>
+            <p class="lang-content en">VelocityNvim - Native vim.pack Neovim Distribution | MIT License</p>
         </div>
     </div>
 
