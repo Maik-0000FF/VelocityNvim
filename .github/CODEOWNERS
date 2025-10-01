@@ -1,0 +1,20 @@
+# VelocityNvim CODEOWNERS
+# Diese Datei definiert Code-Eigentümer für kritische Dateien
+# GitHub erfordert Reviews von diesen Eignern vor dem Merge
+
+# Kritische Dateien mit Bitcoin-Adresse
+# Änderungen erfordern explizite Genehmigung vom Repository-Owner
+/index.html @Maik-0000FF
+/README.md @Maik-0000FF
+
+# Sicherheitsrelevante Konfigurationen
+/.github/CODEOWNERS @Maik-0000FF
+/.github/workflows/*.yml @Maik-0000FF
+
+# Core-Konfiguration
+/lua/core/version.lua @Maik-0000FF
+/lua/core/init.lua @Maik-0000FF
+
+# Sensitive Dokumentation
+/CLAUDE.md @Maik-0000FF
+/docs/DEVELOPMENT.md @Maik-0000FF

@@ -111,6 +111,9 @@ docs/DEVELOPMENT.md
 docs/ARCHITECTURE-DETAILS.md
 docs/SOLUTIONS.md
 
+# Internal security documentation (technical implementation details)
+docs/SECURITY-INTERNAL.md
+
 # SEO strategy files (keep private - internal planning)
 seo/strategy/
 
