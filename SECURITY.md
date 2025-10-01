@@ -50,6 +50,31 @@ The following files contain sensitive project information and require code owner
    - Pre-commit hooks for local validation
    - CI/CD checks on pull requests
 
+4. **Automated Security Scanning**
+   - CodeQL analysis for vulnerability detection
+   - Weekly security scans
+   - Real-time alerts for security issues
+
+---
+
+## 🔍 Automated Security
+
+VelocityNvim uses automated security tools to maintain code quality:
+
+### CodeQL Security Scanning
+
+- **What it scans:** JavaScript/HTML code in landing page and workflows
+- **Frequency:** On every push to main branch and weekly scheduled scans
+- **Coverage:** XSS vulnerabilities, injection attacks, insecure patterns
+- **Status:** [View Security Analysis](https://github.com/Maik-0000FF/VelocityNvim/security/code-scanning)
+
+### Security Monitoring
+
+All security findings are tracked through:
+- GitHub Security tab with automated alerts
+- Pull request checks preventing vulnerable code merges
+- Weekly review of security scan results
+
 ---
 
 ## 📋 Supported Versions

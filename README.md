@@ -10,6 +10,8 @@
 [![GitHub stars](https://img.shields.io/github/stars/Maik-0000FF/VelocityNvim?style=social)](https://github.com/Maik-0000FF/VelocityNvim/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/Maik-0000FF/VelocityNvim?style=social)](https://github.com/Maik-0000FF/VelocityNvim/network/members)
 [![GitHub issues](https://img.shields.io/github/issues/Maik-0000FF/VelocityNvim)](https://github.com/Maik-0000FF/VelocityNvim/issues)
+[![CodeQL](https://github.com/Maik-0000FF/VelocityNvim/workflows/CodeQL%20Security%20Scan/badge.svg)](https://github.com/Maik-0000FF/VelocityNvim/security/code-scanning)
+[![Security Policy](https://img.shields.io/badge/Security-Policy-blue)](https://github.com/Maik-0000FF/VelocityNvim/security/policy)
 
 [![Neovim](https://img.shields.io/badge/Neovim-0.11+-green.svg)](https://neovim.io)
 [![Startup Time](https://img.shields.io/badge/Startup-~0.16s-brightgreen.svg)](#-performance-characteristics)
