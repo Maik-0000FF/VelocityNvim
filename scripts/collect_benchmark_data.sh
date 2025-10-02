@@ -93,9 +93,21 @@ HEALTH_END=$(date +%s%N)
 HEALTH_CHECK_S=$(echo "scale=3; ($HEALTH_END - $HEALTH_START) / 1000000000" | bc)
 echo -e "${GREEN}✓${NC} Health check: ${HEALTH_CHECK_S}s"
 
-# 15. Plugin Count
+# 15. Plugin Count (automatisch aus manage.lua gezählt)
 PLUGIN_COUNT=$(NVIM_APPNAME=VelocityNvim nvim --headless -c "lua local m = require('plugins.manage'); print(vim.tbl_count(m.plugins))" -c "qall" 2>&1 | tail -1)
-echo -e "${GREEN}✓${NC} Plugin count: $PLUGIN_COUNT"
+
+# Info: Vergleiche mit letztem Benchmark (nur zur Information)
+CSV_FILE="$(dirname "$0")/../docs/benchmark_results.csv"
+if [ -f "$CSV_FILE" ]; then
+  LAST_PLUGIN_COUNT=$(tail -1 "$CSV_FILE" | cut -d',' -f15)
+  if [ -n "$LAST_PLUGIN_COUNT" ] && [ "$LAST_PLUGIN_COUNT" != "Plugin_Count" ]; then
+    if [ "$PLUGIN_COUNT" != "$LAST_PLUGIN_COUNT" ]; then
+      echo -e "${YELLOW}ℹ${NC}  Plugin count changed since last benchmark: ${LAST_PLUGIN_COUNT} → ${PLUGIN_COUNT}"
+    fi
+  fi
+fi
+
+echo -e "${GREEN}✓${NC} Plugin count: $PLUGIN_COUNT (automatically counted from manage.lua)"
 
 echo
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"

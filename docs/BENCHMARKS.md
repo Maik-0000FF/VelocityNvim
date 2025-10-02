@@ -453,7 +453,7 @@ VelocityNvim includes a comprehensive benchmark collection script:
 4. Plugin_Load_µs (require time)
 5. Memory_MB (resident set size)
 6. Health_Check_s (test suite runtime)
-7. Plugin_Count (from manage.lua)
+7. **Plugin_Count (AUTOMATISCH aus manage.lua gezählt - NIEMALS manuell eingeben!)**
 8. Test_Type, Notes (manual input)
 
 This benchmark file enables precise performance tracking and regression detection across VelocityNvim development.
