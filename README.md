@@ -573,7 +573,7 @@ VelocityNvim integrates carefully selected plugins from talented developers:
 - [nvim-window-picker](https://github.com/s1n7ax/nvim-window-picker) by **@s1n7ax** - Window selection
 - [mini.nvim](https://github.com/echasnovski/mini.nvim) by **@echasnovski** - Utility collection
 - [suda.vim](https://github.com/lambdalisue/suda.vim) by **@lambdalisue** - Sudo file editing
-- [nvim-colorizer.lua](https://github.com/norcalli/nvim-colorizer.lua) by **@norcalli** - Color highlighting
+- [nvim-colorizer.lua](https://github.com/NvChad/nvim-colorizer.lua) by **@NvChad** - Color highlighting (maintained fork)
 - [render-markdown.nvim](https://github.com/MeanderingProgrammer/render-markdown.nvim) by **@MeanderingProgrammer** - Markdown rendering
 
 ### 🌟 Open Source Community

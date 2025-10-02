@@ -143,6 +143,28 @@ Diese Datei dokumentiert alle Plugin-Interdependenzen in VelocityNvim zur besser
 - Visual Mode Support (alle Keymaps funktionieren in Visual Mode)
 - Multi-Window Support (optional konfigurierbar)
 
+### nvim-colorizer.lua (Color Highlighting)
+**Repository:** `https://github.com/NvChad/nvim-colorizer.lua`
+**Typ:** Maintained Fork (ersetzt `norcalli/nvim-colorizer.lua`)
+**Abhängigkeiten:** Keine (Pure Lua Implementation)
+
+**Features:**
+- High-performance color highlighting
+- Unterstützt: #RGB, #RRGGBB, CSS rgb(), hsl(), Tailwind CSS
+- WezTerm-optimiert mit Debouncing (100ms)
+- Blacklist für Performance-kritische Buffers
+
+**Migration Notes:**
+- **Datum:** 2025-10-02
+- **Von:** `norcalli/nvim-colorizer.lua` (unmaintained)
+- **Zu:** `NvChad/nvim-colorizer.lua` (maintained fork, 58+ commits ahead)
+- **Breaking Changes:** Keine - API ist 100% kompatibel
+- **Deprecation Fix:** Verwendet bereits `vim.iter()` statt `vim.tbl_flatten()`
+
+**Interaktionen:**
+- Nutzt `core.icons` für Keymap-Beschreibungen
+- Performance-optimiert für VelocityNvim (Debouncing, Blacklists)
+
 ### nvim-window-picker (Window Selection)
 **Abhängigkeiten:** Keine (Pure Lua Implementation)
 **Integrationen:**

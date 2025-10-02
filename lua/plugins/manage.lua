@@ -40,7 +40,7 @@ M.plugins = {
   ["suda.vim"] = "https://github.com/lambdalisue/suda.vim",
   -- Hop für ultra-schnelle Cursor-Navigation
   ["hop.nvim"] = "https://github.com/phaazon/hop.nvim",
-  ["nvim-colorizer.lua"] = "https://github.com/norcalli/nvim-colorizer.lua",
+  ["nvim-colorizer.lua"] = "https://github.com/NvChad/nvim-colorizer.lua",
   -- Ultra-performantes Markdown Rendering (löst Treesitter Performance-Probleme)
   ["render-markdown.nvim"] = "https://github.com/MeanderingProgrammer/render-markdown.nvim",
   -- Startup Time Profiling und Benchmark-Analyse
