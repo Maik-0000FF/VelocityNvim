@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
   update-sitemap-and-submit:
@@ -19,13 +20,27 @@ jobs:
         run: |
           sed -i "s/<lastmod>.*<\/lastmod>/<lastmod>$(date +%Y-%m-%d)<\/lastmod>/g" sitemap.xml
 
-      - name: Commit updated sitemap
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add sitemap.xml
-          git diff --staged --quiet || git commit -m "Auto-update sitemap timestamps"
-          git push
+      - name: Create Pull Request
+        id: create-pr
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "Auto-update sitemap timestamps"
+          branch: auto-sitemap-update
+          delete-branch: true
+          title: "Auto-update sitemap timestamps"
+          body: |
+            Automated sitemap timestamp update
+
+            - Updated all lastmod dates to $(date +%Y-%m-%d)
+            - Triggered by: ${{ github.event_name }}
+          labels: automation, seo
+
+      - name: Enable auto-merge
+        if: steps.create-pr.outputs.pull-request-number != ''
+        run: gh pr merge --auto --squash ${{ steps.create-pr.outputs.pull-request-number }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Submit sitemap to Google
         run: |
