@@ -15,8 +15,8 @@ M.rust_tools = {
   rg = "rg",             -- ripgrep für schnelle Suche
   fd = "fd",             -- fd für schnelle Dateifindung
   bat = "bat",           -- bat für Syntax-Highlighting in Previews
-  delta = "delta",       -- Delta für Git-Diffs (INTEGRATION AKTIV!)
-  exa = "exa",           -- exa für bessere ls-Alternative
+  ["git-delta"] = "delta", -- git-delta für Git-Diffs (INTEGRATION AKTIV!)
+  eza = "eza",           -- eza für bessere ls-Alternative (Community-Fork von exa)
   hexyl = "hexyl",       -- hexyl für Hex-Dumps
   hyperfine = "hyperfine", -- Benchmarking-Tool
 }
@@ -87,17 +87,39 @@ function M.get_performance_status()
 
   print(icons.misc.build .. " Verfügbare Tools:")
   for name, cmd in pairs(status.available) do
-    print(string.format("  • %-12s %s %s", name, icons.status.success, cmd))
+    local display_cmd = name == "git-delta" and "git-delta" or cmd
+    print(string.format("  • %-12s %s %s", name, icons.status.success, display_cmd))
   end
 
   if next(status.missing) then
     print("")
     print(icons.status.error .. " Fehlende Tools:")
     for name, cmd in pairs(status.missing) do
-      print(string.format("  • %-12s %s %s", name, icons.status.error, cmd))
+      local display_cmd = name == "git-delta" and "git-delta" or cmd
+      print(string.format("  • %-12s %s %s", name, icons.status.error, display_cmd))
     end
     print("")
-    print(icons.status.hint .. " Installation: " .. table.concat(vim.tbl_values(status.missing), " "))
+    -- Mapping: Tool-Name -> Package-Namen (Arch & Homebrew sind identisch)
+    local package_names = {
+      fzf = "fzf",
+      rg = "ripgrep",
+      fd = "fd",
+      bat = "bat",
+      ["git-delta"] = "git-delta",
+      eza = "eza",
+      hexyl = "hexyl",
+      hyperfine = "hyperfine",
+    }
+
+    -- Installation-Hinweise mit korrekten Package-Namen
+    local install_pkgs = {}
+    for name, _ in pairs(status.missing) do
+      local pkg_name = package_names[name] or name
+      table.insert(install_pkgs, pkg_name)
+    end
+    local pkg_list = table.concat(install_pkgs, " ")
+    print(icons.status.hint .. " Arch Linux: sudo pacman -S " .. pkg_list)
+    print(icons.status.hint .. " macOS:      brew install " .. pkg_list)
   end
 end
 
