@@ -90,6 +90,138 @@ awk -F, 'NR>1 {print $2, $7}' docs/benchmark_results.csv | sort
 
 ---
 
+## Detailed Benchmark Commands (Reproducible)
+
+### 1. Startup Performance (5 runs with hyperfine)
+```bash
+# Run 5 benchmarks with 1 warmup run, export to JSON
+hyperfine --warmup 1 --runs 5 \
+  'NVIM_APPNAME=VelocityNvim nvim --headless -c "quit"' \
+  --export-json /tmp/benchmark.json
+
+# Parse results for cold/warm averages
+python3 -c "
+import json
+with open('/tmp/benchmark.json') as f:
+    d = json.load(f)['results'][0]
+    times = d['times']
+
+    # Runs 1-3: Cold start (includes caching)
+    cold_avg = sum(times[:3]) / 3
+
+    # Runs 4-5: Warm start (cache hot)
+    warm_avg = sum(times[3:5]) / 2
+
+    print(f'Cold Start (1-3): {cold_avg:.4f}s')
+    print(f'Warm Start (4-5): {warm_avg:.4f}s')
+    print(f'Overall Mean: {d[\"mean\"]:.4f}s')
+    print(f'Min: {d[\"min\"]:.4f}s, Max: {d[\"max\"]:.4f}s')
+"
+```
+
+### 2. LSP Performance (1000 operations)
+```bash
+# Measure diagnostic API performance
+NVIM_APPNAME=VelocityNvim nvim --headless -c "
+lua local start = vim.uv.hrtime()
+for i=1,1000 do vim.diagnostic.get(0) end
+local elapsed = (vim.uv.hrtime() - start) / 1000000
+print(string.format('LSP 1000 ops: %.2f ms (%.2f µs per op)', elapsed, elapsed * 1000 / 1000))
+" -c "quit" 2>&1
+```
+
+### 3. Plugin Load Time
+```bash
+# Measure plugin loading time in microseconds
+NVIM_APPNAME=VelocityNvim nvim --headless -c "
+lua local start = vim.uv.hrtime()
+require('plugins')
+local elapsed = (vim.uv.hrtime() - start)
+print(string.format('Plugin Load: %.3f µs', elapsed / 1000))
+" -c "quit" 2>&1
+```
+
+### 4. Memory Usage
+```bash
+# Measure memory consumption in MB
+NVIM_APPNAME=VelocityNvim nvim --headless -c "
+lua local mem = vim.fn.system('ps -o rss= -p ' .. vim.fn.getpid()):gsub('%s+', '')
+print(string.format('Memory: %.1f MB', tonumber(mem) / 1024))
+" -c "quit" 2>&1
+```
+
+### 5. Health Check Performance
+```bash
+# Measure health check execution time (3 runs for consistency)
+hyperfine --warmup 1 --runs 3 \
+  'NVIM_APPNAME=VelocityNvim nvim --headless -c "checkhealth velocitynvim" -c "quit"' \
+  2>&1 | grep "Time (mean"
+```
+
+### 6. Collect System Information
+```bash
+# Get all metadata for CSV entry
+nvim --version | head -1                    # Neovim version
+uname -r                                     # Kernel version
+date '+%Y-%m-%d'                            # Current date
+date '+%H:%M'                               # Current time
+NVIM_APPNAME=VelocityNvim nvim --headless \
+  -c "lua print(vim.version().api_level)" \
+  -c "quit" 2>&1                            # API level
+NVIM_APPNAME=VelocityNvim nvim --headless \
+  -c "lua print(require('core.version').config_version)" \
+  -c "quit" 2>&1                            # VelocityNvim version
+```
+
+### 7. Add to CSV
+```bash
+# Manual entry format (replace values with actual results):
+echo "YYYY-MM-DD,HH:MM,version,Linux X.XX.X-archX-X,X.XX.X,API_level,cold_avg,warm_avg,overall_mean,lsp_ms,lsp_µs,plugin_µs,memory_mb,health_s,plugin_count,test_type,notes" >> docs/benchmark_results.csv
+
+# Example with actual values:
+echo "2025-10-02,15:33,1.0.1,Linux 6.16.8-arch3-1,0.11.4,13,0.2808,0.1303,0.2206,0.95,0.95,0.277,18.3,0.508,25,fresh_installation,Neuinstallation nach Rust-Tools Display-Optimierung" >> docs/benchmark_results.csv
+```
+
+### Notes on Benchmark Execution
+- **Run benchmarks after fresh installation** for baseline measurements
+- **Close other applications** to minimize system load interference
+- **Watch for outliers** - hyperfine shows min/max to identify anomalies
+- **Document system state** in notes (e.g., "post-optimization", "regression test")
+- **Commit both CSV and BENCHMARKS.md** to maintain data integrity
+
+---
+
+## Detailed Startup Analysis (vim-startuptime)
+
+For **interactive analysis** of startup performance and plugin loading times:
+
+### Interactive Startup Profiling
+```vim
+" In Neovim
+:StartupTime
+" or
+:BenchmarkStartup
+
+" Keybinding
+<leader>bs
+```
+
+### Features
+- **Event Timeline**: Visual breakdown of all startup events
+- **Plugin Timings**: Individual plugin loading times
+- **Sourcing Analysis**: Which files take longest to load
+- **Interactive Navigation**: Press `K` for details, `gf` to open files
+
+### Use Cases
+- **Identifying slow plugins**: Find which plugins add most startup time
+- **Optimization validation**: Verify performance improvements after changes
+- **Debugging slow startups**: Drill down into specific bottlenecks
+- **Complementary to hyperfine**: Detailed breakdown vs overall timing
+
+**Note**: `vim-startuptime` is for **analysis**, not automated benchmarks. Use `hyperfine` commands above for reproducible CSV data.
+
+---
+
 ## Benchmark Results
 
 ### Version 1.1.0 - Profile-based Plugin Optimization (2025-09-12)
