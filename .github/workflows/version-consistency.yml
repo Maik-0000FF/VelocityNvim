@@ -1,0 +1,162 @@
+name: Version Consistency Check
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'lua/core/version.lua'
+      - 'README.md'
+      - 'CLAUDE.md'
+      - 'CHANGELOG.md'
+      - '.github/project-info.json'
+      - 'docs/ARCHITECTURE.md'
+      - 'docs/ARCHITECTURE-DETAILS.md'
+      - 'THIRD-PARTY-LICENSES.md'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'lua/core/version.lua'
+      - 'README.md'
+      - 'CLAUDE.md'
+      - 'CHANGELOG.md'
+      - '.github/project-info.json'
+      - 'docs/ARCHITECTURE.md'
+      - 'docs/ARCHITECTURE-DETAILS.md'
+      - 'THIRD-PARTY-LICENSES.md'
+
+jobs:
+  check-version:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Extract version from version.lua
+        id: version_lua
+        run: |
+          VERSION=$(grep -oP 'M\.config_version = "\K[^"]+' lua/core/version.lua)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "📦 Version aus version.lua: $VERSION"
+
+      - name: Check README.md version
+        run: |
+          EXPECTED="${{ steps.version_lua.outputs.version }}"
+
+          # Check "NEW in Modern LSP Performance Edition" header
+          if ! grep -q "NEW in Modern LSP Performance Edition (v$EXPECTED)" README.md; then
+            echo "❌ FEHLER: README.md enthält nicht 'NEW in Modern LSP Performance Edition (v$EXPECTED)'"
+            echo "Gefunden:"
+            grep "NEW in Modern LSP Performance Edition" README.md || echo "  Keine passende Zeile gefunden"
+            exit 1
+          fi
+
+          echo "✅ README.md Version korrekt: v$EXPECTED"
+
+      - name: Check CLAUDE.md version
+        run: |
+          EXPECTED="${{ steps.version_lua.outputs.version }}"
+
+          # Check "Current Version" line
+          if ! grep -q "Current Version.*: $EXPECTED" CLAUDE.md; then
+            echo "❌ FEHLER: CLAUDE.md enthält nicht 'Current Version: $EXPECTED'"
+            echo "Gefunden:"
+            grep "Current Version" CLAUDE.md || echo "  Keine 'Current Version' Zeile gefunden"
+            exit 1
+          fi
+
+          # Check "Version:" line in Quick Reference
+          if ! grep -q "Version.*: $EXPECTED" CLAUDE.md; then
+            echo "❌ FEHLER: CLAUDE.md enthält nicht 'Version: $EXPECTED' in Quick Reference"
+            echo "Gefunden:"
+            grep "^- \*\*Version\*\*:" CLAUDE.md || echo "  Keine Version-Zeile gefunden"
+            exit 1
+          fi
+
+          echo "✅ CLAUDE.md Version korrekt: $EXPECTED"
+
+      - name: Check project-info.json version
+        run: |
+          EXPECTED="${{ steps.version_lua.outputs.version }}"
+          JSON_VERSION=$(grep -oP '"version": "\K[^"]+' .github/project-info.json)
+
+          if [ "$JSON_VERSION" != "$EXPECTED" ]; then
+            echo "❌ FEHLER: project-info.json Version '$JSON_VERSION' ≠ '$EXPECTED'"
+            exit 1
+          fi
+
+          echo "✅ project-info.json Version korrekt: $EXPECTED"
+
+      - name: Check CHANGELOG.md version
+        run: |
+          EXPECTED="${{ steps.version_lua.outputs.version }}"
+
+          # Check if version exists in changelog (format: "## v1.0.1")
+          if ! grep -q "^## v$EXPECTED " CHANGELOG.md; then
+            echo "⚠️ WARNUNG: CHANGELOG.md enthält keinen Eintrag für v$EXPECTED"
+            echo "Gefundene Versionen:"
+            grep "^## v" CHANGELOG.md | head -5
+            echo ""
+            echo "Dies ist nur eine Warnung - Changelog wird möglicherweise nach Release aktualisiert"
+          else
+            echo "✅ CHANGELOG.md Version gefunden: v$EXPECTED"
+          fi
+
+      - name: Check ARCHITECTURE.md version
+        run: |
+          EXPECTED="${{ steps.version_lua.outputs.version }}"
+
+          if ! grep -q "Current Version: $EXPECTED" docs/ARCHITECTURE.md; then
+            echo "❌ FEHLER: ARCHITECTURE.md enthält nicht 'Current Version: $EXPECTED'"
+            echo "Gefunden:"
+            grep "Current Version:" docs/ARCHITECTURE.md || echo "  Keine 'Current Version' Zeile gefunden"
+            exit 1
+          fi
+
+          echo "✅ ARCHITECTURE.md Version korrekt: $EXPECTED"
+
+      - name: Check ARCHITECTURE-DETAILS.md version
+        run: |
+          EXPECTED="${{ steps.version_lua.outputs.version }}"
+
+          if ! grep -q "Current Version: $EXPECTED" docs/ARCHITECTURE-DETAILS.md; then
+            echo "❌ FEHLER: ARCHITECTURE-DETAILS.md enthält nicht 'Current Version: $EXPECTED'"
+            echo "Gefunden:"
+            grep "Current Version:" docs/ARCHITECTURE-DETAILS.md || echo "  Keine 'Current Version' Zeile gefunden"
+            exit 1
+          fi
+
+          echo "✅ ARCHITECTURE-DETAILS.md Version korrekt: $EXPECTED"
+
+      - name: Check THIRD-PARTY-LICENSES.md version
+        run: |
+          EXPECTED="${{ steps.version_lua.outputs.version }}"
+
+          if ! grep -q "VelocityNvim Version.*: $EXPECTED" THIRD-PARTY-LICENSES.md; then
+            echo "❌ FEHLER: THIRD-PARTY-LICENSES.md enthält nicht 'VelocityNvim Version: $EXPECTED'"
+            echo "Gefunden:"
+            grep "VelocityNvim Version" THIRD-PARTY-LICENSES.md || echo "  Keine Version-Zeile gefunden"
+            exit 1
+          fi
+
+          echo "✅ THIRD-PARTY-LICENSES.md Version korrekt: $EXPECTED"
+
+      - name: Version Consistency Summary
+        if: success()
+        run: |
+          echo ""
+          echo "════════════════════════════════════════"
+          echo "✅ ALLE VERSION-CHECKS ERFOLGREICH"
+          echo "════════════════════════════════════════"
+          echo "Version: ${{ steps.version_lua.outputs.version }}"
+          echo ""
+          echo "Überprüfte Dateien:"
+          echo "  ✅ lua/core/version.lua (Quelle)"
+          echo "  ✅ README.md"
+          echo "  ✅ CLAUDE.md"
+          echo "  ✅ .github/project-info.json"
+          echo "  ✅ CHANGELOG.md (Warnung bei fehlender Version)"
+          echo "  ✅ docs/ARCHITECTURE.md"
+          echo "  ✅ docs/ARCHITECTURE-DETAILS.md"
+          echo "  ✅ THIRD-PARTY-LICENSES.md"
+          echo "════════════════════════════════════════"

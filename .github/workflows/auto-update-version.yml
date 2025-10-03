@@ -1,0 +1,96 @@
+name: Auto-Update Public Documentation Version
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'lua/core/version.lua'
+
+jobs:
+  update-version:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract version from version.lua
+        id: extract_version
+        run: |
+          VERSION=$(grep -oP 'M\.config_version = "\K[^"]+' lua/core/version.lua)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "📦 Extrahierte Version: $VERSION"
+
+      - name: Update README.md
+        run: |
+          VERSION="${{ steps.extract_version.outputs.version }}"
+
+          # Update "NEW in Modern LSP Performance Edition (vX.X.X)"
+          sed -i "s/NEW in Modern LSP Performance Edition (v[0-9.]*)/NEW in Modern LSP Performance Edition (v$VERSION)/" README.md
+
+          echo "✅ README.md aktualisiert auf v$VERSION"
+
+      - name: Update project-info.json
+        run: |
+          VERSION="${{ steps.extract_version.outputs.version }}"
+
+          # Update "version" field in JSON
+          sed -i "s/\"version\": \"[0-9.]*\"/\"version\": \"$VERSION\"/" .github/project-info.json
+
+          echo "✅ project-info.json aktualisiert auf $VERSION"
+
+      - name: Update index.html
+        run: |
+          VERSION="${{ steps.extract_version.outputs.version }}"
+
+          # Update "softwareVersion" in JSON-LD structured data
+          sed -i "s/\"softwareVersion\": \"[0-9.]*\"/\"softwareVersion\": \"$VERSION\"/" index.html
+
+          echo "✅ index.html aktualisiert auf $VERSION"
+
+      - name: Check for changes
+        id: check_changes
+        run: |
+          if git diff --quiet; then
+            echo "changes=false" >> $GITHUB_OUTPUT
+            echo "ℹ️ Keine Änderungen erforderlich - alle Dateien bereits aktuell"
+          else
+            echo "changes=true" >> $GITHUB_OUTPUT
+            echo "📝 Änderungen gefunden:"
+            git diff --name-only
+          fi
+
+      - name: Commit and push changes
+        if: steps.check_changes.outputs.changes == 'true'
+        run: |
+          VERSION="${{ steps.extract_version.outputs.version }}"
+
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+
+          git add README.md .github/project-info.json index.html
+
+          git commit -m "docs: Auto-update public documentation to version $VERSION
+
+- Update README.md version header
+- Update project-info.json version field
+- Update index.html softwareVersion in structured data"
+
+          git push
+
+      - name: Summary
+        if: steps.check_changes.outputs.changes == 'true'
+        run: |
+          echo ""
+          echo "════════════════════════════════════════"
+          echo "✅ DOKUMENTATION AUTOMATISCH AKTUALISIERT"
+          echo "════════════════════════════════════════"
+          echo "Version: ${{ steps.extract_version.outputs.version }}"
+          echo ""
+          echo "Aktualisierte Dateien:"
+          echo "  ✅ README.md"
+          echo "  ✅ .github/project-info.json"
+          echo "  ✅ index.html"
+          echo "════════════════════════════════════════"
