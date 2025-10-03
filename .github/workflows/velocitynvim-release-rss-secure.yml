@@ -30,13 +30,14 @@ jobs:
 
       - name: Generate VelocityNvim RSS Feed (Atom Format RFC 4287)
         run: |
+          set -x  # Debug mode
           # VelocityNvim RSS Feed Verzeichnis erstellen
           mkdir -p docs/feeds/velocitynvim
 
-          # VelocityNvim RSS Feed generieren (Atom Format - sicherer als RSS 2.0)
-          cat > docs/feeds/velocitynvim/releases-secure.xml << 'VELOCITYNVIM_RSS_EOF'
-          <?xml version="1.0" encoding="UTF-8"?>
-          <feed xmlns="http://www.w3.org/2005/Atom">
+          # VelocityNvim RSS Feed Header generieren
+          cat > docs/feeds/velocitynvim/releases-secure.xml << 'EOF'
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
             <title>VelocityNvim Official Releases</title>
             <subtitle>Native Neovim Configuration - Performance-Optimized</subtitle>
             <link href="https://github.com/Maik-0000FF/VelocityNvim"/>
@@ -49,7 +50,7 @@ jobs:
               <email>maikblu.github@web.de</email>
             </author>
             <icon>https://github.com/Maik-0000FF.png</icon>
-          VELOCITYNVIM_RSS_EOF
+EOF
 
           # VelocityNvim Releases via Public GitHub API abrufen (KEIN TOKEN NÖTIG)
           echo "🔍 Fetching VelocityNvim releases from GitHub API..."
