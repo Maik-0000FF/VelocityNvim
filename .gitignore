@@ -82,10 +82,6 @@ CLAUDE.md
 
 # Development and internal files
 *debug*.log
-VIDEO-GUIDE.md
-
-# Internal setup and deployment documentation (not for public release)
-setup/
 docs/EMOJI_POLICY.md
 
 # Test and installation documentation (not for repository)
@@ -111,22 +107,13 @@ docs/DEVELOPMENT.md
 docs/ARCHITECTURE-DETAILS.md
 docs/SOLUTIONS.md
 
-# Internal security documentation (technical implementation details)
-docs/SECURITY-INTERNAL.md
-
-# SEO strategy files (keep private - internal planning)
-seo/strategy/
-
-# === DATENSCHUTZ & PRIVACY (CRITICAL) ===
-# Diese Dateien NIEMALS committen - enthalten potentiell sensible Daten
-
-# Persönliche Informationen
+# Private files
+private/
 *personal*
-*private*
 *confidential*
 *secret*
 
-# Credentials und Tokens
+# Credentials
 *.pem
 *.key
 *.cert
@@ -136,53 +123,38 @@ auth.json
 secrets.json
 token.txt
 *.token
-
-# SSH Keys
 id_rsa*
 id_ed25519*
 *.pub.private
-
-# Konfigurationsdateien mit potentiell sensiblen Daten
 config.local.*
 *.credentials
 *.passwd
-
-# GitHub CLI Token-Cache (bereits im Keyring, aber sicher ist sicher)
 .config/gh/
 gh-token*
-
-# Browser-Daten (falls versehentlich im Projekt)
 cookies.txt
 *.cookie
 
-# Backup-Dateien mit potentiell sensiblen Daten
+# Backups
 *backup.tar.gz
 *backup.zip
 backup/personal/
 backup/private/
 
-# Temporäre Entwickler-Notizen (könnten private Infos enthalten)
+# Development notes
 NOTES.txt
 TODO.txt
 notes/
 scratch/
 
-# Email-Exports oder Adressbuch-Daten
+# Data exports
 *.mbox
 *.vcf
 contacts.*
-
-# Finanz- oder Banking-bezogene Dateien
 *invoice*
 *rechnung*
 *banking*
 
-# === ASSETS & MEDIA FILES ===
-# Private branding assets (logos, screenshots for personal use only)
-assets/private/
-assets/private/**
-
-# Temporary media files
+# Temporary files
 *.tmp.png
 *.tmp.jpg
 *-temp.*

@@ -1,0 +1,113 @@
+name: VelocityNvim Secure Release RSS Feed Generator
+
+# Workflow Purpose: Generiert sicheren RSS Feed für VelocityNvim Releases
+# Security Level: MAXIMUM - Zero Secrets Exposure
+# Target: IFTTT RSS-to-X Integration für @VelocityNvim Account
+
+on:
+  release:
+    types: [published, edited]
+  workflow_dispatch:  # Manueller Trigger für VelocityNvim Release Tests
+
+permissions:
+  contents: write  # Nur für VelocityNvim RSS-Update nötig, keine weiteren Permissions
+
+jobs:
+  velocitynvim-generate-secure-rss:
+    name: Generate VelocityNvim Secure RSS Feed
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout VelocityNvim Repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false  # Security: Keine GitHub Credentials cachen
+
+      - name: Generate VelocityNvim RSS Feed (Atom Format RFC 4287)
+        run: |
+          # VelocityNvim RSS Feed Verzeichnis erstellen
+          mkdir -p docs/feeds/velocitynvim
+
+          # VelocityNvim RSS Feed generieren (Atom Format - sicherer als RSS 2.0)
+          cat > docs/feeds/velocitynvim/releases-secure.xml << 'VELOCITYNVIM_RSS_EOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <feed xmlns="http://www.w3.org/2005/Atom">
+            <title>VelocityNvim Official Releases</title>
+            <subtitle>Native Neovim Configuration - Performance-Optimized</subtitle>
+            <link href="https://github.com/Maik-0000FF/VelocityNvim"/>
+            <link rel="self" href="https://maik-0000ff.github.io/VelocityNvim/feeds/velocitynvim/releases-secure.xml"/>
+            <updated>$(date -u +"%Y-%m-%dT%H:%M:%SZ")</updated>
+            <id>https://github.com/Maik-0000FF/VelocityNvim/releases</id>
+            <author>
+              <name>VelocityNvim Project</name>
+              <uri>https://github.com/Maik-0000FF/VelocityNvim</uri>
+              <email>maikblu.github@web.de</email>
+            </author>
+            <icon>https://github.com/Maik-0000FF.png</icon>
+          VELOCITYNVIM_RSS_EOF
+
+          # VelocityNvim Releases via Public GitHub API abrufen (KEIN TOKEN NÖTIG)
+          echo "🔍 Fetching VelocityNvim releases from GitHub API..."
+          curl -s "https://api.github.com/repos/Maik-0000FF/VelocityNvim/releases?per_page=10" | \
+          jq -r '.[] |
+            "<entry>\n" +
+            "  <title>VelocityNvim " + .tag_name + " - " + .name + "</title>\n" +
+            "  <link href=\"" + .html_url + "\"/>\n" +
+            "  <id>" + .html_url + "</id>\n" +
+            "  <published>" + .published_at + "</published>\n" +
+            "  <updated>" + .published_at + "</updated>\n" +
+            "  <content type=\"html\">" + (.body // "VelocityNvim Release" | @html) + "</content>\n" +
+            "  <summary>VelocityNvim " + .tag_name + " released</summary>\n" +
+            "</entry>"' >> docs/feeds/velocitynvim/releases-secure.xml
+
+          # VelocityNvim RSS Feed schließen
+          echo "</feed>" >> docs/feeds/velocitynvim/releases-secure.xml
+
+          # XML Validierung für VelocityNvim Feed
+          if ! xmllint --noout docs/feeds/velocitynvim/releases-secure.xml 2>/dev/null; then
+            echo "❌ VelocityNvim RSS Feed Validierung fehlgeschlagen"
+            exit 1
+          fi
+
+          echo "✅ VelocityNvim RSS Feed erfolgreich generiert und validiert"
+
+      - name: VelocityNvim Security Check - No Secrets in Feed
+        run: |
+          echo "🔒 Running VelocityNvim Security Scan..."
+
+          # Prüfe auf potenzielle Secrets im VelocityNvim Feed
+          if grep -iE '(token|password|secret|api[_-]?key|private[_-]?key)' docs/feeds/velocitynvim/releases-secure.xml; then
+            echo "⚠️ SECURITY ALERT: Potenzielle Secrets im VelocityNvim Feed erkannt!"
+            exit 1
+          fi
+
+          # Prüfe auf private Daten (Telefonnummern, Adressen)
+          if grep -iE '(\+49|[0-9]{10,}|strasse|straße)' docs/feeds/velocitynvim/releases-secure.xml; then
+            echo "⚠️ PRIVACY ALERT: Private Daten im VelocityNvim Feed erkannt!"
+            exit 1
+          fi
+
+          echo "✅ VelocityNvim Security Check bestanden - Feed ist sauber"
+
+      - name: Deploy VelocityNvim RSS to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}  # Auto-generiert von GitHub, read-only
+          publish_dir: ./docs
+          enable_jekyll: false
+          destination_dir: feeds/velocitynvim
+          user_name: 'velocitynvim-bot[bot]'
+          user_email: 'velocitynvim-bot[bot]@users.noreply.github.com'
+          commit_message: 'docs(velocitynvim): Update secure RSS feed for releases'
+
+      - name: VelocityNvim RSS Feed URL Output
+        run: |
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "✅ VelocityNvim Secure RSS Feed Generated"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo ""
+          echo "📡 VelocityNvim RSS Feed URL:"
+          echo "https://maik-0000ff.github.io/VelocityNvim/feeds/velocitynvim/releases-secure.xml"
+          echo ""
+          echo "🔗 Use this URL in IFTTT for VelocityNvim X automation"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
