@@ -37,6 +37,15 @@ echo -e "${GREEN}✓${NC} Neovim: $NVIM_VERSION"
 API_LEVEL=$(NVIM_APPNAME=VelocityNvim nvim --headless -c "lua print(vim.version().api_level)" -c "qall" 2>&1 | tail -1)
 echo -e "${GREEN}✓${NC} API Level: $API_LEVEL"
 
+# 6. CPU Info (model name)
+CPU_MODEL=$(grep "model name" /proc/cpuinfo | head -1 | cut -d':' -f2 | xargs)
+echo -e "${GREEN}✓${NC} CPU: $CPU_MODEL"
+
+# 7. RAM Total (in GB)
+RAM_TOTAL_KB=$(grep "MemTotal" /proc/meminfo | awk '{print $2}')
+RAM_TOTAL_GB=$(echo "scale=1; $RAM_TOTAL_KB / 1024 / 1024" | bc)
+echo -e "${GREEN}✓${NC} RAM: ${RAM_TOTAL_GB}GB"
+
 echo
 echo "Preparing system for benchmark..."
 sync && sleep 2
@@ -53,21 +62,21 @@ done
 
 # Berechne Cold (1-5) und Warm (6-10) Durchschnitte
 COLD_SUM=$(echo "${STARTUP_TIMES[0]} + ${STARTUP_TIMES[1]} + ${STARTUP_TIMES[2]} + ${STARTUP_TIMES[3]} + ${STARTUP_TIMES[4]}" | bc)
-COLD_AVG=$(echo "scale=4; $COLD_SUM / 5 / 1000" | bc -l | awk '{printf "%.4f", $0}')
+COLD_AVG=$(echo "scale=4; $COLD_SUM / 5 / 1000" | bc -l | python3 -c "import sys; print(f'{float(sys.stdin.read().strip()):.4f}')")
 echo -e "${GREEN}✓${NC} Cold Avg (Runs 1-5): ${COLD_AVG}s"
 
 WARM_SUM=$(echo "${STARTUP_TIMES[5]} + ${STARTUP_TIMES[6]} + ${STARTUP_TIMES[7]} + ${STARTUP_TIMES[8]} + ${STARTUP_TIMES[9]}" | bc)
-WARM_AVG=$(echo "scale=4; $WARM_SUM / 5 / 1000" | bc -l | awk '{printf "%.4f", $0}')
+WARM_AVG=$(echo "scale=4; $WARM_SUM / 5 / 1000" | bc -l | python3 -c "import sys; print(f'{float(sys.stdin.read().strip()):.4f}')")
 echo -e "${GREEN}✓${NC} Warm Avg (Runs 6-10): ${WARM_AVG}s"
 
 OVERALL_SUM=$(echo "$COLD_SUM + $WARM_SUM" | bc)
-OVERALL_AVG=$(echo "scale=4; $OVERALL_SUM / 10 / 1000" | bc -l | awk '{printf "%.4f", $0}')
+OVERALL_AVG=$(echo "scale=4; $OVERALL_SUM / 10 / 1000" | bc -l | python3 -c "import sys; print(f'{float(sys.stdin.read().strip()):.4f}')")
 echo -e "${GREEN}✓${NC} Overall Avg: ${OVERALL_AVG}s"
 
 # Berechne Median (resistant to outliers)
 SORTED_TIMES=($(printf '%s\n' "${STARTUP_TIMES[@]}" | sort -n))
 MEDIAN_MS=$(echo "scale=4; (${SORTED_TIMES[4]} + ${SORTED_TIMES[5]}) / 2" | bc)
-MEDIAN_S=$(echo "scale=4; $MEDIAN_MS / 1000" | bc -l | awk '{printf "%.4f", $0}')
+MEDIAN_S=$(echo "scale=4; $MEDIAN_MS / 1000" | bc -l | python3 -c "import sys; print(f'{float(sys.stdin.read().strip()):.4f}')")
 echo -e "${GREEN}✓${NC} Overall Median: ${MEDIAN_S}s (resistant to outliers)"
 
 echo
@@ -99,14 +108,14 @@ echo "Running health check..."
 HEALTH_START=$(date +%s%N)
 NVIM_APPNAME=VelocityNvim nvim --headless -c "lua require('tests.isolated_test_runner').health_check()" -c "qall" >/dev/null 2>&1
 HEALTH_END=$(date +%s%N)
-HEALTH_CHECK_S=$(echo "scale=3; ($HEALTH_END - $HEALTH_START) / 1000000000" | bc)
+HEALTH_CHECK_S=$(echo "scale=3; ($HEALTH_END - $HEALTH_START) / 1000000000" | bc | python3 -c "import sys; print(f'{float(sys.stdin.read().strip()):.3f}')")
 echo -e "${GREEN}✓${NC} Health check: ${HEALTH_CHECK_S}s"
 
 # 15. Plugin Count (automatisch aus manage.lua gezählt)
 PLUGIN_COUNT=$(NVIM_APPNAME=VelocityNvim nvim --headless -c "lua local m = require('plugins.manage'); print(vim.tbl_count(m.plugins))" -c "qall" 2>&1 | tail -1)
 
 # Info: Vergleiche mit letztem Benchmark (nur zur Information)
-CSV_FILE="$(dirname "$0")/../docs/benchmark_results.csv"
+CSV_FILE="$(dirname "$0")/../../docs/benchmark_results.csv"
 if [ -f "$CSV_FILE" ]; then
   LAST_PLUGIN_COUNT=$(tail -1 "$CSV_FILE" | cut -d',' -f15)
   if [ -n "$LAST_PLUGIN_COUNT" ] && [ "$LAST_PLUGIN_COUNT" != "Plugin_Count" ]; then
@@ -137,8 +146,8 @@ echo "  CSV Entry"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo
 
-# Generate CSV line (with median)
-CSV_LINE="$DATE,$TIME,$VERSION,Linux $SYSTEM,$NVIM_VERSION,$API_LEVEL,$COLD_AVG,$WARM_AVG,$OVERALL_AVG,$MEDIAN_S,$LSP_1000OPS_MS,$LSP_PER_OP_US,$PLUGIN_LOAD_US,$MEMORY_MB,$HEALTH_CHECK_S,$PLUGIN_COUNT,$TEST_TYPE,$NOTES"
+# Generate CSV line (with median, CPU, RAM)
+CSV_LINE="$DATE,$TIME,$VERSION,Linux $SYSTEM,$NVIM_VERSION,$API_LEVEL,$CPU_MODEL,$RAM_TOTAL_GB,$COLD_AVG,$WARM_AVG,$OVERALL_AVG,$MEDIAN_S,$LSP_1000OPS_MS,$LSP_PER_OP_US,$PLUGIN_LOAD_US,$MEMORY_MB,$HEALTH_CHECK_S,$PLUGIN_COUNT,$TEST_TYPE,$NOTES"
 
 echo "$CSV_LINE"
 echo
@@ -148,7 +157,7 @@ echo -e "${YELLOW}Append to docs/benchmark_results.csv? (y/n):${NC}"
 read -r APPEND_CONFIRM
 
 if [[ "$APPEND_CONFIRM" == "y" || "$APPEND_CONFIRM" == "Y" ]]; then
-  CSV_FILE="$(dirname "$0")/../docs/benchmark_results.csv"
+  CSV_FILE="$(dirname "$0")/../../docs/benchmark_results.csv"
   echo "$CSV_LINE" >> "$CSV_FILE"
   echo -e "${GREEN}✓${NC} Appended to benchmark_results.csv"
 else

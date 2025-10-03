@@ -12,7 +12,7 @@ This file tracks performance improvements across VelocityNvim versions to enable
 
 #### CSV File Structure:
 ```csv
-Date,Time,Version,System,Neovim_Version,API_Level,Cold_Startup_s,Warm_Startup_s,Overall_Avg_s,Overall_Median_s,LSP_1000ops_ms,LSP_per_op_µs,Plugin_Load_µs,Memory_MB,Health_Check_s,Plugin_Count,Test_Type,Notes
+Date,Time,Version,System,Neovim_Version,API_Level,CPU_Model,RAM_GB,Cold_Startup_s,Warm_Startup_s,Overall_Avg_s,Overall_Median_s,LSP_1000ops_ms,LSP_per_op_µs,Plugin_Load_µs,Memory_MB,Health_Check_s,Plugin_Count,Test_Type,Notes
 ```
 
 #### Column Descriptions:
@@ -21,6 +21,8 @@ Date,Time,Version,System,Neovim_Version,API_Level,Cold_Startup_s,Warm_Startup_s,
 - **System**: OS and kernel info (e.g., "Linux archdesk 6.16.8")
 - **Neovim_Version**: Neovim version (e.g., "0.11.4")
 - **API_Level**: Neovim API level for compatibility tracking
+- **CPU_Model**: CPU model name (e.g., "Intel Core i7-9700K @ 3.60GHz")
+- **RAM_GB**: Total system RAM in gigabytes (e.g., "32.0")
 - **Cold_Startup_s**: Average cold start time in seconds (runs 1-5)
 - **Warm_Startup_s**: Average warm start time in seconds (runs 6-10)
 - **Overall_Avg_s**: Overall average startup time (mean of all 10 runs)
@@ -46,7 +48,7 @@ Date,Time,Version,System,Neovim_Version,API_Level,Cold_Startup_s,Warm_Startup_s,
 #### Automated Integration:
 ```bash
 # Example benchmark script integration:
-echo "$(date +%Y-%m-%d),$(date +%H:%M),$version,$system,$nvim_version,$api_level,$cold,$warm,$avg,$lsp_total,$lsp_per_op,$plugin_load,$memory,$health,$plugin_count,$test_type,$notes" >> docs/benchmark_results.csv
+echo "$(date +%Y-%m-%d),$(date +%H:%M),$version,$system,$nvim_version,$api_level,$cpu_model,$ram_gb,$cold,$warm,$avg,$median,$lsp_total,$lsp_per_op,$plugin_load,$memory,$health,$plugin_count,$test_type,$notes" >> docs/benchmark_results.csv
 ```
 
 ### Data Analysis Guidelines
@@ -132,7 +134,7 @@ tail -1 docs/benchmark_results.csv | awk -F, '{diff=($9-$10)/$10*100; printf "Me
 **For consistent and reproducible benchmarks, use the official benchmark script:**
 
 ```bash
-bash scripts/collect_benchmark_data.sh
+bash scripts/benchmarks/collect_benchmark_data.sh
 ```
 
 **This script automatically:**
@@ -251,14 +253,14 @@ NVIM_APPNAME=VelocityNvim nvim --headless \
 ### 7. Add to CSV
 ```bash
 # Manual entry format (replace values with actual results):
-echo "YYYY-MM-DD,HH:MM,version,Linux X.XX.X-archX-X,X.XX.X,API_level,cold_avg,warm_avg,overall_mean,overall_median,lsp_ms,lsp_µs,plugin_µs,memory_mb,health_s,plugin_count,test_type,notes" >> docs/benchmark_results.csv
+echo "YYYY-MM-DD,HH:MM,version,Linux X.XX.X-archX-X,X.XX.X,API_level,CPU_Model,RAM_GB,cold_avg,warm_avg,overall_mean,overall_median,lsp_ms,lsp_µs,plugin_µs,memory_mb,health_s,plugin_count,test_type,notes" >> docs/benchmark_results.csv
 
 # Example with actual values:
-echo "2025-10-03,11:30,1.0.1,Linux 6.16.10-arch1-1,0.11.4,13,0.2345,0.1987,0.2166,0.2012,0.91,0.91,0.347,18.1,0.523,26,fresh_installation,10-run benchmark with median tracking" >> docs/benchmark_results.csv
+echo "2025-10-03,11:30,1.0.1,Linux 6.16.10-arch1-1,0.11.4,13,Intel Core i7-9700K @ 3.60GHz,32.0,0.2345,0.1987,0.2166,0.2012,0.91,0.91,0.347,18.1,0.523,26,fresh_installation,10-run benchmark with CPU and RAM tracking" >> docs/benchmark_results.csv
 ```
 
 ### Notes on Benchmark Execution
-- **Use the automated script** (`scripts/collect_benchmark_data.sh`) for official benchmarks
+- **Use the automated script** (`scripts/benchmarks/collect_benchmark_data.sh`) for official benchmarks
 - **Run benchmarks after fresh installation** for baseline measurements
 - **Close other applications** to minimize system load interference
 - **10 runs with median** - resistant to outliers (statistical best practice)
@@ -505,14 +507,14 @@ Performance settings modified:
 ---
 
 **Benchmarking Guidelines:**
-1. **Use automated benchmark script** (`scripts/collect_benchmark_data.sh`)
+1. **Use automated benchmark script** (`scripts/benchmarks/collect_benchmark_data.sh`)
 2. Always test on fresh installation to avoid cached data
 3. Run multiple iterations for statistical significance (script does 5 runs)
 4. Document hardware/software environment changes
 5. Include both absolute values and relative improvements
 6. Test both cold start and warm cache scenarios
 7. **Follow BENCHMARKS.md standards** - no ad-hoc testing
-8. **Update benchmark_results.csv** with all 16 data points
+8. **Update benchmark_results.csv** with all 20 data points (including CPU/RAM)
 9. **Compare with historical data** before declaring improvements
 10. **Document methodology changes** for reproducibility
 
@@ -522,21 +524,22 @@ VelocityNvim includes a comprehensive benchmark collection script:
 
 ```bash
 # Run complete benchmark suite and append to CSV
-./scripts/collect_benchmark_data.sh
+./scripts/benchmarks/collect_benchmark_data.sh
 
 # Manual benchmark commands (for individual metrics)
 # See "Konsistente Messungen" section below
 ```
 
-**Script collects all 16 CSV columns:**
+**Script collects all 20 CSV columns:**
 1. Date, Time, Version, System, Neovim_Version, API_Level
-2. Cold_Startup_s, Warm_Startup_s, Overall_Avg_s (5 runs, native hrtime)
-3. LSP_1000ops_ms, LSP_per_op_µs (1000 iterations)
-4. Plugin_Load_µs (require time)
-5. Memory_MB (resident set size)
-6. Health_Check_s (test suite runtime)
-7. **Plugin_Count (AUTOMATISCH aus manage.lua gezählt - NIEMALS manuell eingeben!)**
-8. Test_Type, Notes (manual input)
+2. **CPU_Model, RAM_GB (system hardware info)**
+3. Cold_Startup_s, Warm_Startup_s, Overall_Avg_s, Overall_Median_s (10 runs, native hrtime)
+4. LSP_1000ops_ms, LSP_per_op_µs (1000 iterations)
+5. Plugin_Load_µs (require time)
+6. Memory_MB (resident set size)
+7. Health_Check_s (test suite runtime)
+8. **Plugin_Count (AUTOMATISCH aus manage.lua gezählt - NIEMALS manuell eingeben!)**
+9. Test_Type, Notes (manual input)
 
 This benchmark file enables precise performance tracking and regression detection across VelocityNvim development.
 
@@ -550,12 +553,14 @@ This benchmark file enables precise performance tracking and regression detectio
 
 **1. Automatisierte Benchmark-Collection (EMPFOHLEN):**
 ```bash
-# Vollständige Benchmark-Suite mit allen 16 Metriken
-./scripts/collect_benchmark_data.sh
+# Vollständige Benchmark-Suite mit allen 20 Metriken
+./scripts/benchmarks/collect_benchmark_data.sh
 
 # Automatisch erfasst:
 # - Date, Time, Version, System, Neovim_Version, API_Level
-# - Cold/Warm/Overall Startup (5 runs mit native hrtime)
+# - CPU_Model, RAM_GB (Hardware-Tracking)
+# - Cold/Warm/Overall Startup (10 runs mit native hrtime)
+# - Overall Median (outlier-resistant)
 # - LSP Performance (1000 iterations)
 # - Plugin Load Time (native hrtime)
 # - Memory Usage (RSS in MB)
@@ -615,7 +620,7 @@ Press 'b' im Dashboard
 
 **Bei JEDER Performance-Analyse:**
 1. **Read BENCHMARKS.md**: Aktuelle Baseline verstehen
-2. **Run Automated Script**: `./scripts/collect_benchmark_data.sh`
+2. **Run Automated Script**: `./scripts/benchmarks/collect_benchmark_data.sh`
 3. **Compare Results**: Mit benchmark_results.csv abgleichen
 4. **Verify Plausibility**: Startup-Zeit im Dashboard prüfen
 5. **Update CSV**: Script fügt automatisch neue Zeile hinzu

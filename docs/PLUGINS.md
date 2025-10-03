@@ -642,7 +642,7 @@ end
 #### Integration mit Benchmark System:
 ```bash
 # Automatisiertes Benchmarking
-./scripts/collect_benchmark_data.sh
+./scripts/benchmarks/collect_benchmark_data.sh
 
 # Sammelt automatisch:
 # - Native startup time (hrtime-basiert)

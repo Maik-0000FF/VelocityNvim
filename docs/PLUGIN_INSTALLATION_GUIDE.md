@@ -161,7 +161,7 @@ Im Neovim prüfen:
 
 #### 4.3 Performance-Impact messen
 ```bash
-./scripts/collect_benchmark_data.sh
+./scripts/benchmarks/collect_benchmark_data.sh
 ```
 
 Akzeptable Werte:

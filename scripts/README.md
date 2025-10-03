@@ -31,9 +31,19 @@ Rust builder scripts feature:
 
 Maintenance script features:
 - 🔍 **Dynamic path detection** - Automatically detects installation method
-- 🛡️ **Configuration protection** - Never deletes configuration files  
+- 🛡️ **Configuration protection** - Never deletes configuration files
 - ⚠️ **Safety confirmation** - Requires explicit 'YES' confirmation
 - 📊 **Clear reporting** - Shows what will be deleted before action
+
+### 📊 Benchmark Scripts (`scripts/benchmarks/`)
+- **`collect_benchmark_data.sh`** - Automated benchmark data collection with CPU/RAM tracking
+
+Benchmark script features:
+- 📈 **20 metrics collected** - Startup, LSP, memory, plugin count, CPU, RAM
+- 🎯 **10-run methodology** - Mean and median tracking (outlier resistant)
+- 🔄 **Auto-CSV export** - Direct append to `docs/benchmark_results.csv`
+- 🖥️ **Hardware tracking** - CPU model and RAM size for comparisons
+- 🐍 **Python formatting** - Guaranteed leading zeros in all numbers
 
 ## 🚀 Usage
 
@@ -64,7 +74,12 @@ bash ./scripts/setup/blink-cmp-rust-builder-linux.sh
 bash ./scripts/setup/blink-cmp-rust-builder-macos.sh
 ```
 
-#### 3. Maintenance
+#### 3. Benchmark Performance
+```bash
+bash ./scripts/benchmarks/collect_benchmark_data.sh
+```
+
+#### 4. Maintenance
 ```bash
 bash ./scripts/maintenance/clean-cache-and-plugins.sh
 ```
@@ -110,9 +125,10 @@ If compilation fails:
 | Category | Scripts | Purpose |
 |----------|---------|---------|
 | Setup | 3 | Dependencies + Rust performance optimization |
+| Benchmarks | 1 | Performance data collection with hardware tracking |
 | Maintenance | 1 | Cache cleaning with path detection |
 
-**Total**: 4 scripts for complete VelocityNvim setup and maintenance.
+**Total**: 5 scripts for complete VelocityNvim setup, benchmarking, and maintenance.
 
 ## 🎯 Performance Impact
 
