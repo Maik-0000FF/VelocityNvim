@@ -74,11 +74,10 @@ jobs:
 
           git add README.md .github/project-info.json index.html
 
-          git commit -m "docs: Auto-update public documentation to version $VERSION
-
-- Update README.md version header
-- Update project-info.json version field
-- Update index.html softwareVersion in structured data"
+          git commit -m "docs: Auto-update public documentation to version $VERSION" \
+                     -m "- Update README.md version header" \
+                     -m "- Update project-info.json version field" \
+                     -m "- Update index.html softwareVersion in structured data"
 
           git push
 
