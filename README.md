@@ -42,7 +42,7 @@ VelocityNvim leverages Neovim's built-in plugin system and **modern vim.lsp.conf
 - **Rust Integration**: Fast tools where beneficial (blink.cmp, fzf-lua)
 - **Stable & Tested**: Comprehensive testing and reliable performance
 
-![VelocityNvim Dashboard](./VelocityNvim_Dashboard_Screenshot.png)
+![VelocityNvim Dashboard](./assets/screenshots/VelocityNvim_Dashboard_Screenshot.png)
 
 *VelocityNvim's customized dashboard with performance metrics and native vim.pack integration*
 

@@ -176,3 +176,13 @@ contacts.*
 *invoice*
 *rechnung*
 *banking*
+
+# === ASSETS & MEDIA FILES ===
+# Private branding assets (logos, screenshots for personal use only)
+assets/private/
+assets/private/**
+
+# Temporary media files
+*.tmp.png
+*.tmp.jpg
+*-temp.*
