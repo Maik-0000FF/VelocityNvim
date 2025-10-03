@@ -35,6 +35,8 @@ jobs:
             - Updated all lastmod dates to $(date +%Y-%m-%d)
             - Triggered by: ${{ github.event_name }}
           labels: automation, seo
+          committer: VelocityNvim SEO Bot <seo-bot@velocitynvim.github>
+          author: VelocityNvim SEO Bot <seo-bot@velocitynvim.github>
 
       - name: Enable auto-merge
         if: steps.create-pr.outputs.pull-request-number != ''
