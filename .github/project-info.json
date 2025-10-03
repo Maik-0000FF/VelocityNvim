@@ -8,7 +8,7 @@
   "programmingLanguage": ["Lua", "Vim script"],
   "runtimePlatform": "Neovim 0.11+",
   "license": "MIT",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "releaseNotes": "Stable Beta - Core features stable and tested",
   "developmentStatus": "Stable Beta",
   "isPartOf": {
