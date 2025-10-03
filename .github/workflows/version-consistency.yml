@@ -6,7 +6,6 @@ on:
     paths:
       - 'lua/core/version.lua'
       - 'README.md'
-      - 'CLAUDE.md'
       - 'CHANGELOG.md'
       - '.github/project-info.json'
       - 'docs/ARCHITECTURE.md'
@@ -17,7 +16,6 @@ on:
     paths:
       - 'lua/core/version.lua'
       - 'README.md'
-      - 'CLAUDE.md'
       - 'CHANGELOG.md'
       - '.github/project-info.json'
       - 'docs/ARCHITECTURE.md'
@@ -52,28 +50,6 @@ jobs:
           fi
 
           echo "✅ README.md Version korrekt: v$EXPECTED"
-
-      - name: Check CLAUDE.md version
-        run: |
-          EXPECTED="${{ steps.version_lua.outputs.version }}"
-
-          # Check "Current Version" line
-          if ! grep -q "Current Version.*: $EXPECTED" CLAUDE.md; then
-            echo "❌ FEHLER: CLAUDE.md enthält nicht 'Current Version: $EXPECTED'"
-            echo "Gefunden:"
-            grep "Current Version" CLAUDE.md || echo "  Keine 'Current Version' Zeile gefunden"
-            exit 1
-          fi
-
-          # Check "Version:" line in Quick Reference
-          if ! grep -q "Version.*: $EXPECTED" CLAUDE.md; then
-            echo "❌ FEHLER: CLAUDE.md enthält nicht 'Version: $EXPECTED' in Quick Reference"
-            echo "Gefunden:"
-            grep "^- \*\*Version\*\*:" CLAUDE.md || echo "  Keine Version-Zeile gefunden"
-            exit 1
-          fi
-
-          echo "✅ CLAUDE.md Version korrekt: $EXPECTED"
 
       - name: Check project-info.json version
         run: |
@@ -153,7 +129,6 @@ jobs:
           echo "Überprüfte Dateien:"
           echo "  ✅ lua/core/version.lua (Quelle)"
           echo "  ✅ README.md"
-          echo "  ✅ CLAUDE.md"
           echo "  ✅ .github/project-info.json"
           echo "  ✅ CHANGELOG.md (Warnung bei fehlender Version)"
           echo "  ✅ docs/ARCHITECTURE.md"
