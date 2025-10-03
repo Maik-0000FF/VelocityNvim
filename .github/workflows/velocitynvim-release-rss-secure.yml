@@ -21,13 +21,15 @@ jobs:
           mkdir -p docs/feeds
 
           # Create feed header
-          cat > docs/feeds/releases.xml << 'EOF'
+          cat > docs/feeds/releases.xml << 'HEADER_EOF'
           <?xml version="1.0" encoding="UTF-8"?>
           <feed xmlns="http://www.w3.org/2005/Atom">
             <title>VelocityNvim Releases</title>
             <link href="https://github.com/Maik-0000FF/VelocityNvim"/>
-            <updated>EOF
-          echo "$(date -u +%Y-%m-%dT%H:%M:%SZ)</updated>" >> docs/feeds/releases.xml
+          HEADER_EOF
+
+          # Add timestamp
+          echo "  <updated>$(date -u +%Y-%m-%dT%H:%M:%SZ)</updated>" >> docs/feeds/releases.xml
 
           # Fetch releases and convert to XML
           curl -s "https://api.github.com/repos/Maik-0000FF/VelocityNvim/releases?per_page=10" | \
