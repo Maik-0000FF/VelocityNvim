@@ -48,16 +48,10 @@ jobs:
           echo "Feed generated successfully"
           cat docs/feeds/releases.xml
 
-      - name: Prepare deployment
+      - name: Commit RSS feed to main branch
         run: |
-          mkdir -p _site
-          cp -r docs/* _site/
-          cp index.html _site/
-
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./_site
-          user_name: 'github-actions[bot]'
-          user_email: 'github-actions[bot]@users.noreply.github.com'
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add docs/feeds/releases.xml
+          git diff --quiet && git diff --staged --quiet || git commit -m "chore: Update RSS feed"
+          git push
