@@ -48,10 +48,16 @@ jobs:
           echo "Feed generated successfully"
           cat docs/feeds/releases.xml
 
+      - name: Prepare deployment
+        run: |
+          mkdir -p _site
+          cp -r docs/* _site/
+          cp index.html _site/
+
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs
+          publish_dir: ./_site
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
