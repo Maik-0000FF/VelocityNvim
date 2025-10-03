@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 # VelocityNvim Benchmark Data Collection Script
 # Sammelt alle Daten für benchmark_results.csv
+#
+# RFC 4180 Compliant CSV Output:
+# - Fields with special characters (parentheses, commas) are quoted
+# - Ensures proper parsing by GitHub, Excel, and other CSV tools
+# - CPU_MODEL and NOTES fields are always quoted to prevent column mismatch
 
 set -euo pipefail
 

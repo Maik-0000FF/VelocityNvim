@@ -44,6 +44,7 @@ Benchmark script features:
 - 🔄 **Auto-CSV export** - Direct append to `docs/benchmark_results.csv`
 - 🖥️ **Hardware tracking** - CPU model and RAM size for comparisons
 - 🐍 **Python formatting** - Guaranteed leading zeros in all numbers
+- 📋 **RFC 4180 compliant** - Proper CSV escaping for special characters
 
 ## 🚀 Usage
 

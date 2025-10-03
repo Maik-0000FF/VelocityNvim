@@ -530,16 +530,21 @@ VelocityNvim includes a comprehensive benchmark collection script:
 # See "Konsistente Messungen" section below
 ```
 
-**Script collects all 20 CSV columns:**
+**Script collects all 20 CSV columns (RFC 4180 compliant):**
 1. Date, Time, Version, System, Neovim_Version, API_Level
-2. **CPU_Model, RAM_GB (system hardware info)**
+2. **CPU_Model, RAM_GB (system hardware info, quoted for special chars)**
 3. Cold_Startup_s, Warm_Startup_s, Overall_Avg_s, Overall_Median_s (10 runs, native hrtime)
 4. LSP_1000ops_ms, LSP_per_op_µs (1000 iterations)
 5. Plugin_Load_µs (require time)
 6. Memory_MB (resident set size)
 7. Health_Check_s (test suite runtime)
 8. **Plugin_Count (AUTOMATISCH aus manage.lua gezählt - NIEMALS manuell eingeben!)**
-9. Test_Type, Notes (manual input)
+9. Test_Type, Notes (manual input, quoted for commas)
+
+**CSV Format Standards:**
+- RFC 4180 compliant output for maximum compatibility
+- CPU_MODEL and NOTES fields are quoted to handle special characters
+- Ensures proper parsing by GitHub, Excel, LibreOffice, and CSV tools
 
 This benchmark file enables precise performance tracking and regression detection across VelocityNvim development.
 
