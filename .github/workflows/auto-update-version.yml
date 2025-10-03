@@ -64,34 +64,47 @@ jobs:
             git diff --name-only
           fi
 
-      - name: Commit and push changes
+      - name: Create Pull Request
         if: steps.check_changes.outputs.changes == 'true'
-        run: |
-          VERSION="${{ steps.extract_version.outputs.version }}"
+        id: create-pr
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "docs: Auto-update public documentation to version ${{ steps.extract_version.outputs.version }}"
+          branch: auto-version-update-${{ steps.extract_version.outputs.version }}
+          delete-branch: true
+          title: "docs: Auto-update documentation to version ${{ steps.extract_version.outputs.version }}"
+          body: |
+            Automated version update triggered by changes to `lua/core/version.lua`
 
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
+            **Changes:**
+            - Update README.md version header to v${{ steps.extract_version.outputs.version }}
+            - Update project-info.json version field to ${{ steps.extract_version.outputs.version }}
+            - Update index.html softwareVersion to ${{ steps.extract_version.outputs.version }}
 
-          git add README.md .github/project-info.json index.html
+            **Source:** lua/core/version.lua
+          labels: automation, documentation
 
-          git commit -m "docs: Auto-update public documentation to version $VERSION" \
-                     -m "- Update README.md version header" \
-                     -m "- Update project-info.json version field" \
-                     -m "- Update index.html softwareVersion in structured data"
-
-          git push
+      - name: Enable auto-merge
+        if: steps.create-pr.outputs.pull-request-number != ''
+        run: gh pr merge --auto --squash ${{ steps.create-pr.outputs.pull-request-number }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Summary
-        if: steps.check_changes.outputs.changes == 'true'
+        if: steps.create-pr.outputs.pull-request-number != ''
         run: |
           echo ""
           echo "════════════════════════════════════════"
-          echo "✅ DOKUMENTATION AUTOMATISCH AKTUALISIERT"
+          echo "✅ PULL REQUEST ERSTELLT"
           echo "════════════════════════════════════════"
           echo "Version: ${{ steps.extract_version.outputs.version }}"
+          echo "PR #${{ steps.create-pr.outputs.pull-request-number }}"
           echo ""
           echo "Aktualisierte Dateien:"
           echo "  ✅ README.md"
           echo "  ✅ .github/project-info.json"
           echo "  ✅ index.html"
+          echo ""
+          echo "Auto-merge aktiviert - PR wird automatisch gemerged"
           echo "════════════════════════════════════════"
