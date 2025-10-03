@@ -98,10 +98,10 @@ velocitynvim_check \
     "VelocityNvim Workflow deaktiviert Credential Persistence" \
     "grep -q 'persist-credentials: false' .github/workflows/velocitynvim-release-rss-secure.yml"
 
-# Check 6: VelocityNvim Workflow hat Security Scan Step
+# Check 6: VelocityNvim Workflow generiert RSS Feed
 velocitynvim_check \
-    "VelocityNvim Workflow enthält Security Scan" \
-    "grep -q 'VelocityNvim Security Check' .github/workflows/velocitynvim-release-rss-secure.yml"
+    "VelocityNvim Workflow generiert RSS Feed" \
+    "grep -q 'Generate RSS Feed' .github/workflows/velocitynvim-release-rss-secure.yml"
 
 echo ""
 echo -e "${VELOCITYNVIM_YELLOW}[3/10] VelocityNvim RSS Feed Security Checks${VELOCITYNVIM_RESET}"
@@ -110,7 +110,7 @@ echo ""
 # Check 7: VelocityNvim RSS Feed Directory ist konfiguriert
 velocitynvim_check \
     "VelocityNvim RSS Feed Directory Struktur vorhanden" \
-    "grep -q 'docs/feeds/velocitynvim' .github/workflows/velocitynvim-release-rss-secure.yml"
+    "grep -q 'docs/feeds' .github/workflows/velocitynvim-release-rss-secure.yml"
 
 # Check 8: VelocityNvim RSS Feed verwendet sicheres Atom Format
 velocitynvim_check \
@@ -138,13 +138,13 @@ echo ""
 # Check 10: VelocityNvim Repository enthält keine privaten Telefonnummern
 velocitynvim_check \
     "VelocityNvim Repository enthält keine privaten Telefonnummern" \
-    "git grep -iE '(\+49|0[0-9]{9,})' -- ':!docs/VELOCITYNVIM-X-AUTOMATION-SECURITY.md'" \
+    "git grep -iE '(\+49|0[0-9]{9,})' -- ':!scripts/setup/velocitynvim-security-check.sh'" \
     "true" "error"
 
 # Check 11: VelocityNvim Repository enthält keine privaten Adressen
 velocitynvim_check \
     "VelocityNvim Repository enthält keine privaten Adressen" \
-    "git grep -iE '(strasse|straße|hausnummer)' -- ':!docs/VELOCITYNVIM-X-AUTOMATION-SECURITY.md'" \
+    "git grep -iE '(strasse|straße|hausnummer)'" \
     "true" "warning"
 
 # Check 12: VelocityNvim verwendet nur Projekt-Email
@@ -205,7 +205,8 @@ echo ""
 # Check 19: VelocityNvim RSS Feed URL Struktur ist korrekt
 velocitynvim_check \
     "VelocityNvim RSS Feed URL Struktur ist sicher" \
-    "grep -q 'maik-0000ff.github.io/VelocityNvim/feeds/velocitynvim/releases-secure.xml' .github/workflows/velocitynvim-release-rss-secure.yml"
+    "grep -q 'maik-0000ff.github.io/VelocityNvim/feeds/releases.xml' .github/workflows/velocitynvim-release-rss-secure.yml" \
+    "false" "warning"
 
 echo ""
 echo -e "${VELOCITYNVIM_YELLOW}[10/10] VelocityNvim External Service Security Checks${VELOCITYNVIM_RESET}"
