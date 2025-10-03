@@ -23,6 +23,11 @@ jobs:
         with:
           persist-credentials: false  # Security: Keine GitHub Credentials cachen
 
+      - name: Install XML tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq libxml2-utils
+
       - name: Generate VelocityNvim RSS Feed (Atom Format RFC 4287)
         run: |
           # VelocityNvim RSS Feed Verzeichnis erstellen
