@@ -5,10 +5,10 @@ local M = {}
 local icons = require("core.icons")
 
 -- VelocityNvim - Native vim.pack Architecture
-M.config_version = "1.0.2"
+M.config_version = "1.0.1"
 M.config_name = "VelocityNvim Native - Performance Profiling Edition"
 M.config_author = "neo"
-M.last_updated = "2025-10-03"
+M.last_updated = "2025-10-01"
 
 -- Version components
 local function parse_version(version_string)
@@ -464,4 +464,3 @@ function M.init()
 end
 
 return M
-# Test
