@@ -6,7 +6,7 @@ Utility scripts for VelocityNvim setup and maintenance.
 
 ### 🚀 Setup Scripts (`scripts/setup/`)
 - **`velocitynvim-dependencies-installer.sh`** - Interactive installer for all VelocityNvim dependencies (Arch Linux)
-- **`blink-cmp-rust-builder-linux.sh`** - Linux/Unix Rust builder with dynamic path detection  
+- **`blink-cmp-rust-builder-linux.sh`** - Linux/Unix Rust builder with dynamic path detection
 - **`blink-cmp-rust-builder-macos.sh`** - macOS Rust builder with nightly toolchain management
 
 Dependency installer features:
@@ -112,7 +112,7 @@ If compilation fails:
 | Setup | 3 | Dependencies + Rust performance optimization |
 | Maintenance | 1 | Cache cleaning with path detection |
 
-**Total**: 4 comprehensive scripts for complete VelocityNvim setup and maintenance.
+**Total**: 4 scripts for complete VelocityNvim setup and maintenance.
 
 ## 🎯 Performance Impact
 

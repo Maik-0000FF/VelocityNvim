@@ -129,7 +129,7 @@ install_neovim() {
                     ;;
                 *)
                     print_error "Unsupported Linux distribution: $DISTRO"
-                    print_info "Please install Neovim >= 0.10.0 manually"
+                    print_info "Please install Neovim >= 0.11.0 manually"
                     exit 1
                     ;;
             esac

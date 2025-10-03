@@ -77,7 +77,7 @@ awk -F, 'NR>1 {print $2, $7}' docs/benchmark_results.csv | sort
 
 ### Test Environment
 - **Hardware**: Modern Linux system
-- **Neovim**: 0.10+
+- **Neovim**: 0.11+
 - **Terminal**: WezTerm-optimized settings
 - **Measurement**: Average of 5 runs for startup, 1000 iterations for micro-benchmarks
 
