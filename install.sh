@@ -89,7 +89,7 @@ check_neovim() {
     
     # Get Neovim version
     NVIM_VERSION=$(nvim --version | head -n1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
-    REQUIRED_VERSION="0.10.0"
+    REQUIRED_VERSION="0.11.0"
     
     # Simple version comparison (works for most cases)
     if [ "$(printf '%s\n' "$REQUIRED_VERSION" "$NVIM_VERSION" | sort -V | head -n1)" = "$REQUIRED_VERSION" ]; then

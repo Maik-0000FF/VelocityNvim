@@ -2,7 +2,7 @@
 
 # VelocityNvim ⚡ - Fastest Native vim.pack Neovim Distribution
 
-> **Zero Plugin Manager Required** | **0.16s Startup Time** | **Modern LSP Integration** | **Rust-Powered Performance**
+> **Zero Plugin Manager Required** | **0.22s Startup Time** | **Modern LSP Integration** | **Rust-Powered Performance**
 
 **A Neovim distribution that teaches you real Neovim skills while delivering solid performance through native architecture.**
 
@@ -14,7 +14,7 @@
 [![Security Policy](https://img.shields.io/badge/Security-Policy-blue)](https://github.com/Maik-0000FF/VelocityNvim/security/policy)
 
 [![Neovim](https://img.shields.io/badge/Neovim-0.11+-green.svg)](https://neovim.io)
-[![Startup Time](https://img.shields.io/badge/Startup-~0.16s-brightgreen.svg)](#-performance-characteristics)
+[![Startup Time](https://img.shields.io/badge/Startup-~0.22s-brightgreen.svg)](#-performance-characteristics)
 [![Plugin Manager](https://img.shields.io/badge/Plugin_Manager-None_Required-red.svg)](#-native-architecture-benefits)
 [![Native vim.pack](https://img.shields.io/badge/Architecture-Native_vim.pack-brightgreen.svg)](#-native-architecture-benefits)
 [![LSP](https://img.shields.io/badge/LSP-vim.lsp.config_API-blue.svg)](#-new-in-modern-lsp-performance-edition-v100)
@@ -362,7 +362,7 @@ rm -rf plugin       # Remove
 
 | Component           | Implementation               | Characteristics                     |
 | ------------------- | ---------------------------- | ----------------------------------- |
-| **Startup Time**    | ~0.17s avg                   | Solid performance with 26 plugins  |
+| **Startup Time**    | ~0.22s avg                   | Performance with 26 plugins  |
 | **Plugin Loading**  | Direct vim.pack integration  | No additional abstraction layers    |
 | **LSP Performance** | Modern vim.lsp.config API    | Global configuration, optimized    |
 | **Memory Usage**    | Optimized settings           | Efficient resource utilization      |
@@ -600,7 +600,7 @@ Every plugin in VelocityNvim was chosen not just for its functionality, but for 
 **A:** VelocityNvim requires Neovim 0.11+ for modern vim.lsp.config API. This ensures cutting-edge LSP performance and stability.
 
 ### **Q: How fast is VelocityNvim?**
-**A:** Startup time averages ~0.16s under optimal conditions with modern hardware. The native vim.pack approach eliminates plugin manager overhead, providing efficient performance.
+**A:** Startup time averages ~0.22s with 26 plugins on modern hardware. The native vim.pack approach eliminates plugin manager overhead.
 
 ### **Q: Can I migrate from LazyVim/NvChad to VelocityNvim?**
 **A:** Yes! VelocityNvim includes migration guides and maintains familiar keybindings while teaching you native vim.pack concepts.

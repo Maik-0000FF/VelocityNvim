@@ -200,9 +200,9 @@ print(icons.status.success .. " Operation completed")
 
 ## Version Management
 
-### Current Version: 1.0.0
-- Configuration name: "VelocityNvim Native - Modern LSP Performance"
-- Last updated: 2025-09-24 (Modern LSP API Integration)
+### Current Version: 1.0.1
+- Configuration name: "VelocityNvim Native - Performance Profiling Edition"
+- Last updated: 2025-10-01 (Modern LSP API Integration)
 - Version tracking with automatic migration support
 
 ### Version Change Detection
@@ -270,8 +270,8 @@ M.plugins = {
 
 ## LSP Integration
 
-### Modern vim.lsp.config API (2025-09-24 Update)
-VelocityNvim uses the **modern vim.lsp.config API** with **NvChad-inspired patterns**:
+### Modern vim.lsp.config API (2025-10-01 Update)
+VelocityNvim uses the **modern vim.lsp.config API** with **global configuration pattern**:
 
 #### Global LSP Configuration
 ```lua
@@ -745,10 +745,10 @@ end
 - **Quality**: Health checks, error handling, safe module loading
 
 ### 🔄 Current Version (GitHub Release)
-- **Version**: 1.0.0 (Modern LSP Performance Edition)
-- **Last Updated**: 2025-09-24
+- **Version**: 1.0.1 (Performance Profiling Edition)
+- **Last Updated**: 2025-10-01
 - **Architecture**: Native vim.pack based, modular and maintainable
-- **NEW Features**: Modern vim.lsp.config API, global LSP configuration, NvChad-inspired optimizations
+- **Features**: Modern vim.lsp.config API, global LSP configuration, enhanced performance
 - **Performance**: Semantic tokens disabled, enhanced capabilities, Rust-optimized components
 - **Plugin Collection**: 26 carefully selected plugins for complete IDE experience
 - **Quality**: Comprehensive health checks and error handling

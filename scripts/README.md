@@ -17,8 +17,8 @@ Dependency installer features:
 - ⚡ **Performance optimized** - Hybrid systems for maximum speed
 
 Performance optimizations:
-- 🚀 **Biome + Prettier hybrid** - 20x faster JS/TS/JSON/CSS formatting
-- 🐍 **Pyright over python-lsp-server** - Significantly faster Python LSP
+- 🐍 **Pyright over python-lsp-server** - Faster Python LSP
+- 🐍 **Ruff for Python** - Fast formatting, import sorting, and linting
 - 📄 **LaTeX size options** - Choose minimal (~500MB) or complete (~4GB) installation
 
 Rust builder scripts feature:
@@ -47,7 +47,7 @@ Interactive installer that allows you to choose:
 - **Core Tools** - git, curl, wget, unzip, base-devel
 - **Clipboard Tools** - wl-clipboard, xclip (essential for copy/paste) 
 - **Rust Performance Tools** - fd, ripgrep, bat, delta, fzf
-- **Code Formatters** - biome + prettier hybrid system, stylua, ruff (replaces black+isort), shfmt  
+- **Code Formatters** - prettier, stylua, ruff (replaces black+isort), shfmt  
 - **LSP Servers** - lua-language-server, rust-analyzer, pyright (faster than python-lsp-server)
 - **LaTeX Suite** - texlive, zathura, tectonic, poppler
 - **Development Tools** - nodejs, python, go, gcc, cmake

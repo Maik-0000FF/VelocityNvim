@@ -12,7 +12,7 @@ This file tracks performance improvements across VelocityNvim versions to enable
 
 #### CSV File Structure:
 ```csv
-Date,Time,Version,System,Neovim_Version,API_Level,Cold_Startup_s,Warm_Startup_s,Overall_Avg_s,LSP_1000ops_ms,LSP_per_op_µs,Plugin_Load_µs,Memory_MB,Health_Check_s,Plugin_Count,Test_Type,Notes
+Date,Time,Version,System,Neovim_Version,API_Level,Cold_Startup_s,Warm_Startup_s,Overall_Avg_s,Overall_Median_s,LSP_1000ops_ms,LSP_per_op_µs,Plugin_Load_µs,Memory_MB,Health_Check_s,Plugin_Count,Test_Type,Notes
 ```
 
 #### Column Descriptions:
@@ -21,9 +21,10 @@ Date,Time,Version,System,Neovim_Version,API_Level,Cold_Startup_s,Warm_Startup_s,
 - **System**: OS and kernel info (e.g., "Linux archdesk 6.16.8")
 - **Neovim_Version**: Neovim version (e.g., "0.11.4")
 - **API_Level**: Neovim API level for compatibility tracking
-- **Cold_Startup_s**: Average cold start time in seconds (runs 1-3)
-- **Warm_Startup_s**: Average warm start time in seconds (runs 4-5)
-- **Overall_Avg_s**: Overall average startup time
+- **Cold_Startup_s**: Average cold start time in seconds (runs 1-5)
+- **Warm_Startup_s**: Average warm start time in seconds (runs 6-10)
+- **Overall_Avg_s**: Overall average startup time (mean of all 10 runs)
+- **Overall_Median_s**: Overall median startup time (resistant to outliers)
 - **LSP_1000ops_ms**: Time for 1000 LSP operations in milliseconds
 - **LSP_per_op_µs**: Time per LSP operation in microseconds
 - **Plugin_Load_µs**: Plugin loading time in microseconds
@@ -50,26 +51,60 @@ echo "$(date +%Y-%m-%d),$(date +%H:%M),$version,$system,$nvim_version,$api_level
 
 ### Data Analysis Guidelines
 
+#### Understanding Mean vs Median
+
+**Both metrics are captured and should be analyzed together:**
+
+| Metric | Use Case | Interpretation |
+|--------|----------|----------------|
+| **Mean (Average)** | Overall performance trend | Affected by outliers, shows total time impact |
+| **Median** | Typical user experience | Resistant to outliers, shows "normal" performance |
+
+**When to use which:**
+- **Mean**: Detecting performance regressions across all runs
+- **Median**: Understanding typical startup time users experience
+- **Difference (Mean - Median)**: Indicates outlier impact
+  - Small difference (<10%): Consistent performance
+  - Large difference (>20%): Investigate outliers
+
+**Example Analysis:**
+```
+Mean: 0.25s, Median: 0.20s → Difference 25%
+→ Some runs are slow (outliers), but typical experience is 0.20s
+→ Investigate what causes occasional slowdowns
+
+Mean: 0.21s, Median: 0.20s → Difference 5%
+→ Consistent performance, no outliers
+→ Both metrics reliable for comparisons
+```
+
 #### Regression Detection:
-- **Cold Startup**: >20% increase = investigate
-- **Warm Startup**: >50% increase = investigate
+- **Cold Startup (Mean)**: >20% increase = investigate
+- **Warm Startup (Mean)**: >50% increase = investigate
+- **Median Startup**: >15% increase = investigate typical performance
 - **LSP Performance**: >100% increase = investigate
 - **Memory Usage**: >25% increase = investigate
 
 #### Comparison Commands:
 ```bash
-# Compare latest vs previous version:
-tail -2 docs/benchmark_results.csv | awk -F, '{print "Cold: " $7 "s, Warm: " $8 "s, LSP: " $11 "µs"}'
+# Compare latest vs previous (with median):
+tail -2 docs/benchmark_results.csv | awk -F, '{print "Cold: " $7 "s, Warm: " $8 "s, Mean: " $9 "s, Median: " $10 "s"}'
 
-# Find performance trends:
-awk -F, 'NR>1 {print $2, $7}' docs/benchmark_results.csv | sort
+# Find performance trends (mean):
+awk -F, 'NR>1 {print $1, $9}' docs/benchmark_results.csv | tail -10
+
+# Find performance trends (median):
+awk -F, 'NR>1 {print $1, $10}' docs/benchmark_results.csv | tail -10
+
+# Calculate mean-median difference for latest benchmark:
+tail -1 docs/benchmark_results.csv | awk -F, '{diff=($9-$10)/$10*100; printf "Mean: %ss, Median: %ss, Diff: %.1f%%\n", $9, $10, diff}'
 ```
 
 #### Quality Assessment:
-- **EXCELLENT**: All metrics in top quartile historically
-- **GOOD**: All metrics within acceptable ranges
-- **WARNING**: One or more metrics showing degradation
-- **REGRESSION**: Significant performance decrease detected
+- **EXCELLENT**: Mean and median both in top quartile, <10% difference
+- **GOOD**: Both metrics within acceptable ranges, <20% difference
+- **WARNING**: One metric showing degradation OR >20% mean-median difference
+- **REGRESSION**: Significant performance decrease in either metric
 
 ---
 
@@ -90,31 +125,71 @@ awk -F, 'NR>1 {print $2, $7}' docs/benchmark_results.csv | sort
 
 ---
 
-## Detailed Benchmark Commands (Reproducible)
+## Running Benchmarks
 
-### 1. Startup Performance (5 runs with hyperfine)
+### Recommended Method: Automated Script (Recommended)
+
+**For consistent and reproducible benchmarks, use the official benchmark script:**
+
 ```bash
-# Run 5 benchmarks with 1 warmup run, export to JSON
-hyperfine --warmup 1 --runs 5 \
+bash scripts/collect_benchmark_data.sh
+```
+
+**This script automatically:**
+- Prepares the system (`sync && sleep 2`)
+- Runs 10 startup benchmarks (5 cold, 5 warm)
+- Calculates mean and median (resistant to outliers)
+- Measures LSP performance (1000 operations)
+- Measures plugin load time
+- Measures memory usage
+- Runs health check
+- Counts plugins automatically
+- Formats results as CSV entry
+- Optional: Appends directly to `docs/benchmark_results.csv`
+
+**Benefits:**
+- ✅ Consistent methodology across all benchmarks
+- ✅ Reproducible by anyone
+- ✅ Centrally maintained (changes in one place)
+- ✅ Self-documenting process
+
+---
+
+## Manual Benchmark Commands (Reference)
+
+**Note:** These commands are provided for reference and understanding the methodology. For official benchmarks, use the automated script above.
+
+### 1. Startup Performance (10 runs with hyperfine)
+```bash
+# Prepare system for benchmark
+sync && sleep 2
+
+# Run 10 benchmarks with 1 warmup run, export to JSON
+hyperfine --warmup 1 --runs 10 \
   'NVIM_APPNAME=VelocityNvim nvim --headless -c "quit"' \
   --export-json /tmp/benchmark.json
 
-# Parse results for cold/warm averages
+# Parse results for cold/warm/median averages
 python3 -c "
 import json
+import statistics
 with open('/tmp/benchmark.json') as f:
     d = json.load(f)['results'][0]
     times = d['times']
 
-    # Runs 1-3: Cold start (includes caching)
-    cold_avg = sum(times[:3]) / 3
+    # Runs 1-5: Cold start (includes caching)
+    cold_avg = sum(times[:5]) / 5
 
-    # Runs 4-5: Warm start (cache hot)
-    warm_avg = sum(times[3:5]) / 2
+    # Runs 6-10: Warm start (cache hot)
+    warm_avg = sum(times[5:10]) / 5
 
-    print(f'Cold Start (1-3): {cold_avg:.4f}s')
-    print(f'Warm Start (4-5): {warm_avg:.4f}s')
+    # Median (resistant to outliers)
+    median = statistics.median(times)
+
+    print(f'Cold Start (1-5): {cold_avg:.4f}s')
+    print(f'Warm Start (6-10): {warm_avg:.4f}s')
     print(f'Overall Mean: {d[\"mean\"]:.4f}s')
+    print(f'Overall Median: {median:.4f}s')
     print(f'Min: {d[\"min\"]:.4f}s, Max: {d[\"max\"]:.4f}s')
 "
 ```
@@ -176,18 +251,25 @@ NVIM_APPNAME=VelocityNvim nvim --headless \
 ### 7. Add to CSV
 ```bash
 # Manual entry format (replace values with actual results):
-echo "YYYY-MM-DD,HH:MM,version,Linux X.XX.X-archX-X,X.XX.X,API_level,cold_avg,warm_avg,overall_mean,lsp_ms,lsp_µs,plugin_µs,memory_mb,health_s,plugin_count,test_type,notes" >> docs/benchmark_results.csv
+echo "YYYY-MM-DD,HH:MM,version,Linux X.XX.X-archX-X,X.XX.X,API_level,cold_avg,warm_avg,overall_mean,overall_median,lsp_ms,lsp_µs,plugin_µs,memory_mb,health_s,plugin_count,test_type,notes" >> docs/benchmark_results.csv
 
 # Example with actual values:
-echo "2025-10-02,15:33,1.0.1,Linux 6.16.8-arch3-1,0.11.4,13,0.2808,0.1303,0.2206,0.95,0.95,0.277,18.3,0.508,25,fresh_installation,Neuinstallation nach Rust-Tools Display-Optimierung" >> docs/benchmark_results.csv
+echo "2025-10-03,11:30,1.0.1,Linux 6.16.10-arch1-1,0.11.4,13,0.2345,0.1987,0.2166,0.2012,0.91,0.91,0.347,18.1,0.523,26,fresh_installation,10-run benchmark with median tracking" >> docs/benchmark_results.csv
 ```
 
 ### Notes on Benchmark Execution
+- **Use the automated script** (`scripts/collect_benchmark_data.sh`) for official benchmarks
 - **Run benchmarks after fresh installation** for baseline measurements
 - **Close other applications** to minimize system load interference
-- **Watch for outliers** - hyperfine shows min/max to identify anomalies
-- **Document system state** in notes (e.g., "post-optimization", "regression test")
+- **10 runs with median** - resistant to outliers (statistical best practice)
+- **Document system state** in notes when prompted by script
 - **Commit both CSV and BENCHMARKS.md** to maintain data integrity
+
+### Why 10 Runs + Median?
+- **More reliable**: 10 runs vs 5 provides better statistical confidence
+- **Outlier resistant**: Median is not affected by single slow runs
+- **Real-world**: Captures both cold starts (1-5) and warm starts (6-10)
+- **Transparent**: Mean shows average, median shows typical performance
 
 ---
 

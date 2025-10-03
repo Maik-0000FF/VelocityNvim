@@ -118,7 +118,7 @@ M.version_history = {
     name = "VelocityNvim Native - Modern LSP Performance",
     changes = {
       "🚀 Modern LSP API Integration: vim.lsp.config with global configuration pattern",
-      "📊 NvChad-inspired optimizations while preserving VelocityNvim features",
+      "📊 Modern LSP optimizations while preserving VelocityNvim features",
       "⚡ Performance optimization: Semantic tokens disabled, enhanced capabilities",
       "📦 Pure vim.pack architecture - no lazy.nvim, no packer, no abstractions",
       "🔧 Code quality: Reduced redundancy, improved maintainability",

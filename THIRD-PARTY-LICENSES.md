@@ -21,5 +21,5 @@ For detailed license information, see each plugin's repository.
 
 ---
 
-**Last Updated**: September 28, 2025
-**VelocityNvim Version**: 1.0.0
+**Last Updated**: October 1, 2025
+**VelocityNvim Version**: 1.0.1

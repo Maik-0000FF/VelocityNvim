@@ -13,12 +13,12 @@ Eine umfassende Anleitung zur Behebung häufiger LSP-Warnungen und Code-Probleme
 warning| Undefined field `fs_stat`.
 ```
 
-**Root Cause**: Cross-Version Kompatibilität zwischen Neovim 0.9 (`vim.loop`) und 0.10+ (`vim.uv`).
+**Root Cause**: Historical cross-version compatibility (Neovim 0.9 used `vim.loop`, 0.10+ uses `vim.uv`). VelocityNvim now requires 0.11+ and uses `vim.uv` only.
 
-**✅ Standard-Lösung (Copy-Paste ready)**:
+**✅ Standard-Lösung für 0.11+ (Copy-Paste ready)**:
 ```lua
--- Sichere fs_stat Funktion für Cross-Version Kompatibilität
-local fs_stat_func = rawget(vim.uv, 'fs_stat') or rawget(vim.loop, 'fs_stat')
+-- Direct vim.uv usage (Neovim 0.11+ required)
+local fs_stat_func = vim.uv.fs_stat
 
 -- Verwendung mit Fallback
 if fs_stat_func then
@@ -671,8 +671,8 @@ local params = vim.lsp.util.make_position_params(0, get_preferred_encoding())
 - Unused locals: Strategic underscore usage
 - Return annotations: Korrekte Typen für bessere LSP-Hilfe
 
-### **Cross-Compatibility Patterns**
-- uv APIs: rawget für Neovim 0.9-0.10+ support
+### **Modern API Patterns (Neovim 0.11+)**
+- uv APIs: Direct `vim.uv` usage (no fallback needed)
 - vim.cmd → vim.api: Future-proof API usage
 - Encoding: Platform-aware defaults
 
@@ -694,10 +694,10 @@ local params = vim.lsp.util.make_position_params(0, get_preferred_encoding())
    - Correct return types
    - Eliminate unnecessary code
 
-3. **Verify Cross-Compatibility**:
-   - Test Neovim 0.9 + 0.10
-   - Check platform differences
-   - Ensure fallback behavior
+3. **Verify Compatibility**:
+   - Test on Neovim 0.11+
+   - Check platform differences (Linux, macOS, WSL2)
+   - Ensure error handling
 
 4. **Performance Impact Check**:
    ```bash

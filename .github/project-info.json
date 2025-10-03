@@ -2,13 +2,13 @@
   "@context": "https://schema.org",
   "@type": "SoftwareSourceCode",
   "name": "VelocityNvim",
-  "description": "Fastest Native vim.pack Neovim Distribution - Zero Plugin Manager Required, 0.16s startup time with Rust-powered performance",
+  "description": "Native vim.pack Neovim Distribution - Zero Plugin Manager Required, 0.22s startup time with Rust-powered performance",
   "applicationCategory": "DeveloperApplication",
   "operatingSystem": ["Linux", "macOS", "WSL2"],
   "programmingLanguage": ["Lua", "Vim script"],
   "runtimePlatform": "Neovim 0.11+",
   "license": "MIT",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "releaseNotes": "Stable Beta - Core features stable and tested",
   "developmentStatus": "Stable Beta",
   "isPartOf": {
@@ -37,7 +37,7 @@
   ],
   "features": [
     "Native vim.pack architecture (no plugin manager required)",
-    "0.16s startup time with performance optimization",
+    "0.22s startup time with 26 plugins",
     "Modern LSP integration with vim.lsp.config API",
     "Rust-powered tools (fzf, ripgrep, delta)",
     "24 curated plugins for complete IDE experience",
@@ -48,7 +48,7 @@
     "audienceType": "Developers using Neovim"
   },
   "dateCreated": "2025-09-28",
-  "dateModified": "2025-09-28",
+  "dateModified": "2025-10-01",
   "datePublished": "2025-09-28",
   "discussionUrl": "https://github.com/Maik-0000FF/VelocityNvim/discussions",
   "issueTracker": "https://github.com/Maik-0000FF/VelocityNvim/issues",
@@ -70,7 +70,7 @@
         "itemOffered": {
           "@type": "Service",
           "name": "Performance Optimization",
-          "description": "0.16s startup time with Rust-powered tools"
+          "description": "0.22s startup time with Rust-powered tools"
         }
       },
       {

@@ -1,5 +1,5 @@
 -- ~/.config/VelocityNvim/lua/plugins/native-lsp.lua
--- Modern LSP Setup with NvChad-style vim.lsp.config API + VelocityNvim features
+-- Modern LSP Setup with vim.lsp.config API and VelocityNvim features
 -- Uses global configuration pattern for better performance and cleaner code
 
 local icons = require("core.icons")
@@ -125,12 +125,12 @@ vim.diagnostic.config({
   },
 })
 
--- MODERN LSP API: Global configuration for all servers (NvChad style)
+-- MODERN LSP API: Global configuration for all servers
 -- Performance-optimized capabilities with completion support
 local function setup_global_lsp_config()
   local capabilities = vim.lsp.protocol.make_client_capabilities()
 
-  -- Enhanced completion capabilities (NvChad style)
+  -- Enhanced completion capabilities
   capabilities.textDocument.completion.completionItem = {
     documentationFormat = { "markdown", "plaintext" },
     snippetSupport = true,
@@ -153,7 +153,7 @@ local function setup_global_lsp_config()
   vim.lsp.config("*", {
     capabilities = capabilities,
     on_init = function(client, _)
-      -- PERFORMANCE: Disable semantic tokens for better responsiveness (NvChad optimization)
+      -- PERFORMANCE: Disable semantic tokens for better responsiveness
       if vim.fn.has("nvim-0.11") ~= 1 then
         if client.supports_method("textDocument/semanticTokens") then
           client.server_capabilities.semanticTokensProvider = nil
@@ -247,7 +247,7 @@ local function get_targeted_lua_libraries()
 end
 
 -- MODERN LSP CONFIG: Server-specific settings only (global config applied automatically)
--- NvChad style: Only settings, cmd, filetypes, root_markers - capabilities/on_init are global
+-- Only settings, cmd, filetypes, root_markers - capabilities/on_init are global
 
 vim.lsp.config.lua_ls = {
   cmd = { "lua-language-server" },

@@ -38,34 +38,43 @@ API_LEVEL=$(NVIM_APPNAME=VelocityNvim nvim --headless -c "lua print(vim.version(
 echo -e "${GREEN}✓${NC} API Level: $API_LEVEL"
 
 echo
-echo "Running startup benchmarks (5 runs)..."
+echo "Preparing system for benchmark..."
+sync && sleep 2
 
-# 6-9. Startup Times (Cold: 1-3, Warm: 4-5)
+echo "Running startup benchmarks (10 runs)..."
+
+# 6-9. Startup Times (Cold: 1-5, Warm: 6-10)
 STARTUP_TIMES=()
-for i in {1..5}; do
-  STARTUP_MS=$(NVIM_APPNAME=VelocityNvim nvim --headless -c "lua local elapsed = (vim.loop.hrtime() - vim.g.velocitynvim_start_time) / 1000000; print(string.format('%.2f', elapsed))" -c "qall" 2>&1 | tail -1)
+for i in {1..10}; do
+  STARTUP_MS=$(NVIM_APPNAME=VelocityNvim nvim --headless -c "lua local elapsed = (vim.uv.hrtime() - vim.g.velocitynvim_start_time) / 1000000; print(string.format('%.2f', elapsed))" -c "qall" 2>&1 | tail -1)
   STARTUP_TIMES+=($STARTUP_MS)
   echo -e "  Run $i: ${STARTUP_MS}ms"
 done
 
-# Berechne Cold (1-3) und Warm (4-5) Durchschnitte
-COLD_SUM=$(echo "${STARTUP_TIMES[0]} + ${STARTUP_TIMES[1]} + ${STARTUP_TIMES[2]}" | bc)
-COLD_AVG=$(echo "scale=3; $COLD_SUM / 3 / 1000" | bc -l | awk '{printf "%.3f", $0}')
-echo -e "${GREEN}✓${NC} Cold Avg (Runs 1-3): ${COLD_AVG}s"
+# Berechne Cold (1-5) und Warm (6-10) Durchschnitte
+COLD_SUM=$(echo "${STARTUP_TIMES[0]} + ${STARTUP_TIMES[1]} + ${STARTUP_TIMES[2]} + ${STARTUP_TIMES[3]} + ${STARTUP_TIMES[4]}" | bc)
+COLD_AVG=$(echo "scale=4; $COLD_SUM / 5 / 1000" | bc -l | awk '{printf "%.4f", $0}')
+echo -e "${GREEN}✓${NC} Cold Avg (Runs 1-5): ${COLD_AVG}s"
 
-WARM_SUM=$(echo "${STARTUP_TIMES[3]} + ${STARTUP_TIMES[4]}" | bc)
-WARM_AVG=$(echo "scale=3; $WARM_SUM / 2 / 1000" | bc -l | awk '{printf "%.3f", $0}')
-echo -e "${GREEN}✓${NC} Warm Avg (Runs 4-5): ${WARM_AVG}s"
+WARM_SUM=$(echo "${STARTUP_TIMES[5]} + ${STARTUP_TIMES[6]} + ${STARTUP_TIMES[7]} + ${STARTUP_TIMES[8]} + ${STARTUP_TIMES[9]}" | bc)
+WARM_AVG=$(echo "scale=4; $WARM_SUM / 5 / 1000" | bc -l | awk '{printf "%.4f", $0}')
+echo -e "${GREEN}✓${NC} Warm Avg (Runs 6-10): ${WARM_AVG}s"
 
 OVERALL_SUM=$(echo "$COLD_SUM + $WARM_SUM" | bc)
-OVERALL_AVG=$(echo "scale=3; $OVERALL_SUM / 5 / 1000" | bc -l | awk '{printf "%.3f", $0}')
+OVERALL_AVG=$(echo "scale=4; $OVERALL_SUM / 10 / 1000" | bc -l | awk '{printf "%.4f", $0}')
 echo -e "${GREEN}✓${NC} Overall Avg: ${OVERALL_AVG}s"
+
+# Berechne Median (resistant to outliers)
+SORTED_TIMES=($(printf '%s\n' "${STARTUP_TIMES[@]}" | sort -n))
+MEDIAN_MS=$(echo "scale=4; (${SORTED_TIMES[4]} + ${SORTED_TIMES[5]}) / 2" | bc)
+MEDIAN_S=$(echo "scale=4; $MEDIAN_MS / 1000" | bc -l | awk '{printf "%.4f", $0}')
+echo -e "${GREEN}✓${NC} Overall Median: ${MEDIAN_S}s (resistant to outliers)"
 
 echo
 echo "Running LSP performance benchmark (1000 operations)..."
 
 # 10-11. LSP Performance
-LSP_OUTPUT=$(NVIM_APPNAME=VelocityNvim nvim --headless -c "lua local lsp = require('utils.lsp'); local start = vim.loop.hrtime(); for i=1,1000 do lsp.get_workspace_diagnostics(); end; local elapsed = (vim.loop.hrtime() - start) / 1e6; print(string.format('%.3f', elapsed))" -c "qall" 2>&1 | tail -1)
+LSP_OUTPUT=$(NVIM_APPNAME=VelocityNvim nvim --headless -c "lua local start = vim.uv.hrtime(); for i=1,1000 do vim.diagnostic.get(0) end; local elapsed = (vim.uv.hrtime() - start) / 1000000; print(string.format('%.2f', elapsed))" -c "qall" 2>&1 | tail -1)
 LSP_1000OPS_MS=$LSP_OUTPUT
 LSP_PER_OP_US=$(echo "scale=3; $LSP_1000OPS_MS" | bc) # Already in µs per op
 echo -e "${GREEN}✓${NC} LSP 1000 ops: ${LSP_1000OPS_MS}ms"
@@ -75,14 +84,14 @@ echo
 echo "Running plugin load benchmark..."
 
 # 12. Plugin Load Time
-PLUGIN_LOAD_US=$(NVIM_APPNAME=VelocityNvim nvim --headless -c "lua local start = vim.loop.hrtime(); require('core'); require('plugins'); local elapsed = (vim.loop.hrtime() - start) / 1000; print(string.format('%.3f', elapsed))" -c "qall" 2>&1 | tail -1)
+PLUGIN_LOAD_US=$(NVIM_APPNAME=VelocityNvim nvim --headless -c "lua local start = vim.uv.hrtime(); require('plugins'); local elapsed = (vim.uv.hrtime() - start) / 1000; print(string.format('%.3f', elapsed))" -c "qall" 2>&1 | tail -1)
 echo -e "${GREEN}✓${NC} Plugin load: ${PLUGIN_LOAD_US}µs"
 
 echo
 echo "Collecting system info..."
 
 # 13. Memory Usage (RSS in MB)
-MEMORY_MB=$(NVIM_APPNAME=VelocityNvim nvim --headless -c "lua local mem_bytes = vim.loop.resident_set_memory(); local mem_mb = mem_bytes / 1024 / 1024; print(string.format('%.1f', mem_mb))" -c "qall" 2>&1 | tail -1)
+MEMORY_MB=$(NVIM_APPNAME=VelocityNvim nvim --headless -c "lua local mem = vim.fn.system('ps -o rss= -p ' .. vim.fn.getpid()):gsub('%s+', ''); print(string.format('%.1f', tonumber(mem) / 1024))" -c "qall" 2>&1 | tail -1)
 echo -e "${GREEN}✓${NC} Memory: ${MEMORY_MB}MB"
 
 # 14. Health Check Time
@@ -115,21 +124,21 @@ echo "  Benchmark Data Summary"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo
 
-# Prompt for Test Type and Notes
-echo -e "${YELLOW}Enter test type (e.g., 'startup_tracking_implementation'):${NC}"
-read -r TEST_TYPE
+# Standard test type for automated benchmarks
+TEST_TYPE="standard_benchmark"
 
+# Prompt for notes only
 echo -e "${YELLOW}Enter notes (brief description of changes):${NC}"
 read -r NOTES
 
 echo
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "  CSV Entry (copy to benchmark_results.csv)"
+echo "  CSV Entry"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo
 
-# Generate CSV line
-CSV_LINE="$DATE,$TIME,$VERSION,Linux $SYSTEM,$NVIM_VERSION,$API_LEVEL,$COLD_AVG,$WARM_AVG,$OVERALL_AVG,$LSP_1000OPS_MS,$LSP_PER_OP_US,$PLUGIN_LOAD_US,$MEMORY_MB,$HEALTH_CHECK_S,$PLUGIN_COUNT,$TEST_TYPE,$NOTES"
+# Generate CSV line (with median)
+CSV_LINE="$DATE,$TIME,$VERSION,Linux $SYSTEM,$NVIM_VERSION,$API_LEVEL,$COLD_AVG,$WARM_AVG,$OVERALL_AVG,$MEDIAN_S,$LSP_1000OPS_MS,$LSP_PER_OP_US,$PLUGIN_LOAD_US,$MEMORY_MB,$HEALTH_CHECK_S,$PLUGIN_COUNT,$TEST_TYPE,$NOTES"
 
 echo "$CSV_LINE"
 echo
