@@ -69,10 +69,8 @@ jobs:
           echo "</feed>" >> docs/feeds/velocitynvim/releases-secure.xml
 
           # XML Validierung für VelocityNvim Feed
-          if ! xmllint --noout docs/feeds/velocitynvim/releases-secure.xml 2>/dev/null; then
-            echo "❌ VelocityNvim RSS Feed Validierung fehlgeschlagen"
-            exit 1
-          fi
+          echo "🔍 Validating XML..."
+          xmllint --noout docs/feeds/velocitynvim/releases-secure.xml
 
           echo "✅ VelocityNvim RSS Feed erfolgreich generiert und validiert"
 
