@@ -1,117 +1,55 @@
-name: VelocityNvim Secure Release RSS Feed Generator
-
-# Workflow Purpose: Generiert sicheren RSS Feed für VelocityNvim Releases
-# Security Level: MAXIMUM - Zero Secrets Exposure
-# Target: IFTTT RSS-to-X Integration für @VelocityNvim Account
+name: RSS Feed Generator
 
 on:
   release:
-    types: [published, edited]
-  workflow_dispatch:  # Manueller Trigger für VelocityNvim Release Tests
+    types: [published]
+  workflow_dispatch:
 
 permissions:
-  contents: write  # Nur für VelocityNvim RSS-Update nötig, keine weiteren Permissions
+  contents: write
 
 jobs:
-  velocitynvim-generate-secure-rss:
-    name: Generate VelocityNvim Secure RSS Feed
+  generate-feed:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout VelocityNvim Repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
-          persist-credentials: false  # Security: Keine GitHub Credentials cachen
+          persist-credentials: false
 
-      - name: Install XML tools
+      - name: Generate RSS Feed
         run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq libxml2-utils
+          mkdir -p docs/feeds
 
-      - name: Generate VelocityNvim RSS Feed (Atom Format RFC 4287)
-        run: |
-          set -x  # Debug mode
-          # VelocityNvim RSS Feed Verzeichnis erstellen
-          mkdir -p docs/feeds/velocitynvim
-
-          # VelocityNvim RSS Feed Header generieren
-          cat > docs/feeds/velocitynvim/releases-secure.xml << 'EOF'
-<?xml version="1.0" encoding="UTF-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom">
-            <title>VelocityNvim Official Releases</title>
-            <subtitle>Native Neovim Configuration - Performance-Optimized</subtitle>
+          # Create feed header
+          cat > docs/feeds/releases.xml << 'EOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <feed xmlns="http://www.w3.org/2005/Atom">
+            <title>VelocityNvim Releases</title>
             <link href="https://github.com/Maik-0000FF/VelocityNvim"/>
-            <link rel="self" href="https://maik-0000ff.github.io/VelocityNvim/feeds/velocitynvim/releases-secure.xml"/>
-            <updated>$(date -u +"%Y-%m-%dT%H:%M:%SZ")</updated>
-            <id>https://github.com/Maik-0000FF/VelocityNvim/releases</id>
-            <author>
-              <name>VelocityNvim Project</name>
-              <uri>https://github.com/Maik-0000FF/VelocityNvim</uri>
-              <email>maikblu.github@web.de</email>
-            </author>
-            <icon>https://github.com/Maik-0000FF.png</icon>
-EOF
+            <updated>EOF
+          echo "$(date -u +%Y-%m-%dT%H:%M:%SZ)</updated>" >> docs/feeds/releases.xml
 
-          # VelocityNvim Releases via Public GitHub API abrufen (KEIN TOKEN NÖTIG)
-          echo "🔍 Fetching VelocityNvim releases from GitHub API..."
+          # Fetch releases and convert to XML
           curl -s "https://api.github.com/repos/Maik-0000FF/VelocityNvim/releases?per_page=10" | \
           jq -r '.[] |
-            "<entry>\n" +
-            "  <title>VelocityNvim " + .tag_name + " - " + .name + "</title>\n" +
-            "  <link href=\"" + .html_url + "\"/>\n" +
-            "  <id>" + .html_url + "</id>\n" +
-            "  <published>" + .published_at + "</published>\n" +
-            "  <updated>" + .published_at + "</updated>\n" +
-            "  <content type=\"html\">" + (.body // "VelocityNvim Release" | @html) + "</content>\n" +
-            "  <summary>VelocityNvim " + .tag_name + " released</summary>\n" +
-            "</entry>"' >> docs/feeds/velocitynvim/releases-secure.xml
+            "<entry>" +
+            "<title>" + .name + "</title>" +
+            "<link href=\"" + .html_url + "\"/>" +
+            "<id>" + .html_url + "</id>" +
+            "<updated>" + .published_at + "</updated>" +
+            "<content>" + (.body // "" | @html) + "</content>" +
+            "</entry>"' >> docs/feeds/releases.xml
 
-          # VelocityNvim RSS Feed schließen
-          echo "</feed>" >> docs/feeds/velocitynvim/releases-secure.xml
+          # Close feed
+          echo "</feed>" >> docs/feeds/releases.xml
 
-          # XML Validierung für VelocityNvim Feed
-          echo "🔍 Validating XML..."
-          xmllint --noout docs/feeds/velocitynvim/releases-secure.xml
+          echo "Feed generated successfully"
+          cat docs/feeds/releases.xml
 
-          echo "✅ VelocityNvim RSS Feed erfolgreich generiert und validiert"
-
-      - name: VelocityNvim Security Check - No Secrets in Feed
-        run: |
-          echo "🔒 Running VelocityNvim Security Scan..."
-
-          # Prüfe auf potenzielle Secrets im VelocityNvim Feed
-          if grep -iE '(token|password|secret|api[_-]?key|private[_-]?key)' docs/feeds/velocitynvim/releases-secure.xml; then
-            echo "⚠️ SECURITY ALERT: Potenzielle Secrets im VelocityNvim Feed erkannt!"
-            exit 1
-          fi
-
-          # Prüfe auf private Daten (Telefonnummern, Adressen)
-          if grep -iE '(\+49|[0-9]{10,}|strasse|straße)' docs/feeds/velocitynvim/releases-secure.xml; then
-            echo "⚠️ PRIVACY ALERT: Private Daten im VelocityNvim Feed erkannt!"
-            exit 1
-          fi
-
-          echo "✅ VelocityNvim Security Check bestanden - Feed ist sauber"
-
-      - name: Deploy VelocityNvim RSS to GitHub Pages
+      - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}  # Auto-generiert von GitHub, read-only
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs
-          enable_jekyll: false
-          destination_dir: feeds/velocitynvim
-          user_name: 'velocitynvim-bot[bot]'
-          user_email: 'velocitynvim-bot[bot]@users.noreply.github.com'
-          commit_message: 'docs(velocitynvim): Update secure RSS feed for releases'
-
-      - name: VelocityNvim RSS Feed URL Output
-        run: |
-          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-          echo "✅ VelocityNvim Secure RSS Feed Generated"
-          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-          echo ""
-          echo "📡 VelocityNvim RSS Feed URL:"
-          echo "https://maik-0000ff.github.io/VelocityNvim/feeds/velocitynvim/releases-secure.xml"
-          echo ""
-          echo "🔗 Use this URL in IFTTT for VelocityNvim X automation"
-          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
