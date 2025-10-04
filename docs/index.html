@@ -471,20 +471,62 @@
             border-color: #0366d6;
             font-weight: 600;
         }
+        /* Hamburger Menu */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 4px;
+            cursor: pointer;
+            padding: 8px;
+            background: transparent;
+            border: none;
+            z-index: 1001;
+        }
+        .hamburger span {
+            width: 25px;
+            height: 3px;
+            background: #0366d6;
+            border-radius: 2px;
+            transition: all 0.3s;
+        }
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg) translate(7px, 7px);
+        }
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -7px);
+        }
         /* Mobile Responsive Navigation */
         @media (max-width: 768px) {
+            .hamburger {
+                display: flex;
+            }
             .nav-content {
-                flex-direction: column;
-                padding: 10px 20px;
-                gap: 10px;
+                flex-wrap: wrap;
+                padding: 8px 20px;
             }
             .nav-links {
-                gap: 8px;
-                font-size: 0.85em;
+                display: none;
+                width: 100%;
+                flex-direction: column;
+                background: white;
+                padding: 15px 0;
+                gap: 5px;
+                border-top: 1px solid #e1e4e8;
+                margin-top: 10px;
+            }
+            .nav-links.active {
+                display: flex;
+            }
+            .nav-links li {
+                width: 100%;
             }
             .nav-links a {
-                padding: 6px 10px;
-                font-size: 0.85em;
+                display: block;
+                padding: 10px 20px;
+                font-size: 1em;
             }
         }
         /* Smooth scroll */
@@ -502,7 +544,12 @@
                 <img src="https://raw.githubusercontent.com/Maik-0000FF/VelocityNvim/main/assets/images/VelocityNvim_Logo.png" alt="VelocityNvim Logo">
                 <span>VelocityNvim</span>
             </a>
-            <ul class="nav-links">
+            <button class="hamburger" onclick="toggleMobileMenu()" aria-label="Menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-links" id="navLinks">
                 <li class="lang-content de active"><a href="#features">Features</a></li>
                 <li class="lang-content en"><a href="#features">Features</a></li>
                 <li class="lang-content de active"><a href="#requirements">Voraussetzungen</a></li>
@@ -1206,6 +1253,27 @@ source ~/.bashrc</code>
     </div>
 
     <script>
+        // Toggle mobile menu
+        function toggleMobileMenu() {
+            const navLinks = document.getElementById('navLinks');
+            const hamburger = document.querySelector('.hamburger');
+            navLinks.classList.toggle('active');
+            hamburger.classList.toggle('active');
+        }
+
+        // Close mobile menu when clicking on a link
+        document.addEventListener('DOMContentLoaded', function() {
+            const navLinks = document.querySelectorAll('.nav-links a');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    if (window.innerWidth <= 768) {
+                        document.getElementById('navLinks').classList.remove('active');
+                        document.querySelector('.hamburger').classList.remove('active');
+                    }
+                });
+            });
+        });
+
         function switchTab(tabName) {
             // Hide all tab contents
             const contents = document.querySelectorAll('.tab-content');
