@@ -5,6 +5,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
   update-rss:
@@ -14,7 +15,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: main
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Generate RSS Feed
         run: |
@@ -48,17 +48,27 @@ jobs:
           echo "✅ RSS Feed generated successfully"
           cat docs/feeds/releases.xml
 
-      - name: Commit RSS Feed to main
-        run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email 'github-actions[bot]@users.noreply.github.com'
-          git add docs/feeds/releases.xml
+      - name: Create Pull Request
+        id: create-pr
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore: Update RSS feed for IFTTT"
+          branch: auto-rss-update
+          base: main
+          delete-branch: true
+          title: "Auto-update RSS feed"
+          body: |
+            Automated RSS feed update for IFTTT/Reddit automation
 
-          # Only commit if there are changes
-          if git diff --staged --quiet; then
-            echo "No changes to RSS feed"
-          else
-            git commit -m "chore: Update RSS feed for IFTTT" -m "Auto-generated RSS feed update" -m "Triggered manually for Reddit automation"
-            git push origin main
-            echo "✅ RSS Feed committed and pushed to main"
-          fi
+            - Updated feed with latest releases
+            - Timestamp: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+          labels: automation
+          committer: VelocityNvim RSS Bot <rss-bot@velocitynvim.github>
+          author: VelocityNvim RSS Bot <rss-bot@velocitynvim.github>
+
+      - name: Enable auto-merge
+        if: steps.create-pr.outputs.pull-request-number != ''
+        run: gh pr merge --auto --squash ${{ steps.create-pr.outputs.pull-request-number }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
