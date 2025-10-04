@@ -98,11 +98,13 @@
             color: #24292f;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            padding: 20px;
+            padding: 0;
+            margin: 0;
         }
         .container {
-            max-width: 900px;
-            margin: 0 auto;
+            width: calc(100% - 20px);
+            max-width: 1320px;
+            margin: 10px auto;
             background: white;
             border-radius: 12px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
@@ -374,31 +376,6 @@
             color: white;
             text-decoration: none;
         }
-        .lang-switch {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            display: flex;
-            gap: 10px;
-        }
-        .lang-btn {
-            background: rgba(255,255,255,0.2);
-            color: white;
-            border: 2px solid rgba(255,255,255,0.3);
-            padding: 8px 15px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.9em;
-            transition: all 0.3s;
-        }
-        .lang-btn:hover {
-            background: rgba(255,255,255,0.3);
-        }
-        .lang-btn.active {
-            background: rgba(255,255,255,0.9);
-            color: #0366d6;
-            font-weight: 600;
-        }
         .lang-content {
             display: none;
         }
@@ -408,15 +385,144 @@
         .lang-content.active.features {
             display: grid;
         }
+        /* Sticky Navigation */
+        .sticky-nav {
+            position: sticky;
+            top: 0;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            border-bottom: 2px solid #e1e4e8;
+            width: 100%;
+            left: 0;
+            right: 0;
+        }
+        .nav-content {
+            max-width: 100%;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 4px 40px;
+            gap: 20px;
+        }
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.3em;
+            font-weight: 700;
+            color: #0366d6;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+        .nav-logo img {
+            height: 40px;
+            width: auto;
+            display: block;
+            object-fit: contain;
+            transform: translateY(2px);
+        }
+        .nav-links {
+            display: flex;
+            gap: 15px;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .nav-links a {
+            color: #586069;
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: all 0.3s;
+            font-size: 0.95em;
+            font-weight: 500;
+        }
+        .nav-links a:hover {
+            background: #f6f8fa;
+            color: #0366d6;
+        }
+        .nav-lang-switch {
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+        .nav-lang-btn {
+            background: #f6f8fa;
+            color: #586069;
+            border: 1px solid #d0d7de;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85em;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+        .nav-lang-btn:hover {
+            background: #e1e4e8;
+        }
+        .nav-lang-btn.active {
+            background: #0366d6;
+            color: white;
+            border-color: #0366d6;
+            font-weight: 600;
+        }
+        /* Mobile Responsive Navigation */
+        @media (max-width: 768px) {
+            .nav-content {
+                flex-direction: column;
+                padding: 10px 20px;
+                gap: 10px;
+            }
+            .nav-links {
+                gap: 8px;
+                font-size: 0.85em;
+            }
+            .nav-links a {
+                padding: 6px 10px;
+                font-size: 0.85em;
+            }
+        }
+        /* Smooth scroll */
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 80px;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header" style="position: relative;">
-            <div class="lang-switch">
-                <button class="lang-btn active" onclick="switchLanguage('de')">🇩🇪 DE</button>
-                <button class="lang-btn" onclick="switchLanguage('en')">🇬🇧 EN</button>
+    <!-- Sticky Navigation -->
+    <nav class="sticky-nav">
+        <div class="nav-content">
+            <a href="#top" class="nav-logo">
+                <img src="../assets/images/VelocityNvim_Logo.png" alt="VelocityNvim Logo">
+                <span>VelocityNvim</span>
+            </a>
+            <ul class="nav-links">
+                <li class="lang-content de active"><a href="#features">Features</a></li>
+                <li class="lang-content en"><a href="#features">Features</a></li>
+                <li class="lang-content de active"><a href="#requirements">Voraussetzungen</a></li>
+                <li class="lang-content en"><a href="#requirements">Requirements</a></li>
+                <li class="lang-content de active"><a href="#installation">Installation</a></li>
+                <li class="lang-content en"><a href="#installation">Installation</a></li>
+                <li class="lang-content de active"><a href="#support">Support</a></li>
+                <li class="lang-content en"><a href="#support">Support</a></li>
+                <li class="lang-content de active"><a href="#links">Links</a></li>
+                <li class="lang-content en"><a href="#links">Links</a></li>
+            </ul>
+            <div class="nav-lang-switch">
+                <button class="nav-lang-btn active" onclick="switchLanguage('de')">🇩🇪 DE</button>
+                <button class="nav-lang-btn" onclick="switchLanguage('en')">🇬🇧 EN</button>
             </div>
+        </div>
+    </nav>
+
+    <div class="container" id="top">
+        <div class="header">
             <h1>VelocityNvim</h1>
             <p class="subtitle">Native vim.pack Neovim Distribution</p>
         </div>
@@ -436,6 +542,7 @@
                 <a href="https://github.com/Maik-0000FF/VelocityNvim" class="cta-button lang-content en">Go to GitHub Repository →</a>
             </div>
 
+            <div id="features"></div>
             <h2 class="lang-content de active">Features</h2>
             <h2 class="lang-content en">Features</h2>
 
@@ -459,6 +566,7 @@
                 <li>Performance-optimized for WezTerm</li>
             </ul>
 
+            <div id="requirements"></div>
             <h2 class="lang-content de active">Systemvoraussetzungen</h2>
             <h2 class="lang-content en">System Requirements</h2>
 
@@ -800,6 +908,7 @@ npm install -g typescript typescript-language-server vscode-langservers-extracte
                 </div>
             </div>
 
+            <div id="installation"></div>
             <h2 class="lang-content de active">Installation</h2>
             <h2 class="lang-content en">Installation</h2>
 
@@ -919,6 +1028,7 @@ source ~/.bashrc</code>
                 </div>
             </div>
 
+            <div id="support"></div>
             <!-- German Donation Section -->
             <div class="donation-section lang-content de active">
                 <h2>☕ Unterstütze VelocityNvim</h2>
@@ -1069,6 +1179,7 @@ source ~/.bashrc</code>
                 </div>
             </div>
 
+            <div id="links"></div>
             <!-- German Links -->
             <h2 class="lang-content de active">Links</h2>
             <ul class="links lang-content de active">
@@ -1121,16 +1232,20 @@ source ~/.bashrc</code>
             const langContents = document.querySelectorAll('.lang-content');
             langContents.forEach(content => content.classList.remove('active'));
 
-            // Remove active class from all language buttons
-            const langBtns = document.querySelectorAll('.lang-btn');
-            langBtns.forEach(btn => btn.classList.remove('active'));
+            // Remove active class from all navigation language buttons
+            const navLangBtns = document.querySelectorAll('.nav-lang-btn');
+            navLangBtns.forEach(btn => btn.classList.remove('active'));
 
             // Show selected language content
             const selectedContents = document.querySelectorAll('.lang-content.' + lang);
             selectedContents.forEach(content => content.classList.add('active'));
 
-            // Add active class to clicked button
-            event.target.classList.add('active');
+            // Add active class to selected language button
+            if (lang === 'de') {
+                document.querySelectorAll('.nav-lang-btn')[0].classList.add('active');
+            } else {
+                document.querySelectorAll('.nav-lang-btn')[1].classList.add('active');
+            }
 
             // Save language preference
             localStorage.setItem('velocityLang', lang);
@@ -1207,17 +1322,13 @@ source ~/.bashrc</code>
         document.addEventListener('DOMContentLoaded', function() {
             const savedLang = localStorage.getItem('velocityLang');
             if (savedLang && savedLang === 'en') {
-                // Simulate click on English button
-                const enBtn = document.querySelector('.lang-btn:not(.active)');
-                if (enBtn) {
-                    // Hide German content
-                    document.querySelectorAll('.lang-content.de').forEach(el => el.classList.remove('active'));
-                    // Show English content
-                    document.querySelectorAll('.lang-content.en').forEach(el => el.classList.add('active'));
-                    // Update buttons
-                    document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
-                    enBtn.classList.add('active');
-                }
+                // Hide German content
+                document.querySelectorAll('.lang-content.de').forEach(el => el.classList.remove('active'));
+                // Show English content
+                document.querySelectorAll('.lang-content.en').forEach(el => el.classList.add('active'));
+                // Update navigation buttons
+                document.querySelectorAll('.nav-lang-btn').forEach(btn => btn.classList.remove('active'));
+                document.querySelectorAll('.nav-lang-btn')[1].classList.add('active');
             }
         });
     </script>
