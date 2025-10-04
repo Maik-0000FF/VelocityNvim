@@ -1,14 +1,7 @@
 name: GitHub Pages with RSS Feed
 
 on:
-  release:
-    types: [published]
   workflow_dispatch:
-  push:
-    branches:
-      - main
-    paths:
-      - 'docs/**'
 
 permissions:
   contents: read
