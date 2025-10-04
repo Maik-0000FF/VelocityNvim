@@ -6,6 +6,9 @@ require("tokyonight").setup({
   -- Tokyonight storm variant
   style = "night",
 
+  -- Performance: Cache kompilierte Highlights
+  cache = true,
+
   -- Andere Optionen
   light_style = "day",
   transparent = false,

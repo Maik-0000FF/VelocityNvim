@@ -11,6 +11,8 @@ vim.g.loaded_remote_plugins = 1
 
 -- Python formatting handled by conform.nvim + ruff
 -- Ruff replaces black + isort with better performance
+-- Deaktiviere system-weites black.vim Plugin (~5ms Einsparung)
+vim.g.load_black = 1
 
 local opt = vim.opt
 local g = vim.g
