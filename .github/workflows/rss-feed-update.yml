@@ -24,23 +24,22 @@ jobs:
           cat > docs/feeds/releases.xml << 'HEADER_EOF'
           <?xml version="1.0" encoding="UTF-8"?>
           <feed xmlns="http://www.w3.org/2005/Atom">
-            <title>VelocityNvim Releases</title>
+            <title>VelocityNvim Announcements</title>
             <link href="https://github.com/Maik-0000FF/VelocityNvim"/>
           HEADER_EOF
 
           # Add timestamp
           echo "  <updated>$(date -u +%Y-%m-%dT%H:%M:%SZ)</updated>" >> docs/feeds/releases.xml
 
-          # Fetch releases and convert to XML with proper escaping
-          curl -s "https://api.github.com/repos/Maik-0000FF/VelocityNvim/releases?per_page=10" | \
+          # Convert announcements.json to RSS entries
           jq -r '.[] |
             "  <entry>\n" +
-            "    <title>" + (.name | @html) + "</title>\n" +
-            "    <link href=\"" + .html_url + "\"/>\n" +
-            "    <id>" + .html_url + "</id>\n" +
-            "    <updated>" + .published_at + "</updated>\n" +
-            "    <content type=\"html\"><![CDATA[" + (.body // "") + "]]></content>\n" +
-            "  </entry>"' >> docs/feeds/releases.xml
+            "    <title>" + (.title | @html) + "</title>\n" +
+            "    <link href=\"" + .url + "\"/>\n" +
+            "    <id>" + .url + "</id>\n" +
+            "    <updated>" + .date + "</updated>\n" +
+            "    <content type=\"html\"><![CDATA[" + .content + "]]></content>\n" +
+            "  </entry>"' docs/announcements.json >> docs/feeds/releases.xml
 
           # Close feed
           echo "</feed>" >> docs/feeds/releases.xml
