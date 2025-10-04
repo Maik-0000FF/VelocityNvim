@@ -1,310 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
-  <title>VelocityNvim Releases</title>
+  <title>VelocityNvim Announcements</title>
   <link href="https://github.com/Maik-0000FF/VelocityNvim"/>
-  <updated>2025-10-04T13:51:36Z</updated>
+  <updated>2025-10-04T14:08:54Z</updated>
   <entry>
-    <title>VelocityNvim v1.0.1 - Performance Profiling &amp; Security Edition</title>
-    <link href="https://github.com/Maik-0000FF/VelocityNvim/releases/tag/v1.0.1"/>
-    <id>https://github.com/Maik-0000FF/VelocityNvim/releases/tag/v1.0.1</id>
-    <updated>2025-10-01T13:41:27Z</updated>
-    <content type="html"><![CDATA[# VelocityNvim v1.0.1 - Performance Profiling & Security Edition
-
-## 🎯 Release Highlights
-
-This release brings **detailed performance profiling capabilities** and **comprehensive security enhancements** to VelocityNvim.
-
----
-
-## ⚡ Performance Profiling Features
-
-### vim-startuptime Plugin Integration
-
-- **Detailed Startup Analysis**: New `:StartupTime` command for comprehensive profiling
-- **Native hrtime Tracking**: Precise performance measurements with microsecond accuracy
-- **Dashboard Integration**: Startup metrics displayed on VelocityNvim dashboard
-- **Benchmark Commands**: `:BenchmarkStartup` for reproducible performance testing
-- **25 Plugins Optimized**: Enhanced load order for optimal startup performance
-
-**Usage:**
-```vim
-:StartupTime           " Analyze startup performance
-:BenchmarkStartup      " Run performance benchmark
-:VelocityInfo          " View version and metrics
-```
-
-**Performance Results:**
-- Cold startup: ~0.118s
-- Warm startup: ~0.106s
-- Overall average: ~0.113s (35% faster than previous benchmarks)
-
----
-
-## 🔒 Security Enhancements
-
-### Multi-Layer Protection System
-
-- **GitHub CODEOWNERS**: Critical files require repository owner approval
-- **Branch Protection**: Pull requests mandatory for main branch with code owner reviews
-- **Automated Security Scanning**: CodeQL analysis for JavaScript/HTML vulnerabilities
-- **Protected Assets**: Landing page, documentation, core configuration, and CI/CD workflows
-
-### CodeQL Security Scanning
-
-- **Weekly Automated Scans**: Every Monday at 00:00 UTC
-- **Real-time Analysis**: On every push to main branch and pull requests
-- **Coverage**: XSS vulnerabilities, injection attacks, insecure patterns
-- **GitHub Security Tab**: Integrated alerts and findings dashboard
-
-### Protected Files
-
-All critical files now require code owner approval:
-- `index.html` (landing page with donation information)
-- `README.md` (project documentation)
-- `SECURITY.md` (security policy)
-- `.gitignore` (privacy controls)
-- `lua/core/*.lua` (core configuration)
-- `.github/workflows/*.yml` (CI/CD automation)
-
----
-
-## 📖 Documentation Updates
-
-- **Security Policy**: Public `SECURITY.md` with responsible disclosure guidelines
-- **Security Badges**: CodeQL and Security Policy badges in README
-- **CHANGELOG**: Comprehensive v1.0.1 release notes
-- **Internal Documentation**: Enhanced security implementation details
-
----
-
-## 🛡️ Security Contact
-
-If you discover security vulnerabilities, please report responsibly:
-- **Email**: maikblu.github@web.de
-- **GitHub Security**: [Report Issue](https://github.com/Maik-0000FF/VelocityNvim/security)
-
----
-
-## 📊 System Information
-
-- **Version**: 1.0.1
-- **Release Date**: October 1, 2025
-- **Total Plugins**: 25
-- **Neovim Requirement**: >= 0.11.0
-- **Architecture**: Native vim.pack (no plugin manager required)
-
----
-
-## 🔗 Quick Links
-
-- [Security Policy](https://github.com/Maik-0000FF/VelocityNvim/blob/main/SECURITY.md)
-- [CodeQL Analysis](https://github.com/Maik-0000FF/VelocityNvim/security/code-scanning)
-- [Full Documentation](https://github.com/Maik-0000FF/VelocityNvim/blob/main/README.md)
-- [Installation Guide](https://github.com/Maik-0000FF/VelocityNvim#-installation)
-
----
-
-## ⬆️ Upgrade Instructions
-
-### For Existing Users
-
-```bash
-cd ~/.config/nvim  # or ~/.config/VelocityNvim for parallel install
-git pull origin main
-nvim -c "PluginSync" -c "qall"
-```
-
-### First-Time Installation
-
-```bash
-# Backup existing config
-[ -d ~/.config/nvim ] && mv ~/.config/nvim ~/.config/nvim.backup.$(date +%Y%m%d_%H%M%S)
-
-# Install VelocityNvim
-git clone https://github.com/Maik-0000FF/VelocityNvim.git ~/.config/nvim
-
-# Sync plugins
-nvim -c "PluginSync" -c "qall"
-```
-
----
-
-## ☕ Support VelocityNvim
-
-If you appreciate native, transparent Neovim architecture with security-first design:
-
-**Bitcoin Address:**
-```
-bc1q6gmpgfn4wx2hx2c3njgpep9tl00etma9k7w6d4
-```
-
-**Other ways to support:**
-- ⭐ Star this repository
-- 🐛 Report bugs and suggest improvements
-- 📢 Share with other developers
-- 🤝 Contribute code or documentation
-
----
-
-**Full Changelog**: https://github.com/Maik-0000FF/VelocityNvim/compare/v1.0.0...v1.0.1
-]]></content>
-  </entry>
-  <entry>
-    <title>VelocityNvim v1.0.0 - Stable Beta Release</title>
-    <link href="https://github.com/Maik-0000FF/VelocityNvim/releases/tag/v1.0.0"/>
-    <id>https://github.com/Maik-0000FF/VelocityNvim/releases/tag/v1.0.0</id>
-    <updated>2025-09-28T09:46:50Z</updated>
-    <content type="html"><![CDATA[# VelocityNvim v1.0.0 - Stable Beta Release
-
-## 🚀 **Status Update: Now Stable Beta (September 28, 2025)**
-
-> **IMPORTANT**: VelocityNvim is now in **Stable Beta** status - no longer "Community Preview"
-
-- ✅ **Public Repository** - Fully open source and accessible to all developers
-- ✅ **Production-Ready** - Core features stable for daily development work
-- ✅ **Active Community** - GitHub Discussions and issue tracking available
-- ✅ **Regular Updates** - Continuous improvement based on community feedback
-
----
-
-## ⚡ **Performance Highlights**
-
-### **Fastest Neovim Distribution**
-- **0.16s average startup time** - Significantly faster than LazyVim (~0.5s) and NvChad
-- **Zero plugin manager overhead** - Direct vim.pack integration
-- **Rust-powered performance** - Native tools where they matter most
-
-### **Architecture Benefits**
-- **Native vim.pack** - Uses Neovim's built-in plugin system
-- **Transparent operations** - Standard Git workflows for all plugins
-- **No abstractions** - Learn real Neovim skills, not plugin manager APIs
-
----
-
-## 🆕 **Key Features & Technologies**
-
-### **Modern LSP Integration**
-- **vim.lsp.config API** - Latest Neovim 0.11+ LSP architecture
-- **Global configuration** - Enhanced capabilities and performance
-- **Multi-language support** - Rust, Python, JavaScript/TypeScript, Lua, Go, C/C++
-
-### **Performance-First Design**
-- **Smart Treesitter** - Manual parser installation for optimal startup
-- **Rust toolchain integration** - fzf, ripgrep, fd, git-delta
-- **Optimized settings** - Disabled semantic tokens for responsive navigation
-- **Efficient memory usage** - No plugin manager memory footprint
-
-### **Developer Experience**
-- **24 curated plugins** - Complete IDE experience out of the box
-- **Professional documentation** - Comprehensive guides and troubleshooting
-- **Health monitoring** - `:VelocityHealth` for system diagnostics
-- **Cross-platform** - Linux, macOS, WSL2 support
-
----
-
-## 📦 **Installation**
-
-### **Quick Start**
-```bash
-# Backup existing config (if any)
-[ -d ~/.config/nvim ] && mv ~/.config/nvim ~/.config/nvim.backup
-
-# Install VelocityNvim
-git clone https://github.com/Maik-0000FF/VelocityNvim.git ~/.config/nvim
-
-# Launch and auto-sync plugins
-nvim
-```
-
-### **Parallel Installation (keep existing config)**
-```bash
-# Install alongside existing Neovim config
-git clone https://github.com/Maik-0000FF/VelocityNvim.git ~/.config/VelocityNvim
-
-# Launch VelocityNvim
-NVIM_APPNAME=VelocityNvim nvim
-```
-
----
-
-## 🔧 **System Requirements**
-
-### **Required**
-- **Neovim >= 0.11.0** - Required for modern vim.lsp.config API
-- **Git** - For plugin management and updates
-
-### **Recommended for Optimal Performance**
-- **Rust toolchain** - For blink.cmp performance compilation
-- **Performance tools**: `fzf`, `ripgrep`, `fd`, `git-delta`, `ruff`
-- **NerdFont** - For beautiful icons and symbols
-
----
-
-## 🎯 **Migration from Other Distributions**
-
-### **From LazyVim/NvChad/AstroVim**
-VelocityNvim maintains familiar keybindings while teaching native Neovim concepts:
-
-- **Performance gain** - Faster startup and runtime
-- **Educational value** - Learn vim.pack instead of plugin manager APIs
-- **Transparency** - See exactly how plugins are managed
-- **Future-proof** - Built on stable Neovim foundations
-
-### **Migration Support**
-- Familiar interface and workflows
-- Comprehensive documentation for transition
-- Community support via GitHub Discussions
-
----
-
-## 🔍 **What's Different About VelocityNvim?**
-
-### **The Only Native vim.pack Distribution**
-- **No plugin manager** - Uses Neovim's built-in plugin system
-- **Educational approach** - Learn transferable Neovim skills
-- **Minimal dependencies** - Reduced complexity and conflicts
-- **Standard operations** - Pure Git workflows for plugin management
-
-### **Performance Philosophy**
-- **Rust where beneficial** - Not just for trendy appeal
-- **Selective optimization** - Focus on real-world development scenarios
-- **Measurement-driven** - Actual benchmarks guide decisions
-
----
-
-## 🌟 **Community & Support**
-
-### **Get Help**
-- **GitHub Discussions** - Community questions and ideas
-- **Issue Templates** - Bug reports and feature requests
-- **Documentation** - Comprehensive guides and FAQ
-
-### **Contributing**
-- **Open source** - MIT license, contributions welcome
-- **Standard Neovim patterns** - No plugin manager knowledge required
-- **Community-driven** - Feature development based on user feedback
-
----
-
-## 📚 **Documentation & Resources**
-
-- **[Installation Guide](https://github.com/Maik-0000FF/VelocityNvim#-installation)** - Complete setup instructions
-- **[FAQ](https://github.com/Maik-0000FF/VelocityNvim#-frequently-asked-questions-faq)** - Common questions and answers
-- **[Performance Comparison](https://github.com/Maik-0000FF/VelocityNvim#-performance-characteristics)** - Benchmarks vs other distributions
-- **[GitHub Discussions](https://github.com/Maik-0000FF/VelocityNvim/discussions)** - Community support and ideas
-
----
-
-## 🎉 **Try VelocityNvim Today**
-
-Experience the fastest, most educational Neovim distribution available. Whether you're migrating from another distribution or starting fresh, VelocityNvim provides enterprise-grade performance while teaching you real Neovim skills.
-
-**Installation takes less than 2 minutes. Performance improvements are immediate.**
-
----
-
-*VelocityNvim: Native vim.pack. Native performance. Native simplicity.*
-
-**Finally, a Neovim distribution that doesn't fight against Neovim.**]]></content>
+    <title>Welcome to r/VelocityNvim!</title>
+    <link href="https://github.com/Maik-0000FF/VelocityNvim"/>
+    <id>https://github.com/Maik-0000FF/VelocityNvim</id>
+    <updated>2025-10-04T14:00:00Z</updated>
+    <content type="html"><![CDATA[🎉 **Welcome to r/VelocityNvim!**
+
+This is the official subreddit for VelocityNvim - a native vim.pack based Neovim distribution focused on performance and transparency.
+
+🚀 **What is VelocityNvim?**
+- Native vim.pack architecture (no plugin manager overhead)
+- 0.16s average startup time
+- Modern LSP integration with Neovim 0.11+
+- 25 carefully selected plugins
+- Rust-powered performance tools
+
+📺 **Getting Started:**
+- [Installation Video](https://youtube.com/@VelocityNvim)
+- [Documentation](https://github.com/Maik-0000FF/VelocityNvim)
+- [Latest Release](https://github.com/Maik-0000FF/VelocityNvim/releases)
+
+💬 **Join the Discussion:**
+Feel free to ask questions, share your experience, or suggest improvements!
+
+🔗 **Links:**
+- GitHub: https://github.com/Maik-0000FF/VelocityNvim
+- Landing Page: https://maik-0000ff.github.io/VelocityNvim/]]></content>
   </entry>
 </feed>
