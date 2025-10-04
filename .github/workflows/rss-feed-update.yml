@@ -58,10 +58,7 @@ jobs:
           if git diff --staged --quiet; then
             echo "No changes to RSS feed"
           else
-            git commit -m "chore: Update RSS feed for IFTTT
-
-Auto-generated RSS feed update
-Triggered manually for Reddit automation"
+            git commit -m "chore: Update RSS feed for IFTTT" -m "Auto-generated RSS feed update" -m "Triggered manually for Reddit automation"
             git push origin main
             echo "✅ RSS Feed committed and pushed to main"
           fi
