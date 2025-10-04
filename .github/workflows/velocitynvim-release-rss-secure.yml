@@ -14,7 +14,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          persist-credentials: false
+          ref: main
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Generate RSS Feed
         run: |
@@ -54,4 +55,4 @@ jobs:
           git config user.email 'github-actions[bot]@users.noreply.github.com'
           git add docs/feeds/releases.xml
           git diff --quiet && git diff --staged --quiet || git commit -m "chore: Update RSS feed"
-          git push
+          git push origin main
