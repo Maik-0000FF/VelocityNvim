@@ -1,0 +1,75 @@
+name: GitHub Pages with RSS Feed
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'docs/**'
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Generate RSS Feed
+        run: |
+          mkdir -p docs/feeds
+
+          # Create feed header
+          cat > docs/feeds/releases.xml << 'HEADER_EOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <feed xmlns="http://www.w3.org/2005/Atom">
+            <title>VelocityNvim Releases</title>
+            <link href="https://github.com/Maik-0000FF/VelocityNvim"/>
+          HEADER_EOF
+
+          # Add timestamp
+          echo "  <updated>$(date -u +%Y-%m-%dT%H:%M:%SZ)</updated>" >> docs/feeds/releases.xml
+
+          # Fetch releases and convert to XML
+          curl -s "https://api.github.com/repos/Maik-0000FF/VelocityNvim/releases?per_page=10" | \
+          jq -r '.[] |
+            "<entry>" +
+            "<title>" + .name + "</title>" +
+            "<link href=\"" + .html_url + "\"/>" +
+            "<id>" + .html_url + "</id>" +
+            "<updated>" + .published_at + "</updated>" +
+            "<content>" + (.body // "" | @html) + "</content>" +
+            "</entry>"' >> docs/feeds/releases.xml
+
+          # Close feed
+          echo "</feed>" >> docs/feeds/releases.xml
+
+          echo "✅ RSS Feed generated successfully"
+          ls -lh docs/feeds/releases.xml
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Build with Jekyll
+        uses: actions/jekyll-build-pages@v1
+        with:
+          source: ./docs
+          destination: ./_site
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
