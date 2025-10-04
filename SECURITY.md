@@ -6,7 +6,7 @@ We take the security of VelocityNvim seriously. If you discover a security vulne
 
 ### How to Report
 
-**Email:** maikblu.github@web.de
+**Contact:** GitHub Issues (https://github.com/Maik-0000FF/VelocityNvim/issues)
 
 **Please include:**
 - Description of the vulnerability
@@ -102,7 +102,7 @@ bc1q6gmpgfn4wx2hx2c3njgpep9tl00etma9k7w6d4
 
 **If you suspect the donation address has been compromised:**
 - ⚠️ Do NOT send donations
-- 📧 Report immediately to: maikblu.github@web.de
+- 📧 Report immediately via: https://github.com/Maik-0000FF/VelocityNvim/issues
 - 🐛 Create a GitHub issue with label `security`
 
 ---
@@ -127,7 +127,7 @@ Security researchers who follow responsible disclosure will be:
 
 ## 📞 Contact
 
-- **Security Email:** maikblu.github@web.de
+- **Security Contact:** GitHub Issues - https://github.com/Maik-0000FF/VelocityNvim/issues
 - **GitHub Issues:** [Report Security Issue](https://github.com/Maik-0000FF/VelocityNvim/issues/new?labels=security)
 - **GitHub Discussions:** [Security Discussions](https://github.com/Maik-0000FF/VelocityNvim/discussions)
 

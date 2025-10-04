@@ -149,8 +149,8 @@ velocitynvim_check \
 
 # Check 12: VelocityNvim verwendet nur Projekt-Email
 velocitynvim_check \
-    "VelocityNvim verwendet nur Projekt-Email (maikblu.github@web.de)" \
-    "git grep -iE '[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}' -- ':!docs/' ':!.git/' ':!.github/' | grep -v 'maikblu.github@web.de' | grep -v 'noreply@github.com' | grep -v '@users.noreply.github.com' | grep -v 'velocitynvim-bot'" \
+    "VelocityNvim verwendet keine Emails (Kontakt via GitHub Issues)" \
+    "git grep -iE '[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}' -- ':!docs/' ':!.git/' ':!.github/' | grep -v 'noreply@github.com' | grep -v '@users.noreply.github.com' | grep -v 'github-actions'" \
     "true" "warning"
 
 echo ""
