@@ -464,15 +464,6 @@ The status line shows comprehensive information:
 - Diagnostic counts with NerdFont icons
 - Workspace diagnostics summary
 
-#### File Protection Status
-- File permissions display
-- Security status indicators
-- Custom protection levels
-
-#### Python Environment
-- Virtual environment detection
-- Environment name display
-
 ### Buffer Management (Bufferline)
 - Tabbed interface for open buffers
 - Modified indicators

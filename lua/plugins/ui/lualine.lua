@@ -4,102 +4,6 @@
 -- Icons laden
 local icons = require("core.icons")
 
--- Python venv Anzeigefunktion
-local function python_venv()
-  local venv = os.getenv("VIRTUAL_ENV")
-  if venv then
-    -- Extrahiere nur den Namen der virtuellen Umgebung
-    return string.match(venv, "[^/]+$")
-  end
-  return ""
-end
-
--- Dateischutz-Statusanzeige mit Berechtigungen
-local function file_protection_status()
-  local filepath = vim.fn.expand("%:p")
-  if filepath == "" then
-    return ""
-  end
-
-  -- Prüfe, ob aktuelle Datei eine Datei auf dem Dateisystem ist
-  -- Sichere fs_stat Funktion für Cross-Version Kompatibilität
-  local fs_stat_func = rawget(vim.uv, "fs_stat") or rawget(vim.loop, "fs_stat")
-  local stats = nil
-  if fs_stat_func then
-    local ok, stat = pcall(fs_stat_func, filepath)
-    if ok and stat then
-      stats = stat
-    end
-  end
-  if not stats then
-    return "" -- Keine Datei (z.B. NeoTree-Buffer)
-  end
-
-  -- Hole aktuelle Dateiberechtigungen unabhängig vom Status
-  local current_mode = ""
-  local stat_cmd = "stat -c '%a' " .. vim.fn.shellescape(filepath)
-  local stat_ok, stat_result = pcall(vim.fn.system, stat_cmd)
-
-  if stat_ok and stat_result then
-    current_mode = stat_result:gsub("\n", "")
-  end
-
-  -- Status aus der globalen Statusvariable
-  local status = "none"
-  if _G.file_protection_status == nil then
-    _G.file_protection_status = {}
-  end
-  if _G.file_protection_status[filepath] then
-    status = _G.file_protection_status[filepath]
-  end
-
-  -- Emoji-Map für verschiedene Schutzlevel
-  local emoji_map = {
-    none = "", -- Kein Emoji bei normalem Status
-    readonly = icons.status.shield .. " ", -- Nur Lesen
-    executable = icons.system.binary .. " ", -- Ausführbar
-    owner = icons.status.warning .. " ", -- Besitzer-Schutz
-    group = icons.status.config .. " ", -- Gruppen-Schutz
-    public = icons.status.info .. " ", -- Öffentlicher Zugriff
-    custom = icons.status.shield .. " ", -- Benutzerdefiniert
-  }
-
-  -- Emoji-Zuordnung basierend auf Berechtigungen
-  if status == "none" then
-    -- Wenn kein expliziter Status gesetzt ist, zeige Emoji basierend auf den Dateirechten
-    if current_mode == "400" then
-      return icons.status.shield .. " " .. current_mode
-    elseif current_mode == "500" then
-      return icons.system.binary .. " " .. current_mode
-    elseif current_mode == "600" then
-      return icons.status.warning .. " " .. current_mode
-    elseif current_mode == "640" then
-      return icons.status.config .. " " .. current_mode
-    elseif current_mode == "644" then
-      return icons.status.info .. " " .. current_mode
-    elseif current_mode:match("^[0-7][0-7][0-7]$") then
-      -- Anderes bekanntes Format
-      return icons.status.shield .. " " .. current_mode
-    else
-      -- Nur anzeigen, wenn besonders niedrige Rechte
-      local first_digit = current_mode:sub(1, 1)
-      if
-        first_digit == "0"
-        or first_digit == "1"
-        or first_digit == "2"
-        or first_digit == "3"
-        or first_digit == "4"
-        or first_digit == "5"
-      then
-        return icons.status.warning .. " " .. current_mode
-      end
-      return "" -- Normalfall: keine Anzeige
-    end
-  end
-
-  -- Andernfalls zeige Status mit den Berechtigungen
-  return (emoji_map[status] or "") .. current_mode
-end
 
 -- Statusline wieder einschalten für lualine
 vim.opt.laststatus = 3
@@ -162,9 +66,6 @@ require("lualine").setup({
       "%=", -- Linke und rechte Sektionen ausbalancieren
     },
     lualine_x = {
-      -- Dateischutz-Status anzeigen
-      { file_protection_status },
-      { python_venv, icon = "❯ " },
       {
         "lsp_status",
         icon = icons.lsp.code_action .. " ",
