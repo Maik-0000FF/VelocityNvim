@@ -136,7 +136,7 @@
                 border-radius: 0;
             }
             .header {
-                padding: 40px 20px;
+                padding: 30px 15px;
             }
             .header h1 {
                 font-size: 2em;
@@ -145,7 +145,7 @@
                 font-size: 1.1em;
             }
             .content {
-                padding: 20px;
+                padding: 15px 10px;
             }
         }
         .cta-button {
@@ -269,7 +269,7 @@
         }
         @media (max-width: 768px) {
             .footer {
-                padding: 15px 20px;
+                padding: 15px 10px;
                 font-size: 0.85em;
             }
         }
@@ -288,8 +288,8 @@
         }
         @media (max-width: 768px) {
             .install-section {
-                padding: 20px 15px;
-                margin: 20px 0;
+                padding: 15px 10px;
+                margin: 15px 0;
             }
             .install-section h3 {
                 font-size: 1.1em;
@@ -355,8 +355,8 @@
         }
         @media (max-width: 768px) {
             .donation-section {
-                padding: 30px 20px;
-                margin: 20px 0;
+                padding: 25px 10px;
+                margin: 15px 0;
             }
             .donation-section h2 {
                 font-size: 1.5em;
@@ -608,7 +608,7 @@
         .nav-lang-btn {
             background: #f6f8fa;
             color: #586069;
-            border: none;
+            border: 1px solid transparent;
             padding: 6px 12px;
             border-radius: 6px;
             cursor: pointer;
@@ -623,16 +623,13 @@
         .nav-lang-btn.active {
             background: #0366d6;
             color: white;
-            border: 1px solid #0366d6;
+            border-color: #0366d6;
             font-weight: 600;
         }
         @media (max-width: 768px) {
             .nav-lang-btn {
                 padding: 8px 10px;
                 font-size: 0.8em;
-            }
-            .nav-lang-btn.active {
-                padding: 8px 11px;
             }
         }
         /* Hamburger Menu */
@@ -669,7 +666,7 @@
             }
             .nav-content {
                 flex-wrap: wrap;
-                padding: 8px 20px;
+                padding: 8px 10px;
             }
             .nav-links {
                 display: none;
@@ -723,6 +720,11 @@
                 display: flex;
                 align-items: center;
                 justify-content: center;
+            }
+            /* Fix legend list padding in verification section */
+            .tab-content ul {
+                padding-left: 25px;
+                margin-left: 5px;
             }
         }
     </style>
@@ -1467,23 +1469,27 @@ source ~/.bashrc</code>
         });
 
         function switchTab(tabName) {
-            // Hide all tab contents
-            const contents = document.querySelectorAll('.tab-content');
+            // Find the parent install-section
+            const tabContent = document.getElementById(tabName);
+            const parentSection = tabContent.closest('.install-section');
+
+            // Hide only tab contents within this section
+            const contents = parentSection.querySelectorAll('.tab-content');
             contents.forEach(content => content.classList.remove('active'));
 
-            // Remove active class from all tabs
-            const tabs = document.querySelectorAll('.tab');
+            // Remove active class from only tabs within this section
+            const tabs = parentSection.querySelectorAll('.tab');
             tabs.forEach(tab => tab.classList.remove('active'));
 
             // Show selected tab content
-            document.getElementById(tabName).classList.add('active');
+            tabContent.classList.add('active');
 
             // Add active class to clicked tab
             event.target.classList.add('active');
         }
 
         function switchRequirementsTab(tabName) {
-            // Same as switchTab but for requirements section
+            // Same logic as switchTab
             switchTab(tabName);
         }
 
