@@ -63,10 +63,10 @@ end
 vim.api.nvim_create_autocmd("FileType", {
   pattern = "markdown",
   callback = function()
-    -- Weitere Performance-Optimierungen für Markdown
-    vim.opt_local.wrap = true -- Wrap für bessere Lesbarkeit
-    vim.opt_local.linebreak = true -- Intelligente Zeilenumbrüche
-    vim.opt_local.showbreak = "↳ " -- Visueller Indikator für umgebrochene Zeilen
+    -- Performance-Optimierungen für Markdown
+    vim.opt_local.wrap = false -- Kein Wrap
+    vim.opt_local.linebreak = false -- Keine intelligenten Zeilenumbrüche
+    vim.opt_local.showbreak = "" -- Kein Indikator für umgebrochene Zeilen
 
     -- Performance: Reduziere Update-Frequenz für Markdown
     vim.opt_local.updatetime = 200 -- Schnellere Updates für Live-Rendering
