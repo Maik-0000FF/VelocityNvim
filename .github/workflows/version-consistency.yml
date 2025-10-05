@@ -9,7 +9,6 @@ on:
       - 'CHANGELOG.md'
       - '.github/project-info.json'
       - 'docs/ARCHITECTURE.md'
-      - 'docs/ARCHITECTURE-DETAILS.md'
       - 'THIRD-PARTY-LICENSES.md'
   pull_request:
     branches: [main]
@@ -19,7 +18,6 @@ on:
       - 'CHANGELOG.md'
       - '.github/project-info.json'
       - 'docs/ARCHITECTURE.md'
-      - 'docs/ARCHITECTURE-DETAILS.md'
       - 'THIRD-PARTY-LICENSES.md'
 
 jobs:
@@ -91,19 +89,6 @@ jobs:
 
           echo "✅ ARCHITECTURE.md Version korrekt: $EXPECTED"
 
-      - name: Check ARCHITECTURE-DETAILS.md version
-        run: |
-          EXPECTED="${{ steps.version_lua.outputs.version }}"
-
-          if ! grep -q "Current Version: $EXPECTED" docs/ARCHITECTURE-DETAILS.md; then
-            echo "❌ FEHLER: ARCHITECTURE-DETAILS.md enthält nicht 'Current Version: $EXPECTED'"
-            echo "Gefunden:"
-            grep "Current Version:" docs/ARCHITECTURE-DETAILS.md || echo "  Keine 'Current Version' Zeile gefunden"
-            exit 1
-          fi
-
-          echo "✅ ARCHITECTURE-DETAILS.md Version korrekt: $EXPECTED"
-
       - name: Check THIRD-PARTY-LICENSES.md version
         run: |
           EXPECTED="${{ steps.version_lua.outputs.version }}"
@@ -132,6 +117,5 @@ jobs:
           echo "  ✅ .github/project-info.json"
           echo "  ✅ CHANGELOG.md (Warnung bei fehlender Version)"
           echo "  ✅ docs/ARCHITECTURE.md"
-          echo "  ✅ docs/ARCHITECTURE-DETAILS.md"
           echo "  ✅ THIRD-PARTY-LICENSES.md"
           echo "════════════════════════════════════════"
