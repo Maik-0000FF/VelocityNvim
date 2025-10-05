@@ -12,6 +12,9 @@ vim.g.loaded_remote_plugins = 1
 -- Python formatting handled by conform.nvim + ruff
 -- Ruff replaces black + isort with better performance
 -- Deaktiviere system-weites black.vim Plugin (~5ms Einsparung)
+-- WICHTIG: black.vim prüft nur ob g:load_black existiert (if exists("g:load_black"))
+-- Der Wert ist egal - jeder Wert (0, 1, "foo") verhindert das Laden
+-- Quelle: https://github.com/psf/black/blob/main/plugin/black.vim (Zeile 10-13)
 vim.g.load_black = 1
 
 local opt = vim.opt
