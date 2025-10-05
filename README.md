@@ -4,7 +4,7 @@
 
 > **Zero Plugin Manager Required** | **0.22s Startup Time** | **Modern LSP Integration** | **Rust-Powered Performance**
 
-**A Neovim distribution that teaches you real Neovim skills while delivering solid performance through native architecture.**
+**A Neovim distribution with eager loading architecture for uninterrupted workflow and solid performance through native vim.pack.**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![GitHub stars](https://img.shields.io/github/stars/Maik-0000FF/VelocityNvim?style=social)](https://github.com/Maik-0000FF/VelocityNvim/stargazers)
@@ -155,7 +155,7 @@ Despite eager loading, startup remains fast through:
 
 ### 📚 **Simplicity**
 
-- **Focus on Neovim**: Learn core editor concepts rather than abstraction layers
+- **Native approach**: Direct use of Neovim's built-in features
 - **Clear structure**: Straightforward plugin organization and loading
 - **Standard patterns**: Uses familiar Neovim configuration approaches
 - **Portable configuration**: Based on standard Neovim conventions
@@ -467,16 +467,6 @@ end
 
 **Philosophy**: VelocityNvim prioritizes **instant responsiveness** over convenience. Install parsers manually when you need them, not preemptively "just in case."
 
-## 🎓 Learn Native Neovim Skills
-
-VelocityNvim teaches you **transferable Neovim knowledge**:
-
-- ✅ **vim.pack** - Core Neovim plugin system (works everywhere)
-- ✅ **Direct Git** - Universal version control (no abstraction)
-- ✅ **Native APIs** - Pure Neovim functions (future-proof)
-- ✅ **Standard Paths** - `~/.local/share/nvim/site/pack/user/start/`
-- ❌ **Plugin Manager APIs** - Specific to one tool (becomes outdated)
-
 ## 🧪 Testing & Quality
 
 VelocityNvim includes comprehensive testing:
@@ -531,8 +521,6 @@ VelocityNvim welcomes contributions! Our native architecture makes contributing 
 3. **Make changes** using standard Neovim patterns
 4. **Test** with `:VelocityTest`
 5. **Submit** a pull request
-
-No plugin manager knowledge required - just pure Neovim skills!
 
 ## ☕ Support VelocityNvim
 
@@ -629,16 +617,13 @@ Every plugin in VelocityNvim was chosen not just for its functionality, but for 
 ## 🔍 **Frequently Asked Questions (FAQ)**
 
 ### **Q: Why choose VelocityNvim over LazyVim or NvChad?**
-**A:** VelocityNvim offers a different approach using native vim.pack architecture. This means no plugin manager dependencies, direct Git-based management, and you learn transferable Neovim skills. It provides solid performance and deeper understanding of Neovim's internals.
+**A:** VelocityNvim uses native vim.pack architecture with eager loading. This means no plugin manager dependencies, direct Git-based management, and uninterrupted workflow. All plugins load at startup for predictable performance.
 
 ### **Q: Does VelocityNvim work with Neovim 0.10?**
 **A:** VelocityNvim requires Neovim 0.11+ for modern vim.lsp.config API. This ensures improved LSP performance and stability.
 
 ### **Q: How fast is VelocityNvim?**
 **A:** Startup time averages ~0.22s with 26 plugins on modern hardware. The native vim.pack approach eliminates plugin manager overhead.
-
-### **Q: Can I migrate from LazyVim/NvChad to VelocityNvim?**
-**A:** Yes! VelocityNvim includes migration guides and maintains familiar keybindings while teaching you native vim.pack concepts.
 
 ### **Q: What programming languages does VelocityNvim support?**
 **A:** Full LSP integration for Rust, Python, JavaScript/TypeScript, Lua, Go, C/C++, and more via modern vim.lsp.config API.
@@ -648,10 +633,4 @@ Every plugin in VelocityNvim was chosen not just for its functionality, but for 
 ## 🏷️ **Keywords & Tags**
 
 **Neovim Distribution** | **vim.pack Native** | **No Plugin Manager** | **Fast Startup** | **Modern LSP** | **Rust Performance** | **Neovim 0.11** | **Terminal Editor** | **Developer Tools** | **Configuration Management** | **Text Editor** | **Code Editor** | **Vim Alternative**
-
----
-
-**VelocityNvim: Learn Neovim's native architecture through hands-on experience.**
-
-_A distribution focused on education, transparency, and solid performance._
 

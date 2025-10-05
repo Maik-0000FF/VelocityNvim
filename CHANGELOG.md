@@ -65,7 +65,7 @@
 ### 🏗️ **Architecture Highlights**
 - Native vim.pack plugin management (transparent Git operations)
 - No external dependencies or plugin manager abstractions
-- Educational approach - learn real Neovim skills
+- Eager loading approach - all plugins available at startup
 - Stable and predictable plugin loading mechanisms
 
 ### 🌐 **Community Features**

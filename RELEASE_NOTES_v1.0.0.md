@@ -21,7 +21,7 @@
 ### **Architecture Benefits**
 - **Native vim.pack** - Uses Neovim's built-in plugin system
 - **Transparent operations** - Standard Git workflows for all plugins
-- **No abstractions** - Learn real Neovim skills, not plugin manager APIs
+- **Eager loading** - All plugins available at startup for uninterrupted workflow
 
 ---
 
@@ -87,11 +87,11 @@ NVIM_APPNAME=VelocityNvim nvim
 ## 🎯 **Migration from Other Distributions**
 
 ### **From LazyVim/NvChad/AstroVim**
-VelocityNvim maintains familiar keybindings while teaching native Neovim concepts:
+VelocityNvim offers a different approach with native architecture:
 
 - **Performance gain** - Faster startup and runtime
-- **Educational value** - Learn vim.pack instead of plugin manager APIs
-- **Transparency** - See exactly how plugins are managed
+- **Eager loading** - All plugins immediately available
+- **Transparency** - Direct Git-based plugin management
 - **Future-proof** - Built on stable Neovim foundations
 
 ### **Migration Support**
@@ -105,7 +105,7 @@ VelocityNvim maintains familiar keybindings while teaching native Neovim concept
 
 ### **The Only Native vim.pack Distribution**
 - **No plugin manager** - Uses Neovim's built-in plugin system
-- **Educational approach** - Learn transferable Neovim skills
+- **Eager loading** - All plugins loaded at startup for uninterrupted workflow
 - **Minimal dependencies** - Reduced complexity and conflicts
 - **Standard operations** - Pure Git workflows for plugin management
 
@@ -125,7 +125,7 @@ VelocityNvim maintains familiar keybindings while teaching native Neovim concept
 
 ### **Contributing**
 - **Open source** - MIT license, contributions welcome
-- **Standard Neovim patterns** - No plugin manager knowledge required
+- **Standard Neovim patterns** - Direct vim.pack implementation
 - **Community-driven** - Feature development based on user feedback
 
 ---
@@ -141,7 +141,7 @@ VelocityNvim maintains familiar keybindings while teaching native Neovim concept
 
 ## 🎉 **Try VelocityNvim Today**
 
-Experience the fastest, most educational Neovim distribution available. Whether you're migrating from another distribution or starting fresh, VelocityNvim provides enterprise-grade performance while teaching you real Neovim skills.
+Experience the fastest native vim.pack Neovim distribution. Whether you're migrating from another distribution or starting fresh, VelocityNvim provides solid performance with eager loading architecture.
 
 **Installation takes less than 2 minutes. Performance improvements are immediate.**
 

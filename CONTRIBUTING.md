@@ -1,6 +1,6 @@
 # Contributing to VelocityNvim ⚡
 
-Thank you for your interest in contributing to VelocityNvim! As a stable beta native vim.pack Neovim distribution, we welcome contributions that align with our core philosophy of simplicity, performance, and native architecture.
+Thank you for your interest in contributing to VelocityNvim! As a stable beta native vim.pack Neovim distribution, we welcome contributions that align with our core philosophy of performance and native architecture.
 
 ## 🎯 Our Philosophy
 
@@ -10,7 +10,7 @@ Before contributing, please understand VelocityNvim's core principles:
 - **Transparent Operations**: Every operation should be understandable
 - **Performance Focused**: Rust-powered tools and zero overhead
 - **Future-Proof**: Only use stable Neovim APIs
-- **Simplicity**: Learn Neovim, not plugin manager abstractions
+- **Eager Loading**: All plugins load at startup for uninterrupted workflow
 - **NerdFont Icons**: We use NerdFont symbols instead of emojis for consistent terminal compatibility and professional appearance
 
 ## 🚀 Quick Start for Contributors
@@ -19,7 +19,6 @@ Before contributing, please understand VelocityNvim's core principles:
 - **Neovim**: >= 0.11.0 (required for modern vim.lsp.config API)
 - **Git**: For repository management
 - **Rust/Cargo**: For performance optimizations (optional)
-- **Basic Neovim knowledge**: Understanding of vim.pack and native APIs
 
 ### Development Setup
 ```bash
@@ -242,37 +241,22 @@ List any breaking changes and migration path.
 - ❌ Undocumented complex changes
 - ❌ Missing error handling
 
-## 🎓 Learning Native vim.pack
-
-### **Essential Concepts**
-- `~/.local/share/nvim/site/pack/user/start/` - Plugin directory
-- `git clone` - Plugin installation
-- `git pull` - Plugin updates
-- `rm -rf` - Plugin removal
-- No abstractions, no magic
-
-### **Helpful Resources**
-- `:help vim.pack` - Official Neovim documentation
-- `docs/NATIVE-ADVANTAGES.md` - Our philosophy guide
-- `docs/ARCHITECTURE.md` - Technical deep dive
-- `lua/plugins/manage.lua` - Reference implementation
-
 ## 💬 Community Guidelines
 
 ### **Be Respectful**
 - Respect the native vim.pack philosophy
 - Provide constructive feedback
-- Help newcomers learn native approaches
+- Help newcomers understand the codebase
 
-### **Be Patient**  
-- Code reviews focus on education
-- We explain WHY native approaches are better
-- Learning curve is part of the process
+### **Be Patient**
+- Code reviews focus on quality and clarity
+- We explain WHY specific approaches are used
+- Take time to understand the architecture
 
 ### **Be Collaborative**
-- Share knowledge about native vim.pack
-- Document lessons learned
-- Help improve the native ecosystem
+- Share insights about vim.pack implementation
+- Document important decisions
+- Help improve the project
 
 ## 🐛 Reporting Issues
 
@@ -306,6 +290,4 @@ Contributors who help advance the native vim.pack ecosystem will be:
 
 ---
 
-**Thank you for helping advance the native vim.pack revolution!** 🚀
-
-*Together, we're proving that simplicity and transparency beat abstraction and complexity.*
+**Thank you for contributing to VelocityNvim!** 🚀
