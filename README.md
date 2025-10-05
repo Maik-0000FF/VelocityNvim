@@ -23,9 +23,19 @@
 
 ## 🎯 What is VelocityNvim?
 
-**A modern Neovim distribution built entirely on native vim.pack architecture with cutting-edge LSP integration.**
+**A modern Neovim distribution built entirely on native vim.pack architecture with modern LSP integration.**
 
 VelocityNvim leverages Neovim's built-in plugin system and **modern vim.lsp.config API** for enhanced performance, stability, and simplicity.
+
+### ⚡ **Eager Loading Philosophy**
+
+Unlike most Neovim distributions, VelocityNvim uses **eager loading** - all plugins load at startup instead of on-demand.
+
+**Trade-offs:**
+- ✅ **Advantages**: All functionality immediately available, no mid-workflow interruptions, predictable performance
+- ⚠️ **Disadvantages**: Longer startup time compared to lazy-loading configurations
+
+**Why this approach?** Prioritizes consistent workflow continuity over minimal startup time - optimized for developers who value uninterrupted coding sessions.
 
 ### 📢 **Current Status: Stable Beta (September 2025)**
 - ✅ **Public Repository** - Fully open source and accessible
@@ -104,6 +114,31 @@ This approach provides direct control over plugin management using standard Git 
 
 ## 🏗️ Native Architecture Benefits
 
+### ⚡ **Eager Loading: Workflow-First Philosophy**
+
+**All plugins load at startup - No lazy loading by design**
+
+VelocityNvim deliberately uses **eager loading** instead of lazy loading. While this results in a slightly higher initial startup time (~0.22s), this architectural decision provides workflow advantages:
+
+**Benefits:**
+- **Immediate Access**: All functionality available after startup
+- **No Mid-Workflow Interruptions**: No plugin loading delays during work
+- **Predictable Performance**: Consistent response times
+- **Stable Workflow**: No disruptive plugin-load pauses
+
+**Performance Optimization:**
+Despite eager loading, startup remains fast through:
+- Native vim.pack architecture (no plugin manager overhead)
+- Rust-first tooling (rg, fd, fzf, bat)
+- Modern LSP API with global configuration pattern
+- Optimized module loading
+
+**The Trade-off:**
+- **Lazy-Loading Distributions**: Fast start, occasional plugin loading delays during work
+- **VelocityNvim**: Slightly longer startup, uninterrupted workflow
+
+*Philosophy: Initial startup investment for consistent workflow continuity.*
+
 ### 🚀 **Performance**
 
 - **Minimal overhead**: Direct integration with Neovim's plugin system
@@ -153,7 +188,7 @@ Before installing VelocityNvim, make sure you have:
 - **Rust toolchain** - For maximum performance (fzf, ripgrep, delta)
 
 ### Performance Tools (Optional)
-VelocityNvim works best with these Rust-powered tools:
+VelocityNvim is optimized for these Rust-powered tools:
 - `fzf` - Fuzzy finder
 - `ripgrep` - Fast text search  
 - `fd` - File finder
@@ -597,7 +632,7 @@ Every plugin in VelocityNvim was chosen not just for its functionality, but for 
 **A:** VelocityNvim offers a different approach using native vim.pack architecture. This means no plugin manager dependencies, direct Git-based management, and you learn transferable Neovim skills. It provides solid performance and deeper understanding of Neovim's internals.
 
 ### **Q: Does VelocityNvim work with Neovim 0.10?**
-**A:** VelocityNvim requires Neovim 0.11+ for modern vim.lsp.config API. This ensures cutting-edge LSP performance and stability.
+**A:** VelocityNvim requires Neovim 0.11+ for modern vim.lsp.config API. This ensures improved LSP performance and stability.
 
 ### **Q: How fast is VelocityNvim?**
 **A:** Startup time averages ~0.22s with 26 plugins on modern hardware. The native vim.pack approach eliminates plugin manager overhead.

@@ -11,8 +11,8 @@
     <!-- Primary Meta Tags -->
     <title>VelocityNvim - Native vim.pack Neovim Distribution</title>
     <meta name="title" content="VelocityNvim - Native vim.pack Neovim Distribution">
-    <meta name="description" content="Moderne, performante Neovim-Distribution ohne externe Plugin-Manager. Native vim.pack Integration, LSP, Treesitter, fzf-lua und mehr. Optimiert für WezTerm und Performance.">
-    <meta name="keywords" content="neovim, nvim, vim, editor, ide, lua, lsp, treesitter, telescope, native, performance, wezterm, velocitynvim">
+    <meta name="description" content="Neovim distribution with native vim.pack and eager loading. No plugin managers needed. Modern LSP, Treesitter, fzf-lua. Uninterrupted workflow - all plugins instantly available.">
+    <meta name="keywords" content="neovim, nvim, vim.pack, eager loading, no lazy loading, LSP, treesitter, fzf-lua, blink.cmp, workflow optimization, neovim distribution, alternative to lazyvim, alternative to nvchad">
     <meta name="author" content="VelocityNvim Project">
     <meta name="robots" content="index, follow">
     <meta name="language" content="German">
@@ -22,7 +22,7 @@
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://maik-0000ff.github.io/VelocityNvim/">
     <meta property="og:title" content="VelocityNvim - Native vim.pack Neovim Distribution">
-    <meta property="og:description" content="Moderne, performante Neovim-Distribution ohne externe Plugin-Manager. Native vim.pack Integration, LSP, Treesitter, fzf-lua und mehr.">
+    <meta property="og:description" content="Neovim distribution with native vim.pack and eager loading. No plugin managers needed. Modern LSP, Treesitter, fzf-lua. Uninterrupted workflow.">
     <meta property="og:image" content="https://avatars.githubusercontent.com/u/230545093?v=4">
     <meta property="og:site_name" content="VelocityNvim">
     <meta property="og:locale" content="de_DE">
@@ -31,7 +31,7 @@
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://maik-0000ff.github.io/VelocityNvim/">
     <meta property="twitter:title" content="VelocityNvim - Native vim.pack Neovim Distribution">
-    <meta property="twitter:description" content="Moderne, performante Neovim-Distribution ohne externe Plugin-Manager. Native vim.pack Integration, LSP, Treesitter, fzf-lua und mehr.">
+    <meta property="twitter:description" content="Neovim distribution with native vim.pack and eager loading. No plugin managers needed. Modern LSP, Treesitter, fzf-lua. Uninterrupted workflow.">
     <meta property="twitter:image" content="https://avatars.githubusercontent.com/u/230545093?v=4">
 
     <!-- Canonical URL -->
@@ -45,7 +45,7 @@
         "name": "VelocityNvim",
         "applicationCategory": "DeveloperApplication",
         "operatingSystem": "Linux, macOS, Windows",
-        "description": "Native vim.pack Neovim-Distribution mit modernem LSP, Treesitter, fzf-lua und Performance-Optimierungen. Keine externen Plugin-Manager erforderlich.",
+        "description": "Neovim distribution with native vim.pack and eager loading architecture. No external plugin managers required. Features modern LSP integration, Treesitter syntax highlighting, fzf-lua fuzzy finding, and blink.cmp completion. All plugins load at startup for uninterrupted workflow.",
         "url": "https://maik-0000ff.github.io/VelocityNvim/",
         "downloadUrl": "https://github.com/Maik-0000FF/VelocityNvim",
         "softwareVersion": "1.0.1",
@@ -65,7 +65,7 @@
             "ratingValue": "5",
             "ratingCount": "1"
         },
-        "keywords": "neovim, vim, editor, IDE, LSP, treesitter, telescope, native, performance, lua",
+        "keywords": "neovim, vim, vim.pack, editor, IDE, LSP, treesitter, fzf-lua, blink.cmp, eager loading, no lazy loading, workflow optimization, neovim distribution, alternative to lazyvim, alternative to nvchad",
         "programmingLanguage": "Lua",
         "license": "https://opensource.org/licenses/MIT"
     }
@@ -595,22 +595,22 @@
 
             <!-- German Features -->
             <ul class="features lang-content de active">
+                <li>Eager Loading - Alle Plugins beim Start geladen für unterbrechungsfreien Workflow</li>
                 <li>Native vim.pack Integration - keine externen Plugin-Manager</li>
                 <li>Moderne LSP-Konfiguration mit vim.lsp.config</li>
                 <li>Treesitter für Syntax-Highlighting</li>
                 <li>fzf-lua für Fuzzy Finding (Rust-Performance)</li>
                 <li>blink.cmp mit Rust fuzzy matching</li>
-                <li>Performance-optimiert für WezTerm</li>
             </ul>
 
             <!-- English Features -->
             <ul class="features lang-content en">
+                <li>Eager Loading - All plugins loaded at startup for uninterrupted workflow</li>
                 <li>Native vim.pack integration - no external plugin managers</li>
                 <li>Modern LSP configuration with vim.lsp.config</li>
                 <li>Treesitter for syntax highlighting</li>
                 <li>fzf-lua for fuzzy finding (Rust performance)</li>
                 <li>blink.cmp with Rust fuzzy matching</li>
-                <li>Performance-optimized for WezTerm</li>
             </ul>
 
             <div id="requirements"></div>
@@ -620,13 +620,35 @@
             <!-- German System Requirements -->
             <div class="install-section lang-content de active">
                 <div class="tabs">
-                    <button class="tab active" onclick="switchRequirementsTab('arch-requirements')">Arch Linux</button>
+                    <button class="tab active" onclick="switchRequirementsTab('verify-requirements')">Verifikation</button>
+                    <button class="tab" onclick="switchRequirementsTab('arch-requirements')">Arch Linux</button>
                     <button class="tab" onclick="switchRequirementsTab('macos-requirements')">macOS</button>
-                    <button class="tab" onclick="switchRequirementsTab('verify-requirements')">Verifikation</button>
+                </div>
+
+                <!-- Verification -->
+                <div id="verify-requirements" class="tab-content active">
+                    <h3>✅ VOR Installation: Was fehlt mir?</h3>
+                    <p>Prüfe alle Voraussetzungen auf einmal mit diesem Befehl. Kopiere ihn und füge ihn in dein Terminal ein.</p>
+
+                    <h4 style="margin-top: 20px;">📋 Kompletter Check (One-Liner)</h4>
+                    <div class="code-block" style="position: relative; padding-bottom: 45px;">
+                        <code id="oneliner-de">bash -c 'echo "=== VelocityNvim Check ==="; echo ""; echo "🔴 ERFORDERLICH - Editor & VCS:"; nvim --version &>/dev/null && echo "✓ Neovim" || echo "❌ Neovim FEHLT!"; git --version &>/dev/null && echo "✓ Git" || echo "❌ Git FEHLT!"; echo ""; echo "🔴 ERFORDERLICH - Build Tools:"; gcc --version &>/dev/null && echo "✓ GCC" || echo "❌ GCC FEHLT!"; make --version &>/dev/null && echo "✓ make" || echo "❌ make FEHLT!"; echo ""; echo "🔴 ERFORDERLICH - Download & Archive:"; command -v curl &>/dev/null && echo "✓ curl" || echo "❌ curl FEHLT!"; command -v wget &>/dev/null && echo "✓ wget" || echo "❌ wget FEHLT!"; command -v unzip &>/dev/null && echo "✓ unzip" || echo "❌ unzip FEHLT!"; command -v tar &>/dev/null && echo "✓ tar" || echo "❌ tar FEHLT!"; echo ""; echo "🟠 CLIPBOARD:"; wl-copy --version &>/dev/null && echo "✓ wl-clipboard" || true; xclip -version &>/dev/null && echo "✓ xclip" || true; command -v pbcopy &>/dev/null && echo "✓ pbcopy" || true; echo ""; echo "🎨 NERD FONT:"; fc-list | grep -iq "nerd" && echo "✓ Nerd Font installiert" || echo "❌ Nerd Font fehlt"; echo ""; echo "⚡ RUST:"; for tool in cargo fzf rg fd bat; do command -v $tool &>/dev/null && echo "✓ $tool" || echo "❌ $tool"; done; command -v delta &>/dev/null && echo "✓ git-delta" || echo "❌ git-delta"; echo ""; echo "🧠 LSP:"; for lsp in lua-language-server pyright typescript-language-server rust-analyzer texlab; do command -v $lsp &>/dev/null && echo "✓ $lsp" || echo "❌ $lsp"; done; echo ""; echo "🔧 FORMATTERS:"; for fmt in ruff stylua prettier shfmt; do command -v $fmt &>/dev/null && echo "✓ $fmt" || echo "❌ $fmt"; done; echo ""; echo "📝 LATEX:"; command -v pdflatex &>/dev/null && echo "✓ pdflatex" || echo "❌ pdflatex"; command -v latexmk &>/dev/null && echo "✓ latexmk" || echo "❌ latexmk"; echo ""; echo "📄 PDF:"; for pdf in zathura okular evince; do command -v $pdf &>/dev/null && echo "✓ $pdf" || true; done'</code>
+                        <button class="copy-btn" style="position: absolute; bottom: 10px; right: 10px; background: #0366d6; border: none; color: white; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.9em;" onclick="copyOneliner('de')" title="Befehl kopieren">📋 Kopieren</button>
+                        <div id="copy-feedback-oneliner-de" class="copy-feedback" style="bottom: 50px; top: auto;">Kopiert! ✓</div>
+                    </div>
+
+                    <h4 style="margin-top: 20px;">📊 Was bedeutet das Ergebnis?</h4>
+                    <ul style="font-size: 0.9em; color: #586069;">
+                        <li><strong>✓ Programm</strong> - Installiert und funktionsfähig</li>
+                        <li><strong>❌ Programm fehlt</strong> - Muss noch installiert werden</li>
+                        <li><strong>🔴 ERFORDERLICH fehlt?</strong> - VelocityNvim wird NICHT funktionieren</li>
+                        <li><strong>⚡ Rust Tools fehlen?</strong> - Funktioniert, aber langsamer</li>
+                        <li><strong>🧠 LSP fehlt?</strong> - Keine Code-Intelligence für diese Sprache</li>
+                    </ul>
                 </div>
 
                 <!-- Arch Linux Requirements -->
-                <div id="arch-requirements" class="tab-content active">
+                <div id="arch-requirements" class="tab-content">
                     <h3>📦 Arch Linux - Komplette Installation</h3>
 
                     <h4 style="margin-top: 20px;">🔴 Kritische Basis (PFLICHT)</h4>
@@ -805,39 +827,40 @@ npm install -g typescript typescript-language-server vscode-langservers-extracte
                     </div>
                 </div>
 
-                <!-- Verification -->
-                <div id="verify-requirements" class="tab-content">
-                    <h3>✅ VOR Installation: Was fehlt mir?</h3>
-                    <p>Prüfe alle Voraussetzungen auf einmal mit diesem Befehl. Kopiere ihn und füge ihn in dein Terminal ein.</p>
-
-                    <h4 style="margin-top: 20px;">📋 Kompletter Check (One-Liner)</h4>
-                    <div class="code-block" style="position: relative; padding-bottom: 45px;">
-                        <code id="oneliner-de">bash -c 'echo "=== VelocityNvim Check ==="; echo ""; echo "🔴 PFLICHT:"; nvim --version &>/dev/null && echo "✓ Neovim" || echo "❌ Neovim FEHLT!"; git --version &>/dev/null && echo "✓ Git" || echo "❌ Git FEHLT!"; gcc --version &>/dev/null && echo "✓ GCC" || echo "❌ GCC FEHLT!"; echo ""; echo "🟠 CLIPBOARD:"; wl-copy --version &>/dev/null && echo "✓ wl-clipboard" || true; xclip -version &>/dev/null && echo "✓ xclip" || true; command -v pbcopy &>/dev/null && echo "✓ pbcopy" || true; echo ""; echo "🎨 NERD FONT:"; fc-list | grep -iq "nerd" && echo "✓ Nerd Font installiert" || echo "❌ Nerd Font fehlt"; echo ""; echo "⚡ RUST:"; for tool in cargo fzf rg fd bat delta; do command -v $tool &>/dev/null && echo "✓ $tool" || echo "❌ $tool"; done; echo ""; echo "🧠 LSP:"; for lsp in lua-language-server pyright typescript-language-server rust-analyzer texlab; do command -v $lsp &>/dev/null && echo "✓ $lsp" || echo "❌ $lsp"; done; echo ""; echo "🔧 FORMATTERS:"; for fmt in ruff stylua prettier shfmt; do command -v $fmt &>/dev/null && echo "✓ $fmt" || echo "❌ $fmt"; done; echo ""; echo "📄 PDF:"; for pdf in zathura okular evince; do command -v $pdf &>/dev/null && echo "✓ $pdf" || true; done'</code>
-                        <button class="copy-btn" style="position: absolute; bottom: 10px; right: 10px; background: #0366d6; border: none; color: white; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.9em;" onclick="copyOneliner('de')" title="Befehl kopieren">📋 Kopieren</button>
-                        <div id="copy-feedback-oneliner-de" class="copy-feedback" style="bottom: 50px; top: auto;">Kopiert! ✓</div>
-                    </div>
-
-                    <h4 style="margin-top: 20px;">📊 Was bedeutet das Ergebnis?</h4>
-                    <ul style="font-size: 0.9em; color: #586069;">
-                        <li><strong>✓ Programm</strong> - Installiert und funktionsfähig</li>
-                        <li><strong>❌ Programm fehlt</strong> - Muss noch installiert werden</li>
-                        <li><strong>🔴 PFLICHT fehlt?</strong> - VelocityNvim wird NICHT funktionieren</li>
-                        <li><strong>⚡ Rust Tools fehlen?</strong> - Funktioniert, aber langsamer</li>
-                        <li><strong>🧠 LSP fehlt?</strong> - Keine Code-Intelligence für diese Sprache</li>
-                    </ul>
-                </div>
             </div>
 
             <!-- English System Requirements -->
             <div class="install-section lang-content en">
                 <div class="tabs">
-                    <button class="tab active" onclick="switchRequirementsTab('arch-requirements-en')">Arch Linux</button>
+                    <button class="tab active" onclick="switchRequirementsTab('verify-requirements-en')">Verification</button>
+                    <button class="tab" onclick="switchRequirementsTab('arch-requirements-en')">Arch Linux</button>
                     <button class="tab" onclick="switchRequirementsTab('macos-requirements-en')">macOS</button>
-                    <button class="tab" onclick="switchRequirementsTab('verify-requirements-en')">Verification</button>
+                </div>
+
+                <!-- Verification (English) -->
+                <div id="verify-requirements-en" class="tab-content active">
+                    <h3>✅ BEFORE Installation: What's Missing?</h3>
+                    <p>Check all requirements at once with this command. Copy it and paste it into your terminal.</p>
+
+                    <h4 style="margin-top: 20px;">📋 Complete Check (One-Liner)</h4>
+                    <div class="code-block" style="position: relative; padding-bottom: 45px;">
+                        <code id="oneliner-en">bash -c 'echo "=== VelocityNvim Check ==="; echo ""; echo "🔴 REQUIRED - Editor & VCS:"; nvim --version &>/dev/null && echo "✓ Neovim" || echo "❌ Neovim MISSING!"; git --version &>/dev/null && echo "✓ Git" || echo "❌ Git MISSING!"; echo ""; echo "🔴 REQUIRED - Build Tools:"; gcc --version &>/dev/null && echo "✓ GCC" || echo "❌ GCC MISSING!"; make --version &>/dev/null && echo "✓ make" || echo "❌ make MISSING!"; echo ""; echo "🔴 REQUIRED - Download & Archive:"; command -v curl &>/dev/null && echo "✓ curl" || echo "❌ curl MISSING!"; command -v wget &>/dev/null && echo "✓ wget" || echo "❌ wget MISSING!"; command -v unzip &>/dev/null && echo "✓ unzip" || echo "❌ unzip MISSING!"; command -v tar &>/dev/null && echo "✓ tar" || echo "❌ tar MISSING!"; echo ""; echo "🟠 CLIPBOARD:"; wl-copy --version &>/dev/null && echo "✓ wl-clipboard" || true; xclip -version &>/dev/null && echo "✓ xclip" || true; command -v pbcopy &>/dev/null && echo "✓ pbcopy" || true; echo ""; echo "🎨 NERD FONT:"; fc-list | grep -iq "nerd" && echo "✓ Nerd Font installed" || echo "❌ Nerd Font missing"; echo ""; echo "⚡ RUST:"; for tool in cargo fzf rg fd bat; do command -v $tool &>/dev/null && echo "✓ $tool" || echo "❌ $tool"; done; command -v delta &>/dev/null && echo "✓ git-delta" || echo "❌ git-delta"; echo ""; echo "🧠 LSP:"; for lsp in lua-language-server pyright typescript-language-server rust-analyzer texlab; do command -v $lsp &>/dev/null && echo "✓ $lsp" || echo "❌ $lsp"; done; echo ""; echo "🔧 FORMATTERS:"; for fmt in ruff stylua prettier shfmt; do command -v $fmt &>/dev/null && echo "✓ $fmt" || echo "❌ $fmt"; done; echo ""; echo "📝 LATEX:"; command -v pdflatex &>/dev/null && echo "✓ pdflatex" || echo "❌ pdflatex"; command -v latexmk &>/dev/null && echo "✓ latexmk" || echo "❌ latexmk"; echo ""; echo "📄 PDF:"; for pdf in zathura okular evince; do command -v $pdf &>/dev/null && echo "✓ $pdf" || true; done'</code>
+                        <button class="copy-btn" style="position: absolute; bottom: 10px; right: 10px; background: #0366d6; border: none; color: white; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.9em;" onclick="copyOneliner('en')" title="Copy command">📋 Copy</button>
+                        <div id="copy-feedback-oneliner-en" class="copy-feedback" style="bottom: 50px; top: auto;">Copied! ✓</div>
+                    </div>
+
+                    <h4 style="margin-top: 20px;">📊 What Does the Result Mean?</h4>
+                    <ul style="font-size: 0.9em; color: #586069;">
+                        <li><strong>✓ Program</strong> - Installed and functional</li>
+                        <li><strong>❌ Program missing</strong> - Needs to be installed</li>
+                        <li><strong>🔴 REQUIRED missing?</strong> - VelocityNvim will NOT work</li>
+                        <li><strong>⚡ Rust tools missing?</strong> - Works, but slower</li>
+                        <li><strong>🧠 LSP missing?</strong> - No code intelligence for that language</li>
+                    </ul>
                 </div>
 
                 <!-- Arch Linux Requirements (English) -->
-                <div id="arch-requirements-en" class="tab-content active">
+                <div id="arch-requirements-en" class="tab-content">
                     <h3>📦 Arch Linux - Complete Installation</h3>
 
                     <h4 style="margin-top: 20px;">🔴 Critical Base (REQUIRED)</h4>
@@ -930,28 +953,6 @@ brew install --cask font-meslo-lg-nerd-font wezterm<br><br>
 cargo install ruff stylua<br>
 npm install -g typescript typescript-language-server vscode-langservers-extracted</code>
                     </div>
-                </div>
-
-                <!-- Verification (English) -->
-                <div id="verify-requirements-en" class="tab-content">
-                    <h3>✅ BEFORE Installation: What's Missing?</h3>
-                    <p>Check all requirements at once with this command. Copy it and paste it into your terminal.</p>
-
-                    <h4 style="margin-top: 20px;">📋 Complete Check (One-Liner)</h4>
-                    <div class="code-block" style="position: relative; padding-bottom: 45px;">
-                        <code id="oneliner-en">bash -c 'echo "=== VelocityNvim Check ==="; echo ""; echo "🔴 REQUIRED:"; nvim --version &>/dev/null && echo "✓ Neovim" || echo "❌ Neovim MISSING!"; git --version &>/dev/null && echo "✓ Git" || echo "❌ Git MISSING!"; gcc --version &>/dev/null && echo "✓ GCC" || echo "❌ GCC MISSING!"; echo ""; echo "🟠 CLIPBOARD:"; wl-copy --version &>/dev/null && echo "✓ wl-clipboard" || true; xclip -version &>/dev/null && echo "✓ xclip" || true; command -v pbcopy &>/dev/null && echo "✓ pbcopy" || true; echo ""; echo "🎨 NERD FONT:"; fc-list | grep -iq "nerd" && echo "✓ Nerd Font installed" || echo "❌ Nerd Font missing"; echo ""; echo "⚡ RUST:"; for tool in cargo fzf rg fd bat delta; do command -v $tool &>/dev/null && echo "✓ $tool" || echo "❌ $tool"; done; echo ""; echo "🧠 LSP:"; for lsp in lua-language-server pyright typescript-language-server rust-analyzer texlab; do command -v $lsp &>/dev/null && echo "✓ $lsp" || echo "❌ $lsp"; done; echo ""; echo "🔧 FORMATTERS:"; for fmt in ruff stylua prettier shfmt; do command -v $fmt &>/dev/null && echo "✓ $fmt" || echo "❌ $fmt"; done; echo ""; echo "📄 PDF:"; for pdf in zathura okular evince; do command -v $pdf &>/dev/null && echo "✓ $pdf" || true; done'</code>
-                        <button class="copy-btn" style="position: absolute; bottom: 10px; right: 10px; background: #0366d6; border: none; color: white; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.9em;" onclick="copyOneliner('en')" title="Copy command">📋 Copy</button>
-                        <div id="copy-feedback-oneliner-en" class="copy-feedback" style="bottom: 50px; top: auto;">Copied! ✓</div>
-                    </div>
-
-                    <h4 style="margin-top: 20px;">📊 What Does the Result Mean?</h4>
-                    <ul style="font-size: 0.9em; color: #586069;">
-                        <li><strong>✓ Program</strong> - Installed and functional</li>
-                        <li><strong>❌ Program missing</strong> - Needs to be installed</li>
-                        <li><strong>🔴 REQUIRED missing?</strong> - VelocityNvim will NOT work</li>
-                        <li><strong>⚡ Rust tools missing?</strong> - Works, but slower</li>
-                        <li><strong>🧠 LSP missing?</strong> - No code intelligence for that language</li>
-                    </ul>
                 </div>
             </div>
 
