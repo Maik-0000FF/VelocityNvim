@@ -614,23 +614,9 @@ VelocityNvim's approach of using native vim.pack reflects our respect for the th
 
 Every plugin in VelocityNvim was chosen not just for its functionality, but for the quality and dedication of its maintainers. Their contributions to the Neovim ecosystem make projects like VelocityNvim possible.
 
-## 🔍 **Frequently Asked Questions (FAQ)**
-
-### **Q: Why choose VelocityNvim over LazyVim or NvChad?**
-**A:** VelocityNvim uses native vim.pack architecture with eager loading. This means no plugin manager dependencies, direct Git-based management, and uninterrupted workflow. All plugins load at startup for predictable performance.
-
-### **Q: Does VelocityNvim work with Neovim 0.10?**
-**A:** VelocityNvim requires Neovim 0.11+ for modern vim.lsp.config API. This ensures improved LSP performance and stability.
-
-### **Q: How fast is VelocityNvim?**
-**A:** Startup time averages ~0.22s with 26 plugins on modern hardware. The native vim.pack approach eliminates plugin manager overhead.
-
-### **Q: What programming languages does VelocityNvim support?**
-**A:** Full LSP integration for Rust, Python, JavaScript/TypeScript, Lua, Go, C/C++, and more via modern vim.lsp.config API.
-
 ---
 
 ## 🏷️ **Keywords & Tags**
 
-**Neovim Distribution** | **vim.pack Native** | **No Plugin Manager** | **Fast Startup** | **Modern LSP** | **Rust Performance** | **Neovim 0.11** | **Terminal Editor** | **Developer Tools** | **Configuration Management** | **Text Editor** | **Code Editor** | **Vim Alternative**
+**Neovim Distribution** | **Eager Loading** | **vim.pack Native** | **No Plugin Manager** | **Uninterrupted Workflow** | **Fast Startup** | **Modern LSP** | **Rust Performance** | **Neovim 0.11** | **Nvim Configuration** | **Terminal Editor** | **Developer Tools** | **Text Editor** | **Code Editor**
 
