@@ -1,0 +1,237 @@
+/**
+ * VelocityNvim Landing Page - Donation Section Styles
+ * Support Grid, Bitcoin Address, YouTube Icon
+ */
+
+.donation-section {
+    background: var(--bg-gradient-donation);
+    padding: var(--spacing-2xl);
+    border-radius: var(--radius-xl);
+    margin: var(--spacing-xl) 0;
+    text-align: center;
+    color: white;
+}
+
+.donation-section h2 {
+    color: white;
+    border: none;
+    margin: 0 0 var(--spacing-md) 0;
+}
+
+.donation-section p {
+    font-size: 1.1em;
+    margin-bottom: 10px;
+}
+
+.bitcoin-address {
+    background: rgba(255, 255, 255, 0.2);
+    padding: var(--spacing-md);
+    border-radius: var(--radius-lg);
+    font-family: var(--font-mono);
+    font-size: 0.95em;
+    word-break: break-all;
+    margin: var(--spacing-lg) 0;
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.donation-buttons {
+    display: flex;
+    gap: var(--spacing-md);
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: var(--spacing-lg);
+}
+
+.donate-btn {
+    background: rgba(255, 255, 255, 0.9);
+    color: #f5576c;
+    padding: var(--spacing-sm) 25px;
+    border-radius: var(--radius-lg);
+    text-decoration: none;
+    font-weight: 600;
+    transition: all var(--transition-normal);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.donate-btn:hover {
+    background: white;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.support-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--spacing-md);
+    margin-top: 25px;
+}
+
+.support-item {
+    background: rgba(255, 255, 255, 0.15);
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-lg);
+    text-align: center;
+    transition: all var(--transition-normal);
+    border: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.support-item:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateY(-8px);
+}
+
+.support-item .emoji {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
+    min-height: 60px;
+}
+
+.support-item .emoji svg,
+.support-item .emoji .material-symbols-outlined {
+    width: 60px;
+    height: 60px;
+    display: block;
+    margin: 0 auto;
+}
+
+.support-item h3 {
+    color: white;
+    font-size: 1.1em;
+    margin: 10px 0;
+    border: none;
+    padding: 0;
+}
+
+.support-item p {
+    font-size: 0.9em;
+    opacity: 0.95;
+    margin: 0;
+}
+
+.support-item a {
+    color: white;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.support-item a > div,
+.support-item > div:not(.emoji) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.bitcoin-item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.bitcoin-item .copy-btn {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: all 0.3s;
+}
+
+.bitcoin-item .copy-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+}
+
+.bitcoin-item .copy-feedback {
+    top: auto;
+    bottom: 50px;
+    right: 50%;
+    transform: translateX(50%);
+}
+
+/* Mobile Optimizations */
+@media (max-width: 768px) {
+    .donation-section {
+        padding: 25px 10px;
+        margin: var(--spacing-md) 0;
+    }
+
+    .donation-section h2 {
+        font-size: 1.5em;
+    }
+
+    .donation-section p {
+        font-size: 1em;
+    }
+
+    .support-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--spacing-sm);
+        margin-top: var(--spacing-lg);
+    }
+
+    .support-item:not(.bitcoin-item) {
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: var(--spacing-md) 10px;
+    }
+
+    .support-item:not(.bitcoin-item) a {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        flex: 1;
+    }
+
+    .support-item:not(.bitcoin-item) .emoji {
+        min-height: auto;
+        margin-bottom: 10px;
+        flex-shrink: 0;
+        justify-content: center;
+    }
+
+    .support-item:not(.bitcoin-item) > div:not(.emoji),
+    .support-item:not(.bitcoin-item) a > div {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .support-item .emoji svg,
+    .support-item .emoji .material-symbols-outlined {
+        width: 50px;
+        height: 50px;
+    }
+
+    .support-item h3 {
+        font-size: 0.95em;
+    }
+
+    .support-item p {
+        font-size: 0.8em;
+    }
+}
+
+@media (max-width: 480px) {
+    .support-grid {
+        grid-template-columns: 1fr;
+    }
+}

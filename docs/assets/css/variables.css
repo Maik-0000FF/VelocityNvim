@@ -1,0 +1,75 @@
+/**
+ * VelocityNvim Landing Page - CSS Variables
+ * Zentrale Definition aller Farben, Größen und Breakpoints
+ */
+
+:root {
+    /* Primary Colors */
+    --color-primary: #0366d6;
+    --color-primary-dark: #0256c7;
+    --color-text: #24292f;
+    --color-text-secondary: #586069;
+    --color-success: #22863a;
+    --color-warning: #ffc107;
+    --color-warning-dark: #f59e0b;
+    --color-danger: #dc3545;
+    --color-orange: #fd7e14;
+
+    /* Background Colors */
+    --bg-gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --bg-gradient-header: linear-gradient(135deg, #0366d6 0%, #0256c7 100%);
+    --bg-gradient-donation: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    --bg-light: #f6f8fa;
+    --bg-white: #ffffff;
+    --bg-code: #24292f;
+
+    /* Border Colors */
+    --border-color: #e1e4e8;
+    --border-primary: #0366d6;
+
+    /* Text Colors for Code Blocks */
+    --text-code: #c9d1d9;
+
+    /* Spacing */
+    --spacing-xs: 8px;
+    --spacing-sm: 12px;
+    --spacing-md: 15px;
+    --spacing-lg: 20px;
+    --spacing-xl: 30px;
+    --spacing-2xl: 40px;
+    --spacing-3xl: 60px;
+
+    /* Border Radius */
+    --radius-sm: 4px;
+    --radius-md: 6px;
+    --radius-lg: 8px;
+    --radius-xl: 12px;
+
+    /* Breakpoints */
+    --breakpoint-mobile: 480px;
+    --breakpoint-tablet: 768px;
+    --breakpoint-desktop: 1024px;
+    --breakpoint-wide: 1320px;
+
+    /* Transitions */
+    --transition-fast: 0.2s ease;
+    --transition-normal: 0.3s ease;
+
+    /* Shadows */
+    --shadow-sm: 0 4px 15px rgba(3, 102, 214, 0.3);
+    --shadow-md: 0 6px 20px rgba(3, 102, 214, 0.4);
+    --shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.3);
+    --shadow-code: 0 4px 12px rgba(0, 0, 0, 0.3);
+
+    /* Typography */
+    --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    --font-mono: 'Monaco', 'Consolas', monospace;
+    --font-size-base: 16px;
+    --line-height-base: 1.6;
+
+    /* Icon Sizes */
+    --icon-size-sm: 1em;
+    --icon-size-md: 1.2em;
+    --icon-size-lg: 1.5em;
+    --icon-size-xl: 2.5em;
+}

@@ -1,0 +1,22 @@
+/**
+ * VelocityNvim Landing Page - Main Stylesheet
+ * Importiert alle CSS-Module in korrekter Reihenfolge
+ */
+
+/* 1. Variables (MUST be first) */
+@import 'variables.css';
+
+/* 2. Base Styles */
+@import 'base.css';
+
+/* 3. Components */
+@import 'components.css';
+
+/* 4. Navigation */
+@import 'navigation.css';
+
+/* 5. Donation Section */
+@import 'donation.css';
+
+/* 6. Icons */
+@import 'icons.css';

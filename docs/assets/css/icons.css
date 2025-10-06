@@ -1,0 +1,58 @@
+/**
+ * VelocityNvim Landing Page - Icon Utility Styles
+ * Material Icons & Custom SVG Icon Positionierung und Größen
+ */
+
+/* Material Icons Styling */
+.material-symbols-outlined {
+    font-variation-settings:
+    'FILL' 0,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 24;
+    vertical-align: middle;
+    margin-right: var(--spacing-xs);
+    display: inline-block;
+    user-select: none;
+}
+
+/* Custom SVG Icon Utility Classes */
+.icon-inline {
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: var(--spacing-xs);
+}
+
+h2 .icon-inline,
+h3 .icon-inline,
+h4 .icon-inline {
+    width: var(--icon-size-md);
+    height: var(--icon-size-md);
+}
+
+.nav-lang-btn .icon-inline {
+    width: var(--icon-size-sm);
+    height: var(--icon-size-sm);
+    margin-right: 4px;
+}
+
+/* Support Grid Icon Sizes */
+.support-item .emoji {
+    display: block;
+    margin-bottom: 10px;
+}
+
+.support-item .emoji svg,
+.support-item .emoji .material-symbols-outlined {
+    width: 60px;
+    height: 60px;
+    margin-right: 0;
+}
+
+@media (max-width: 768px) {
+    .support-item .emoji svg,
+    .support-item .emoji .material-symbols-outlined {
+        width: 50px;
+        height: 50px;
+    }
+}

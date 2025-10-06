@@ -1,24 +1,7 @@
-# VelocityNvim - Native vim.pack Neovim Distribution
-# Last updated: September 28, 2025
-# Status: Public Stable Beta (NOT Community Preview)
+# robots.txt for VelocityNvim Landing Page
 
 User-agent: *
 Allow: /
 
-# Prioritize important content
-Allow: /README.md
-Allow: /docs/
-Allow: /.github/
-
-# Block potentially confusing historical content
-Disallow: /.git/
-
-# Sitemap location
+# Sitemap
 Sitemap: https://maik-0000ff.github.io/VelocityNvim/sitemap.xml
-
-# Repository information for crawlers
-# Project: VelocityNvim
-# Type: Neovim Distribution
-# Status: Stable Beta (Public)
-# License: MIT
-# Primary URL: https://github.com/Maik-0000FF/VelocityNvim

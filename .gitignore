@@ -158,3 +158,21 @@ contacts.*
 *.tmp.png
 *.tmp.jpg
 *-temp.*
+
+# Website/Docs development documentation (internal only)
+website/GITHUB_PAGES_SETUP.md
+website/MIGRATION.md
+website/README.md
+website/SESSION_STATUS.md
+docs/GITHUB_PAGES_SETUP.md
+docs/MIGRATION.md
+docs/README.md
+docs/SESSION_STATUS.md
+docs/EMOJI_POLICY.md
+docs/ERROR_HANDLING.md
+docs/ICON_GUIDELINES.md
+docs/MACOS-OPTIMIZATION.md
+docs/PLUGIN_INSTALLATION_GUIDE.md
+docs/REFACTORING.md
+docs/RUST_PERFORMANCE.md
+docs/TESTING.md

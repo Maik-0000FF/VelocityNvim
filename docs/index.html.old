@@ -1,0 +1,2021 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="https://avatars.githubusercontent.com/u/230545093?v=4">
+    <link rel="apple-touch-icon" href="https://avatars.githubusercontent.com/u/230545093?v=4">
+
+    <!-- Primary Meta Tags -->
+    <title>VelocityNvim - Native vim.pack Neovim Distribution</title>
+    <meta name="title" content="VelocityNvim - Native vim.pack Neovim Distribution">
+    <meta name="description" content="Neovim distribution with native vim.pack and eager loading. No plugin managers needed. Modern LSP, Treesitter, fzf-lua. Uninterrupted workflow - all plugins instantly available.">
+    <meta name="keywords" content="neovim, nvim, vim.pack, eager loading, no lazy loading, LSP, treesitter, fzf-lua, blink.cmp, workflow optimization, neovim distribution, alternative to lazyvim, alternative to nvchad">
+    <meta name="author" content="VelocityNvim Project">
+    <meta name="robots" content="index, follow">
+    <meta name="language" content="German">
+    <meta name="revisit-after" content="7 days">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://maik-0000ff.github.io/VelocityNvim/">
+    <meta property="og:title" content="VelocityNvim - Native vim.pack Neovim Distribution">
+    <meta property="og:description" content="Neovim distribution with native vim.pack and eager loading. No plugin managers needed. Modern LSP, Treesitter, fzf-lua. Uninterrupted workflow.">
+    <meta property="og:image" content="https://avatars.githubusercontent.com/u/230545093?v=4">
+    <meta property="og:site_name" content="VelocityNvim">
+    <meta property="og:locale" content="de_DE">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://maik-0000ff.github.io/VelocityNvim/">
+    <meta property="twitter:title" content="VelocityNvim - Native vim.pack Neovim Distribution">
+    <meta property="twitter:description" content="Neovim distribution with native vim.pack and eager loading. No plugin managers needed. Modern LSP, Treesitter, fzf-lua. Uninterrupted workflow.">
+    <meta property="twitter:image" content="https://avatars.githubusercontent.com/u/230545093?v=4">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://maik-0000ff.github.io/VelocityNvim/">
+
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "VelocityNvim",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Linux, macOS, Windows",
+        "description": "Neovim distribution with native vim.pack and eager loading architecture. No external plugin managers required. Features modern LSP integration, Treesitter syntax highlighting, fzf-lua fuzzy finding, and blink.cmp completion. All plugins load at startup for uninterrupted workflow.",
+        "url": "https://maik-0000ff.github.io/VelocityNvim/",
+        "downloadUrl": "https://github.com/Maik-0000FF/VelocityNvim",
+        "softwareVersion": "1.0.1",
+        "datePublished": "2025-10-01",
+        "dateModified": "2025-10-01",
+        "author": {
+            "@type": "Organization",
+            "name": "VelocityNvim Project"
+        },
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "EUR"
+        },
+        "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "5",
+            "ratingCount": "1"
+        },
+        "keywords": "neovim, vim, vim.pack, editor, IDE, LSP, treesitter, fzf-lua, blink.cmp, eager loading, no lazy loading, workflow optimization, neovim distribution, alternative to lazyvim, alternative to nvchad",
+        "programmingLanguage": "Lua",
+        "license": "https://opensource.org/licenses/MIT"
+    }
+    </script>
+
+    <!-- Additional Structured Data for Organization -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "VelocityNvim Project",
+        "url": "https://maik-0000ff.github.io/VelocityNvim/",
+        "logo": "https://github.com/Maik-0000FF/VelocityNvim/blob/main/.github/assets/logo.png",
+        "sameAs": [
+            "https://github.com/Maik-0000FF/VelocityNvim",
+            "https://www.youtube.com/@Maik-0000FF"
+        ]
+    }
+    </script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #24292f;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 0;
+            margin: 0;
+        }
+        .container {
+            width: calc(100% - 20px);
+            max-width: 1320px;
+            margin: 10px auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #0366d6 0%, #0256c7 100%);
+            color: white;
+            padding: 60px 40px;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        .header .subtitle {
+            font-size: 1.3em;
+            opacity: 0.95;
+        }
+        .content {
+            padding: 40px;
+        }
+        /* Mobile Optimizations */
+        @media (max-width: 768px) {
+            .container {
+                width: 100%;
+                margin: 0;
+                border-radius: 0;
+            }
+            .header {
+                padding: 30px 15px;
+            }
+            .header h1 {
+                font-size: 2em;
+            }
+            .header .subtitle {
+                font-size: 1.1em;
+            }
+            .content {
+                padding: 15px 10px;
+            }
+        }
+        .cta-button {
+            display: inline-block;
+            background: #0366d6;
+            color: white;
+            padding: 15px 40px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 1.2em;
+            font-weight: 600;
+            margin: 20px 0;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(3, 102, 214, 0.3);
+            -webkit-tap-highlight-color: transparent;
+        }
+        .cta-button:hover {
+            background: #0256c7;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(3, 102, 214, 0.4);
+        }
+        .cta-button:active {
+            transform: scale(0.98);
+        }
+        @media (max-width: 768px) {
+            .cta-button {
+                width: 100%;
+                padding: 18px 30px;
+                font-size: 1.1em;
+                margin: 15px 0;
+            }
+        }
+        .features {
+            list-style: none;
+            padding: 0;
+            margin: 30px 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .features li {
+            background: #f6f8fa;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #0366d6;
+        }
+        .features li:before {
+            content: "✓ ";
+            color: #22863a;
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-right: 8px;
+        }
+        @media (max-width: 768px) {
+            .features {
+                grid-template-columns: 1fr;
+                gap: 12px;
+                margin: 20px 0;
+            }
+            .features li {
+                padding: 12px 15px;
+                font-size: 0.95em;
+            }
+        }
+        .code-block {
+            background: #24292f;
+            color: #c9d1d9;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .code-block code {
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 0.95em;
+        }
+        h2 {
+            color: #0366d6;
+            margin: 30px 0 15px 0;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e1e4e8;
+        }
+        @media (max-width: 768px) {
+            .code-block {
+                padding: 15px;
+                margin: 15px 0;
+                font-size: 0.85em;
+            }
+            .code-block code {
+                font-size: 0.85em;
+            }
+            h2 {
+                font-size: 1.5em;
+                margin: 25px 0 12px 0;
+            }
+        }
+        .links {
+            list-style: none;
+            padding: 0;
+        }
+        .links li {
+            margin: 10px 0;
+        }
+        .links a {
+            color: #0366d6;
+            text-decoration: none;
+            font-size: 1.1em;
+            transition: color 0.2s;
+        }
+        .links a:hover {
+            color: #0256c7;
+            text-decoration: underline;
+        }
+        .footer {
+            background: #f6f8fa;
+            padding: 20px 40px;
+            text-align: center;
+            color: #586069;
+            font-size: 0.9em;
+        }
+        @media (max-width: 768px) {
+            .footer {
+                padding: 15px 10px;
+                font-size: 0.85em;
+            }
+        }
+        .install-section {
+            background: #f6f8fa;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 25px 0;
+        }
+        .install-section h3 {
+            color: #24292f;
+            margin: 0 0 15px 0;
+            padding: 0;
+            border: none;
+            font-size: 1.3em;
+        }
+        @media (max-width: 768px) {
+            .install-section {
+                padding: 15px 10px;
+                margin: 15px 0;
+            }
+            .install-section h3 {
+                font-size: 1.1em;
+            }
+        }
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e1e4e8;
+            flex-wrap: wrap;
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            font-size: 1em;
+            color: #586069;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .tab:hover {
+            color: #0366d6;
+        }
+        .tab.active {
+            color: #0366d6;
+            border-bottom-color: #0366d6;
+            font-weight: 600;
+        }
+        @media (max-width: 768px) {
+            .tabs {
+                gap: 5px;
+                margin-bottom: 15px;
+            }
+            .tab {
+                padding: 8px 12px;
+                font-size: 0.9em;
+                flex: 1;
+                text-align: center;
+                min-width: auto;
+            }
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .donation-section {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            padding: 40px;
+            border-radius: 12px;
+            margin: 30px 0;
+            text-align: center;
+            color: white;
+        }
+        .donation-section h2 {
+            color: white;
+            border: none;
+            margin: 0 0 15px 0;
+        }
+        @media (max-width: 768px) {
+            .donation-section {
+                padding: 25px 10px;
+                margin: 15px 0;
+            }
+            .donation-section h2 {
+                font-size: 1.5em;
+            }
+            .donation-section p {
+                font-size: 1em;
+            }
+        }
+        .bitcoin-address {
+            background: rgba(255,255,255,0.2);
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 0.95em;
+            word-break: break-all;
+            margin: 20px 0;
+            border: none;
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        @media (max-width: 768px) {
+            .bitcoin-address {
+                flex-direction: column;
+                padding: 12px;
+                font-size: 0.8em;
+                gap: 10px;
+            }
+        }
+        .copy-btn {
+            background: rgba(255,255,255,0.3);
+            border: none;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1.2em;
+            transition: all 0.3s;
+            flex-shrink: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .copy-btn:hover {
+            background: rgba(255,255,255,0.5);
+            transform: scale(1.1);
+        }
+        .copy-btn:active {
+            transform: scale(0.95);
+        }
+        @media (max-width: 768px) {
+            .bitcoin-address .copy-btn {
+                width: 100%;
+                padding: 12px;
+                font-size: 1em;
+            }
+            .code-block .copy-btn {
+                position: absolute !important;
+                width: auto !important;
+                padding: 6px 10px !important;
+                font-size: 0.8em !important;
+            }
+        }
+        .copy-feedback {
+            position: absolute;
+            top: -35px;
+            right: 10px;
+            background: rgba(34, 197, 94, 0.95);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 6px;
+            font-size: 0.9em;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .copy-feedback.show {
+            opacity: 1;
+        }
+        .donation-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        .donate-btn {
+            background: rgba(255,255,255,0.9);
+            color: #f5576c;
+            padding: 12px 25px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .donate-btn:hover {
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+        .support-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 25px;
+        }
+        .support-item {
+            background: rgba(255,255,255,0.15);
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            transition: all 0.3s;
+            border: none;
+        }
+        .support-item:hover {
+            background: rgba(255,255,255,0.25);
+            transform: translateY(-8px);
+        }
+        .support-item .emoji {
+            display: block;
+            margin-bottom: 10px;
+        }
+        .support-item .emoji svg {
+            width: 60px;
+            height: 60px;
+        }
+        .support-item h3 {
+            color: white;
+            font-size: 1.1em;
+            margin: 10px 0;
+            border: none;
+            padding: 0;
+        }
+        .support-item p {
+            font-size: 0.9em;
+            opacity: 0.95;
+            margin: 0;
+        }
+        .support-item a {
+            color: white;
+            text-decoration: none;
+        }
+        @media (max-width: 768px) {
+            .support-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+                margin-top: 20px;
+            }
+            .support-item {
+                padding: 15px 10px;
+            }
+            .support-item .emoji svg {
+                width: 50px;
+                height: 50px;
+            }
+            .support-item h3 {
+                font-size: 0.95em;
+            }
+            .support-item p {
+                font-size: 0.8em;
+            }
+        }
+        @media (max-width: 480px) {
+            .support-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .lang-content {
+            display: none;
+        }
+        .lang-content.active {
+            display: block;
+        }
+        .lang-content.active.features {
+            display: grid;
+        }
+        /* Sticky Navigation */
+        .sticky-nav {
+            position: sticky;
+            top: 0;
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            width: 100%;
+            left: 0;
+            right: 0;
+        }
+        .nav-content {
+            max-width: 100%;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 40px;
+            gap: 20px;
+        }
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.3em;
+            font-weight: 700;
+            color: #0366d6;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+        .nav-logo img {
+            height: 40px;
+            width: auto;
+            display: block;
+            object-fit: contain;
+            transform: translateY(2px);
+        }
+        @media (max-width: 768px) {
+            .nav-logo {
+                font-size: 1.1em;
+                gap: 8px;
+            }
+            .nav-logo img {
+                height: 32px;
+            }
+        }
+        .nav-links {
+            display: flex;
+            gap: 15px;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .nav-links a {
+            color: #586069;
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: all 0.3s;
+            font-size: 0.95em;
+            font-weight: 500;
+        }
+        .nav-links a:hover {
+            background: #f6f8fa;
+            color: #0366d6;
+        }
+        .nav-lang-switch {
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+        .nav-lang-btn {
+            background: #f6f8fa;
+            color: #586069;
+            border: 1px solid transparent;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85em;
+            transition: all 0.3s;
+            white-space: nowrap;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .nav-lang-btn:hover {
+            background: #e1e4e8;
+        }
+        .nav-lang-btn.active {
+            background: #0366d6;
+            color: white;
+            border-color: #0366d6;
+            font-weight: 600;
+        }
+        @media (max-width: 768px) {
+            .nav-lang-btn {
+                padding: 8px 10px;
+                font-size: 0.8em;
+            }
+        }
+        /* Hamburger Menu */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 4px;
+            cursor: pointer;
+            padding: 8px;
+            background: transparent;
+            border: none;
+            z-index: 1001;
+        }
+        .hamburger span {
+            width: 25px;
+            height: 3px;
+            background: #0366d6;
+            border-radius: 2px;
+            transition: all 0.3s;
+        }
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg) translate(7px, 7px);
+        }
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -7px);
+        }
+        /* Mobile Responsive Navigation */
+        @media (max-width: 768px) {
+            .hamburger {
+                display: flex;
+            }
+            .nav-content {
+                flex-wrap: wrap;
+                padding: 8px 10px;
+            }
+            .nav-links {
+                display: none;
+                width: 100%;
+                flex-direction: column;
+                background: transparent;
+                padding: 15px 0;
+                gap: 5px;
+                border-top: 1px solid #e1e4e8;
+                margin-top: 10px;
+            }
+            .nav-links.active {
+                display: flex;
+            }
+            .nav-links li {
+                width: 100%;
+            }
+            .nav-links a {
+                display: block;
+                padding: 10px 20px;
+                font-size: 1em;
+            }
+        }
+        /* Smooth scroll */
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 80px;
+        }
+        /* Additional Mobile Optimizations */
+        @media (max-width: 480px) {
+            body {
+                font-size: 14px;
+            }
+            .header h1 {
+                font-size: 1.75em;
+            }
+            .header .subtitle {
+                font-size: 1em;
+            }
+            h2 {
+                font-size: 1.3em;
+            }
+            .links a {
+                font-size: 1em;
+            }
+        }
+        /* Improve touch targets */
+        @media (max-width: 768px) {
+            a, button, .tab, .nav-links a {
+                min-height: 44px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            /* Fix legend list padding in verification section */
+            .tab-content ul {
+                padding-left: 25px;
+                margin-left: 5px;
+            }
+        }
+        /* SVG Icon Utility Classes */
+        .icon-inline {
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+        h2 .icon-inline,
+        h3 .icon-inline,
+        h4 .icon-inline {
+            width: 1.2em;
+            height: 1.2em;
+        }
+        .nav-lang-btn .icon-inline {
+            width: 1em;
+            height: 1em;
+            margin-right: 4px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sticky Navigation -->
+    <nav class="sticky-nav">
+        <div class="nav-content">
+            <a href="#top" class="nav-logo">
+                <img src="https://raw.githubusercontent.com/Maik-0000FF/VelocityNvim/main/assets/images/VelocityNvim_Logo.png" alt="VelocityNvim Logo">
+                <span>VelocityNvim</span>
+            </a>
+            <button class="hamburger" onclick="toggleMobileMenu()" aria-label="Menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-links" id="navLinks">
+                <li class="lang-content de active"><a href="#features">Features</a></li>
+                <li class="lang-content en"><a href="#features">Features</a></li>
+                <li class="lang-content de active"><a href="#requirements">Voraussetzungen</a></li>
+                <li class="lang-content en"><a href="#requirements">Requirements</a></li>
+                <li class="lang-content de active"><a href="#installation">Installation</a></li>
+                <li class="lang-content en"><a href="#installation">Installation</a></li>
+                <li class="lang-content de active"><a href="#support">Support</a></li>
+                <li class="lang-content en"><a href="#support">Support</a></li>
+                <li class="lang-content de active"><a href="#links">Links</a></li>
+                <li class="lang-content en"><a href="#links">Links</a></li>
+            </ul>
+            <div class="nav-lang-switch">
+                <button class="nav-lang-btn active" onclick="switchLanguage('de')">
+                    <svg class="icon-inline" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="2" y="6" width="20" height="4" fill="#000000"/>
+                        <rect x="2" y="10" width="20" height="4" fill="#DD0000"/>
+                        <rect x="2" y="14" width="20" height="4" fill="#FFCE00"/>
+                    </svg>
+                    DE
+                </button>
+                <button class="nav-lang-btn" onclick="switchLanguage('en')">
+                    <svg class="icon-inline" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="2" y="5" width="20" height="14" fill="#012169"/>
+                        <path d="M2 5 L22 19 M22 5 L2 19" stroke="#FFFFFF" stroke-width="3"/>
+                        <path d="M2 5 L22 19 M22 5 L2 19" stroke="#C8102E" stroke-width="2"/>
+                        <path d="M12 5 L12 19 M2 12 L22 12" stroke="#FFFFFF" stroke-width="5"/>
+                        <path d="M12 5 L12 19 M2 12 L22 12" stroke="#C8102E" stroke-width="3"/>
+                    </svg>
+                    EN
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container" id="top">
+        <div class="header">
+            <h1>VelocityNvim</h1>
+            <p class="subtitle">Native vim.pack Neovim Distribution</p>
+        </div>
+
+        <div class="content">
+            <!-- German intro -->
+            <p class="lang-content de active" style="text-align: center; font-size: 1.2em; margin-bottom: 20px;">
+                Moderne, performante Neovim-Konfiguration ohne externe Plugin-Manager
+            </p>
+            <!-- English intro -->
+            <p class="lang-content en" style="text-align: center; font-size: 1.2em; margin-bottom: 20px;">
+                Modern, high-performance Neovim configuration without external plugin managers
+            </p>
+
+            <div style="text-align: center;">
+                <a href="https://github.com/Maik-0000FF/VelocityNvim" class="cta-button lang-content de active">Zum GitHub Repository →</a>
+                <a href="https://github.com/Maik-0000FF/VelocityNvim" class="cta-button lang-content en">Go to GitHub Repository →</a>
+            </div>
+
+            <div id="features"></div>
+            <h2 class="lang-content de active">Features</h2>
+            <h2 class="lang-content en">Features</h2>
+
+            <!-- German Features -->
+            <ul class="features lang-content de active">
+                <li>Eager Loading - Alle Plugins beim Start geladen für unterbrechungsfreien Workflow</li>
+                <li>Native vim.pack Integration - keine externen Plugin-Manager</li>
+                <li>Moderne LSP-Konfiguration mit vim.lsp.config</li>
+                <li>Treesitter für Syntax-Highlighting</li>
+                <li>fzf-lua für Fuzzy Finding (Rust-Performance)</li>
+                <li>blink.cmp mit Rust fuzzy matching</li>
+            </ul>
+
+            <!-- English Features -->
+            <ul class="features lang-content en">
+                <li>Eager Loading - All plugins loaded at startup for uninterrupted workflow</li>
+                <li>Native vim.pack integration - no external plugin managers</li>
+                <li>Modern LSP configuration with vim.lsp.config</li>
+                <li>Treesitter for syntax highlighting</li>
+                <li>fzf-lua for fuzzy finding (Rust performance)</li>
+                <li>blink.cmp with Rust fuzzy matching</li>
+            </ul>
+
+            <div id="requirements"></div>
+            <h2 class="lang-content de active">Systemvoraussetzungen</h2>
+            <h2 class="lang-content en">System Requirements</h2>
+
+            <!-- German System Requirements -->
+            <div class="install-section lang-content de active">
+                <div class="tabs">
+                    <button class="tab active" onclick="switchRequirementsTab('verify-requirements')">Verifikation</button>
+                    <button class="tab" onclick="switchRequirementsTab('arch-requirements')">Arch Linux</button>
+                    <button class="tab" onclick="switchRequirementsTab('macos-requirements')">macOS</button>
+                </div>
+
+                <!-- Verification -->
+                <div id="verify-requirements" class="tab-content active">
+                    <h3>
+                        <svg class="icon-inline" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="12" cy="12" r="10" fill="#22863a" stroke="#22863a" stroke-width="2"/>
+                            <path d="M7 12l3 3 7-7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        VOR Installation: Was fehlt mir?
+                    </h3>
+                    <p>Prüfe alle Voraussetzungen auf einmal mit diesem Befehl. Kopiere ihn und füge ihn in dein Terminal ein.</p>
+
+                    <h4 style="margin-top: 20px;">
+                        <svg class="icon-inline" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="3" y="5" width="18" height="14" rx="2" fill="none" stroke="#0366d6" stroke-width="2"/>
+                            <line x1="3" y1="9" x2="21" y2="9" stroke="#0366d6" stroke-width="2"/>
+                            <line x1="7" y1="12" x2="17" y2="12" stroke="#0366d6" stroke-width="1.5"/>
+                            <line x1="7" y1="15" x2="14" y2="15" stroke="#0366d6" stroke-width="1.5"/>
+                        </svg>
+                        Kompletter Check (One-Liner)
+                    </h4>
+                    <div class="code-block" style="position: relative; padding-bottom: 45px;">
+                        <code id="oneliner-de">bash -c 'echo "=== VelocityNvim Check ==="; echo ""; echo "🔴 ERFORDERLICH - Editor & VCS:"; nvim --version &>/dev/null && echo "✓ Neovim" || echo "❌ Neovim FEHLT!"; git --version &>/dev/null && echo "✓ Git" || echo "❌ Git FEHLT!"; echo ""; echo "🔴 ERFORDERLICH - Build Tools:"; gcc --version &>/dev/null && echo "✓ GCC" || echo "❌ GCC FEHLT!"; make --version &>/dev/null && echo "✓ make" || echo "❌ make FEHLT!"; echo ""; echo "🔴 ERFORDERLICH - Download & Archive:"; command -v curl &>/dev/null && echo "✓ curl" || echo "❌ curl FEHLT!"; command -v wget &>/dev/null && echo "✓ wget" || echo "❌ wget FEHLT!"; command -v unzip &>/dev/null && echo "✓ unzip" || echo "❌ unzip FEHLT!"; command -v tar &>/dev/null && echo "✓ tar" || echo "❌ tar FEHLT!"; echo ""; echo "🟠 CLIPBOARD:"; wl-copy --version &>/dev/null && echo "✓ wl-clipboard" || true; xclip -version &>/dev/null && echo "✓ xclip" || true; command -v pbcopy &>/dev/null && echo "✓ pbcopy" || true; echo ""; echo "🎨 NERD FONT:"; fc-list | grep -iq "nerd" && echo "✓ Nerd Font installiert" || echo "❌ Nerd Font fehlt"; echo ""; echo "⚡ RUST:"; for tool in cargo fzf rg fd bat; do command -v $tool &>/dev/null && echo "✓ $tool" || echo "❌ $tool"; done; command -v delta &>/dev/null && echo "✓ git-delta" || echo "❌ git-delta"; echo ""; echo "🧠 LSP:"; for lsp in lua-language-server pyright typescript-language-server rust-analyzer texlab; do command -v $lsp &>/dev/null && echo "✓ $lsp" || echo "❌ $lsp"; done; echo ""; echo "🔧 FORMATTERS:"; for fmt in ruff stylua prettier shfmt; do command -v $fmt &>/dev/null && echo "✓ $fmt" || echo "❌ $fmt"; done; echo ""; echo "📝 LATEX:"; command -v pdflatex &>/dev/null && echo "✓ pdflatex" || echo "❌ pdflatex"; command -v latexmk &>/dev/null && echo "✓ latexmk" || echo "❌ latexmk"; echo ""; echo "📄 PDF:"; for pdf in zathura okular evince; do command -v $pdf &>/dev/null && echo "✓ $pdf" || true; done'</code>
+                        <button class="copy-btn" style="position: absolute; bottom: 10px; right: 10px; background: #0366d6; border: none; color: white; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.9em;" onclick="copyOneliner('de')" title="Befehl kopieren">📋 Kopieren</button>
+                        <div id="copy-feedback-oneliner-de" class="copy-feedback" style="bottom: 50px; top: auto;">Kopiert! ✓</div>
+                    </div>
+
+                    <h4 style="margin-top: 20px;">
+                        <svg class="icon-inline" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="3" y="4" width="18" height="16" rx="2" fill="none" stroke="#0366d6" stroke-width="2"/>
+                            <rect x="6" y="13" width="3" height="5" fill="#0366d6"/>
+                            <rect x="10.5" y="10" width="3" height="8" fill="#0366d6"/>
+                            <rect x="15" y="7" width="3" height="11" fill="#0366d6"/>
+                        </svg>
+                        Was bedeutet das Ergebnis?
+                    </h4>
+                    <ul style="font-size: 0.9em; color: #586069;">
+                        <li><strong>✓ Programm</strong> - Installiert und funktionsfähig</li>
+                        <li><strong>❌ Programm fehlt</strong> - Muss noch installiert werden</li>
+                        <li><strong>🔴 ERFORDERLICH fehlt?</strong> - VelocityNvim wird NICHT funktionieren</li>
+                        <li><strong>⚡ Rust Tools fehlen?</strong> - Funktioniert, aber langsamer</li>
+                        <li><strong>🧠 LSP fehlt?</strong> - Keine Code-Intelligence für diese Sprache</li>
+                    </ul>
+                </div>
+
+                <!-- Arch Linux Requirements -->
+                <div id="arch-requirements" class="tab-content">
+                    <h3>
+                        <svg class="icon-inline" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2L3 7v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-9-5z" fill="none" stroke="#0366d6" stroke-width="2"/>
+                            <circle cx="12" cy="11" r="3" fill="#0366d6"/>
+                        </svg>
+                        Arch Linux - Komplette Installation
+                    </h3>
+
+                    <h4 style="margin-top: 20px;">
+                        <svg class="icon-inline" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="12" cy="12" r="10" fill="#dc3545"/>
+                            <text x="12" y="17" text-anchor="middle" fill="white" font-size="14" font-weight="bold">!</text>
+                        </svg>
+                        Kritische Basis (ERFORDERLICH)
+                    </h4>
+                    <p>Editor, Build-Tools und Versionskontrolle</p>
+                    <div class="code-block">
+                        <code>sudo pacman -S neovim git gcc base-devel</code>
+                    </div>
+                    <ul style="font-size: 0.9em; color: #586069;">
+                        <li><strong>neovim</strong> - Editor-Engine (>= 0.11.0)</li>
+                        <li><strong>git</strong> - Versionskontrolle für Plugin-Installation</li>
+                        <li><strong>gcc</strong> - C-Compiler für Treesitter-Parser</li>
+                        <li><strong>base-devel</strong> - Build-Tools (make, autoconf, etc.)</li>
+                    </ul>
+
+                    <h4 style="margin-top: 20px;">
+                        <svg class="icon-inline" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="12" cy="12" r="10" fill="#fd7e14"/>
+                            <text x="12" y="17" text-anchor="middle" fill="white" font-size="14" font-weight="bold">!</text>
+                        </svg>
+                        System-Integration (ERFORDERLICH)
+                    </h4>
+                    <p>Zwischenablage und Download-Tools</p>
+                    <div class="code-block">
+                        <code># Für Wayland:<br>
+sudo pacman -S wl-clipboard curl wget unzip tar<br><br>
+# Für X11:<br>
+sudo pacman -S xclip xsel curl wget unzip tar</code>
+                    </div>
+                    <ul style="font-size: 0.9em; color: #586069;">
+                        <li><strong>wl-clipboard</strong> - Zwischenablage für Wayland (wl-copy/wl-paste)</li>
+                        <li><strong>xclip/xsel</strong> - Zwischenablage für X11</li>
+                        <li><strong>curl/wget</strong> - HTTP-Download-Tools</li>
+                        <li><strong>unzip/tar</strong> - Archive entpacken</li>
+                    </ul>
+
+                    <h4 style="margin-top: 20px;">
+                        <svg class="icon-inline" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="3" y="3" width="18" height="18" rx="2" fill="none" stroke="#0366d6" stroke-width="2"/>
+                            <path d="M7 7h10M7 11h6M7 15h8" stroke="#0366d6" stroke-width="1.5"/>
+                            <circle cx="17" cy="15" r="1.5" fill="#0366d6"/>
+                        </svg>
+                        UI & Terminal (Sehr empfohlen)
+                    </h4>
+                    <p>Icons und optimierter Terminal-Emulator</p>
+                    <div class="code-block">
+                        <code>sudo pacman -S ttf-meslo-nerd wezterm</code>
+                    </div>
+                    <ul style="font-size: 0.9em; color: #586069;">
+                        <li><strong>ttf-meslo-nerd</strong> - Nerd Font für UI-Icons (Neo-tree, Bufferline, Lualine)</li>
+                        <li><strong>wezterm</strong> - GPU-beschleunigter Terminal, VelocityNvim-optimiert</li>
+                        <li><em>Alternative Fonts:</em> ttf-jetbrains-mono-nerd, ttf-firacode-nerd</li>
+                    </ul>
+
+                    <h4 style="margin-top: 20px;">
+                        <svg class="icon-inline" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M13 2L3 14h8l-2 8 10-12h-8l2-8z" fill="#ffc107" stroke="#f59e0b" stroke-width="1.5"/>
+                        </svg>
+                        Rust Performance Stack (Empfohlen)
+                    </h4>
+                    <p>Massiver Performance-Boost durch Rust-Tools</p>
+                    <div class="code-block">
+                        <code># Basis-Tools<br>
+sudo pacman -S rust fzf ripgrep fd bat git-delta<br><br>
+# Zusätzliche Tools via Cargo<br>
+cargo install ruff stylua hyperfine</code>
+                    </div>
+                    <ul style="font-size: 0.9em; color: #586069;">
+                        <li><strong>rust</strong> - Rust-Toolchain (enthält cargo)</li>
+                        <li><strong>fzf</strong> - Fuzzy-Finder (FZF-Lua Backend)</li>
+                        <li><strong>ripgrep</strong> - Ultraschnelle Textsuche (10-100x schneller als grep)</li>
+                        <li><strong>fd</strong> - Moderner File-Finder (schneller als find)</li>
+                        <li><strong>bat</strong> - Cat mit Syntax-Highlighting (FZF-Previews)</li>
+                        <li><strong>git-delta</strong> - Syntax-Highlighting für Git-Diffs</li>
+                        <li><strong>ruff</strong> (cargo) - Python-Formatter/Linter (10-100x schneller als Black)</li>
+                        <li><strong>stylua</strong> (cargo) - Lua-Code-Formatter</li>
+                        <li><strong>hyperfine</strong> (cargo) - Benchmark-Tool</li>
+                    </ul>
+
+                    <h4 style="margin-top: 20px;">
+                        <svg class="icon-inline" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z" fill="none" stroke="#0366d6" stroke-width="2"/>
+                            <path d="M12 6v6l4 2" stroke="#0366d6" stroke-width="2" stroke-linecap="round"/>
+                            <circle cx="12" cy="12" r="1.5" fill="#0366d6"/>
+                        </svg>
+                        LSP-Server (Pro Sprache)
+                    </h4>
+                    <p>Code-Intelligence für verschiedene Programmiersprachen</p>
+                    <div class="code-block">
+                        <code># Lua Development<br>
+sudo pacman -S lua-language-server<br><br>
+# Python Development<br>
+sudo pacman -S pyright python python-pip<br><br>
+# Web Development (JS/TS/HTML/CSS/JSON)<br>
+sudo pacman -S nodejs npm<br>
+npm install -g typescript typescript-language-server \<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;vscode-langservers-extracted<br><br>
+# Rust Development<br>
+sudo pacman -S rust-analyzer<br><br>
+# LaTeX Development<br>
+sudo pacman -S texlab texlive-basic texlive-bin</code>
+                    </div>
+
+                    <h4 style="margin-top: 20px;">
+                        <svg class="icon-inline" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" fill="none" stroke="#0366d6" stroke-width="2"/>
+                        </svg>
+                        Code-Formatters (Optional)
+                    </h4>
+                    <div class="code-block">
+                        <code>sudo pacman -S prettier shfmt</code>
+                    </div>
+
+                    <h4 style="margin-top: 20px;">
+                        <svg class="icon-inline" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z" fill="none" stroke="#0366d6" stroke-width="2"/>
+                            <path d="M14 2v6h6" stroke="#0366d6" stroke-width="2"/>
+                            <line x1="8" y1="13" x2="16" y2="13" stroke="#0366d6" stroke-width="1.5"/>
+                            <line x1="8" y1="17" x2="16" y2="17" stroke="#0366d6" stroke-width="1.5"/>
+                        </svg>
+                        Dokumenten-Tools (Optional)
+                    </h4>
+                    <p>PDF-Viewer für LaTeX-Workflow</p>
+                    <div class="code-block">
+                        <code>sudo pacman -S zathura zathura-pdf-mupdf poppler typst</code>
+                    </div>
+
+                    <h4 style="margin-top: 20px;">
+                        <svg class="icon-inline" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2L2 7l10 5 10-5-10-5z" fill="#0366d6"/>
+                            <path d="M2 17l10 5 10-5M2 12l10 5 10-5" fill="none" stroke="#0366d6" stroke-width="2"/>
+                        </svg>
+                        Schnell-Installation
+                    </h4>
+                    <p><strong>Empfohlen:</strong> Performance + LSP (Lua, Python, Web)</p>
+                    <div class="code-block">
+                        <code>sudo pacman -S neovim git gcc base-devel \<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;wl-clipboard curl wget unzip tar \<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ttf-meslo-nerd wezterm \<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rust fzf ripgrep fd bat git-delta \<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lua-language-server pyright python nodejs npm<br><br>
+cargo install ruff stylua<br>
+npm install -g typescript typescript-language-server vscode-langservers-extracted</code>
+                    </div>
+                </div>
+
+                <!-- macOS Requirements -->
+                <div id="macos-requirements" class="tab-content">
+                    <h3>
+                        <svg class="icon-inline" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z" fill="#0366d6"/>
+                        </svg>
+                        macOS - Komplette Installation
+                    </h3>
+
+                    <h4 style="margin-top: 20px;">
+                        <svg class="icon-inline" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2L3 7v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-9-5z" fill="none" stroke="#0366d6" stroke-width="2"/>
+                            <circle cx="12" cy="11" r="3" fill="#0366d6"/>
+                        </svg>
+                        Homebrew (Package Manager)
+                    </h4>
+                    <p>Falls noch nicht installiert:</p>
+                    <div class="code-block">
+                        <code>/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"</code>
+                    </div>
+
+                    <h4 style="margin-top: 20px;">
+                        <svg class="icon-inline" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="12" cy="12" r="10" fill="#dc3545"/>
+                            <text x="12" y="17" text-anchor="middle" fill="white" font-size="14" font-weight="bold">!</text>
+                        </svg>
+                        Kritische Basis (ERFORDERLICH)
+                    </h4>
+                    <div class="code-block">
+                        <code>brew install neovim git gcc</code>
+                    </div>
+                    <ul style="font-size: 0.9em; color: #586069;">
+                        <li><strong>neovim</strong> - Editor-Engine (>= 0.11.0)</li>
+                        <li><strong>git</strong> - Versionskontrolle</li>
+                        <li><strong>gcc</strong> - C-Compiler für Treesitter</li>
+                    </ul>
+
+                    <h4 style="margin-top: 20px;">
+                        <svg class="icon-inline" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="3" y="3" width="18" height="18" rx="2" fill="none" stroke="#0366d6" stroke-width="2"/>
+                            <path d="M7 7h10M7 11h6M7 15h8" stroke="#0366d6" stroke-width="1.5"/>
+                            <circle cx="17" cy="15" r="1.5" fill="#0366d6"/>
+                        </svg>
+                        UI & Terminal (Sehr empfohlen)
+                    </h4>
+                    <div class="code-block">
+                        <code>brew install --cask font-meslo-lg-nerd-font wezterm</code>
+                    </div>
+                    <ul style="font-size: 0.9em; color: #586069;">
+                        <li><strong>font-meslo-lg-nerd-font</strong> - Nerd Font für UI-Icons</li>
+                        <li><strong>wezterm</strong> - Optimierter Terminal-Emulator</li>
+                        <li><strong>Hinweis:</strong> macOS-Zwischenablage funktioniert nativ (pbcopy/pbpaste)</li>
+                    </ul>
+
+                    <h4 style="margin-top: 20px;">
+                        <svg class="icon-inline" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M13 2L3 14h8l-2 8 10-12h-8l2-8z" fill="#ffc107" stroke="#f59e0b" stroke-width="1.5"/>
+                        </svg>
+                        Rust Performance Stack (Empfohlen)
+                    </h4>
+                    <div class="code-block">
+                        <code># Basis-Tools<br>
+brew install rust fzf ripgrep fd bat git-delta<br><br>
+# Zusätzliche Tools via Cargo<br>
+cargo install ruff stylua hyperfine</code>
+                    </div>
+
+                    <h4 style="margin-top: 20px;">
+                        <svg class="icon-inline" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z" fill="none" stroke="#0366d6" stroke-width="2"/>
+                            <path d="M12 6v6l4 2" stroke="#0366d6" stroke-width="2" stroke-linecap="round"/>
+                            <circle cx="12" cy="12" r="1.5" fill="#0366d6"/>
+                        </svg>
+                        LSP-Server (Pro Sprache)
+                    </h4>
+                    <div class="code-block">
+                        <code># Lua Development<br>
+brew install lua-language-server<br><br>
+# Python Development<br>
+brew install pyright python@3.12<br><br>
+# Web Development<br>
+brew install node<br>
+npm install -g typescript typescript-language-server \<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;vscode-langservers-extracted<br><br>
+# Rust Development<br>
+brew install rust-analyzer<br><br>
+# LaTeX Development<br>
+brew install texlab<br>
+brew install --cask mactex  # Vollständige LaTeX-Distribution</code>
+                    </div>
+
+                    <h4 style="margin-top: 20px;">
+                        <svg class="icon-inline" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" fill="none" stroke="#0366d6" stroke-width="2"/>
+                        </svg>
+                        Code-Formatters (Optional)
+                    </h4>
+                    <div class="code-block">
+                        <code>brew install prettier shfmt</code>
+                    </div>
+
+                    <h4 style="margin-top: 20px;">
+                        <svg class="icon-inline" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z" fill="none" stroke="#0366d6" stroke-width="2"/>
+                            <path d="M14 2v6h6" stroke="#0366d6" stroke-width="2"/>
+                            <line x1="8" y1="13" x2="16" y2="13" stroke="#0366d6" stroke-width="1.5"/>
+                            <line x1="8" y1="17" x2="16" y2="17" stroke="#0366d6" stroke-width="1.5"/>
+                        </svg>
+                        Dokumenten-Tools (Optional)
+                    </h4>
+                    <div class="code-block">
+                        <code>brew install --cask skim  # PDF-Viewer mit Vim-Keys<br>
+brew install poppler typst</code>
+                    </div>
+
+                    <h4 style="margin-top: 20px;">
+                        <svg class="icon-inline" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2L2 7l10 5 10-5-10-5z" fill="#0366d6"/>
+                            <path d="M2 17l10 5 10-5M2 12l10 5 10-5" fill="none" stroke="#0366d6" stroke-width="2"/>
+                        </svg>
+                        Schnell-Installation
+                    </h4>
+                    <p><strong>Empfohlen:</strong> Performance + LSP (Lua, Python, Web)</p>
+                    <div class="code-block">
+                        <code>brew install neovim git gcc rust fzf ripgrep fd bat git-delta \<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lua-language-server pyright python@3.12 node<br>
+brew install --cask font-meslo-lg-nerd-font wezterm<br><br>
+cargo install ruff stylua<br>
+npm install -g typescript typescript-language-server vscode-langservers-extracted</code>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- English System Requirements -->
+            <div class="install-section lang-content en">
+                <div class="tabs">
+                    <button class="tab active" onclick="switchRequirementsTab('verify-requirements-en')">Verification</button>
+                    <button class="tab" onclick="switchRequirementsTab('arch-requirements-en')">Arch Linux</button>
+                    <button class="tab" onclick="switchRequirementsTab('macos-requirements-en')">macOS</button>
+                </div>
+
+                <!-- Verification (English) -->
+                <div id="verify-requirements-en" class="tab-content active">
+                    <h3>
+                        <svg class="icon-inline" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="12" cy="12" r="10" fill="#22863a" stroke="#22863a" stroke-width="2"/>
+                            <path d="M7 12l3 3 7-7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        BEFORE Installation: What's Missing?
+                    </h3>
+                    <p>Check all requirements at once with this command. Copy it and paste it into your terminal.</p>
+
+                    <h4 style="margin-top: 20px;">
+                        <svg class="icon-inline" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="3" y="5" width="18" height="14" rx="2" fill="none" stroke="#0366d6" stroke-width="2"/>
+                            <line x1="3" y1="9" x2="21" y2="9" stroke="#0366d6" stroke-width="2"/>
+                            <line x1="7" y1="12" x2="17" y2="12" stroke="#0366d6" stroke-width="1.5"/>
+                            <line x1="7" y1="15" x2="14" y2="15" stroke="#0366d6" stroke-width="1.5"/>
+                        </svg>
+                        Complete Check (One-Liner)
+                    </h4>
+                    <div class="code-block" style="position: relative; padding-bottom: 45px;">
+                        <code id="oneliner-en">bash -c 'echo "=== VelocityNvim Check ==="; echo ""; echo "🔴 REQUIRED - Editor & VCS:"; nvim --version &>/dev/null && echo "✓ Neovim" || echo "❌ Neovim MISSING!"; git --version &>/dev/null && echo "✓ Git" || echo "❌ Git MISSING!"; echo ""; echo "🔴 REQUIRED - Build Tools:"; gcc --version &>/dev/null && echo "✓ GCC" || echo "❌ GCC MISSING!"; make --version &>/dev/null && echo "✓ make" || echo "❌ make MISSING!"; echo ""; echo "🔴 REQUIRED - Download & Archive:"; command -v curl &>/dev/null && echo "✓ curl" || echo "❌ curl MISSING!"; command -v wget &>/dev/null && echo "✓ wget" || echo "❌ wget MISSING!"; command -v unzip &>/dev/null && echo "✓ unzip" || echo "❌ unzip MISSING!"; command -v tar &>/dev/null && echo "✓ tar" || echo "❌ tar MISSING!"; echo ""; echo "🟠 CLIPBOARD:"; wl-copy --version &>/dev/null && echo "✓ wl-clipboard" || true; xclip -version &>/dev/null && echo "✓ xclip" || true; command -v pbcopy &>/dev/null && echo "✓ pbcopy" || true; echo ""; echo "🎨 NERD FONT:"; fc-list | grep -iq "nerd" && echo "✓ Nerd Font installed" || echo "❌ Nerd Font missing"; echo ""; echo "⚡ RUST:"; for tool in cargo fzf rg fd bat; do command -v $tool &>/dev/null && echo "✓ $tool" || echo "❌ $tool"; done; command -v delta &>/dev/null && echo "✓ git-delta" || echo "❌ git-delta"; echo ""; echo "🧠 LSP:"; for lsp in lua-language-server pyright typescript-language-server rust-analyzer texlab; do command -v $lsp &>/dev/null && echo "✓ $lsp" || echo "❌ $lsp"; done; echo ""; echo "🔧 FORMATTERS:"; for fmt in ruff stylua prettier shfmt; do command -v $fmt &>/dev/null && echo "✓ $fmt" || echo "❌ $fmt"; done; echo ""; echo "📝 LATEX:"; command -v pdflatex &>/dev/null && echo "✓ pdflatex" || echo "❌ pdflatex"; command -v latexmk &>/dev/null && echo "✓ latexmk" || echo "❌ latexmk"; echo ""; echo "📄 PDF:"; for pdf in zathura okular evince; do command -v $pdf &>/dev/null && echo "✓ $pdf" || true; done'</code>
+                        <button class="copy-btn" style="position: absolute; bottom: 10px; right: 10px; background: #0366d6; border: none; color: white; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.9em;" onclick="copyOneliner('en')" title="Copy command">📋 Copy</button>
+                        <div id="copy-feedback-oneliner-en" class="copy-feedback" style="bottom: 50px; top: auto;">Copied! ✓</div>
+                    </div>
+
+                    <h4 style="margin-top: 20px;">
+                        <svg class="icon-inline" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="3" y="4" width="18" height="16" rx="2" fill="none" stroke="#0366d6" stroke-width="2"/>
+                            <rect x="6" y="13" width="3" height="5" fill="#0366d6"/>
+                            <rect x="10.5" y="10" width="3" height="8" fill="#0366d6"/>
+                            <rect x="15" y="7" width="3" height="11" fill="#0366d6"/>
+                        </svg>
+                        What Does the Result Mean?
+                    </h4>
+                    <ul style="font-size: 0.9em; color: #586069;">
+                        <li><strong>✓ Program</strong> - Installed and functional</li>
+                        <li><strong>❌ Program missing</strong> - Needs to be installed</li>
+                        <li><strong>🔴 REQUIRED missing?</strong> - VelocityNvim will NOT work</li>
+                        <li><strong>⚡ Rust tools missing?</strong> - Works, but slower</li>
+                        <li><strong>🧠 LSP missing?</strong> - No code intelligence for that language</li>
+                    </ul>
+                </div>
+
+                <!-- Arch Linux Requirements (English) -->
+                <div id="arch-requirements-en" class="tab-content">
+                    <h3>
+                        <svg class="icon-inline" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2L3 7v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-9-5z" fill="none" stroke="#0366d6" stroke-width="2"/>
+                            <circle cx="12" cy="11" r="3" fill="#0366d6"/>
+                        </svg>
+                        Arch Linux - Complete Installation
+                    </h3>
+
+                    <h4 style="margin-top: 20px;">
+                        <svg class="icon-inline" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="12" cy="12" r="10" fill="#dc3545"/>
+                            <text x="12" y="17" text-anchor="middle" fill="white" font-size="14" font-weight="bold">!</text>
+                        </svg>
+                        Critical Base (REQUIRED)
+                    </h4>
+                    <p>Editor, build tools, and version control</p>
+                    <div class="code-block">
+                        <code>sudo pacman -S neovim git gcc base-devel</code>
+                    </div>
+                    <ul style="font-size: 0.9em; color: #586069;">
+                        <li><strong>neovim</strong> - Editor engine (>= 0.11.0 required)</li>
+                        <li><strong>git</strong> - Version control for plugin installation</li>
+                        <li><strong>gcc</strong> - C compiler for Treesitter parsers</li>
+                        <li><strong>base-devel</strong> - Build tools (make, autoconf, etc.)</li>
+                    </ul>
+
+                    <h4 style="margin-top: 20px;">
+                        <svg class="icon-inline" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="12" cy="12" r="10" fill="#fd7e14"/>
+                            <text x="12" y="17" text-anchor="middle" fill="white" font-size="14" font-weight="bold">!</text>
+                        </svg>
+                        System Integration (REQUIRED)
+                    </h4>
+                    <p>Clipboard and download tools</p>
+                    <div class="code-block">
+                        <code># For Wayland:<br>
+sudo pacman -S wl-clipboard curl wget unzip tar<br><br>
+# For X11:<br>
+sudo pacman -S xclip xsel curl wget unzip tar</code>
+                    </div>
+
+                    <h4 style="margin-top: 20px;">
+                        <svg class="icon-inline" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="3" y="3" width="18" height="18" rx="2" fill="none" stroke="#0366d6" stroke-width="2"/>
+                            <path d="M7 7h10M7 11h6M7 15h8" stroke="#0366d6" stroke-width="1.5"/>
+                            <circle cx="17" cy="15" r="1.5" fill="#0366d6"/>
+                        </svg>
+                        UI & Terminal (Highly Recommended)
+                    </h4>
+                    <div class="code-block">
+                        <code>sudo pacman -S ttf-meslo-nerd wezterm</code>
+                    </div>
+
+                    <h4 style="margin-top: 20px;">
+                        <svg class="icon-inline" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M13 2L3 14h8l-2 8 10-12h-8l2-8z" fill="#ffc107" stroke="#f59e0b" stroke-width="1.5"/>
+                        </svg>
+                        Rust Performance Stack (Recommended)
+                    </h4>
+                    <div class="code-block">
+                        <code>sudo pacman -S rust fzf ripgrep fd bat git-delta<br>
+cargo install ruff stylua hyperfine</code>
+                    </div>
+
+                    <h4 style="margin-top: 20px;">
+                        <svg class="icon-inline" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z" fill="none" stroke="#0366d6" stroke-width="2"/>
+                            <path d="M12 6v6l4 2" stroke="#0366d6" stroke-width="2" stroke-linecap="round"/>
+                            <circle cx="12" cy="12" r="1.5" fill="#0366d6"/>
+                        </svg>
+                        LSP Servers (Per Language)
+                    </h4>
+                    <div class="code-block">
+                        <code># Lua, Python, Web Dev<br>
+sudo pacman -S lua-language-server pyright python nodejs npm<br>
+npm install -g typescript typescript-language-server vscode-langservers-extracted</code>
+                    </div>
+
+                    <h4 style="margin-top: 20px;">
+                        <svg class="icon-inline" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2L2 7l10 5 10-5-10-5z" fill="#0366d6"/>
+                            <path d="M2 17l10 5 10-5M2 12l10 5 10-5" fill="none" stroke="#0366d6" stroke-width="2"/>
+                        </svg>
+                        Quick Installation
+                    </h4>
+                    <div class="code-block">
+                        <code>sudo pacman -S neovim git gcc base-devel \<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;wl-clipboard curl wget unzip tar \<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ttf-meslo-nerd wezterm \<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rust fzf ripgrep fd bat git-delta \<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lua-language-server pyright python nodejs npm<br><br>
+cargo install ruff stylua<br>
+npm install -g typescript typescript-language-server vscode-langservers-extracted</code>
+                    </div>
+                </div>
+
+                <!-- macOS Requirements (English) -->
+                <div id="macos-requirements-en" class="tab-content">
+                    <h3>
+                        <svg class="icon-inline" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z" fill="#0366d6"/>
+                        </svg>
+                        macOS - Complete Installation
+                    </h3>
+
+                    <h4 style="margin-top: 20px;">
+                        <svg class="icon-inline" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2L3 7v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-9-5z" fill="none" stroke="#0366d6" stroke-width="2"/>
+                            <circle cx="12" cy="11" r="3" fill="#0366d6"/>
+                        </svg>
+                        Homebrew (Package Manager)
+                    </h4>
+                    <div class="code-block">
+                        <code>/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"</code>
+                    </div>
+
+                    <h4 style="margin-top: 20px;">
+                        <svg class="icon-inline" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="12" cy="12" r="10" fill="#dc3545"/>
+                            <text x="12" y="17" text-anchor="middle" fill="white" font-size="14" font-weight="bold">!</text>
+                        </svg>
+                        Critical Base (REQUIRED)
+                    </h4>
+                    <div class="code-block">
+                        <code>brew install neovim git gcc</code>
+                    </div>
+
+                    <h4 style="margin-top: 20px;">
+                        <svg class="icon-inline" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="3" y="3" width="18" height="18" rx="2" fill="none" stroke="#0366d6" stroke-width="2"/>
+                            <path d="M7 7h10M7 11h6M7 15h8" stroke="#0366d6" stroke-width="1.5"/>
+                            <circle cx="17" cy="15" r="1.5" fill="#0366d6"/>
+                        </svg>
+                        UI & Terminal
+                    </h4>
+                    <div class="code-block">
+                        <code>brew install --cask font-meslo-lg-nerd-font wezterm</code>
+                    </div>
+
+                    <h4 style="margin-top: 20px;">
+                        <svg class="icon-inline" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M13 2L3 14h8l-2 8 10-12h-8l2-8z" fill="#ffc107" stroke="#f59e0b" stroke-width="1.5"/>
+                        </svg>
+                        Rust Performance Stack
+                    </h4>
+                    <div class="code-block">
+                        <code>brew install rust fzf ripgrep fd bat git-delta<br>
+cargo install ruff stylua hyperfine</code>
+                    </div>
+
+                    <h4 style="margin-top: 20px;">
+                        <svg class="icon-inline" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z" fill="none" stroke="#0366d6" stroke-width="2"/>
+                            <path d="M12 6v6l4 2" stroke="#0366d6" stroke-width="2" stroke-linecap="round"/>
+                            <circle cx="12" cy="12" r="1.5" fill="#0366d6"/>
+                        </svg>
+                        LSP Servers
+                    </h4>
+                    <div class="code-block">
+                        <code>brew install lua-language-server pyright python@3.12 node<br>
+npm install -g typescript typescript-language-server vscode-langservers-extracted</code>
+                    </div>
+
+                    <h4 style="margin-top: 20px;">
+                        <svg class="icon-inline" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2L2 7l10 5 10-5-10-5z" fill="#0366d6"/>
+                            <path d="M2 17l10 5 10-5M2 12l10 5 10-5" fill="none" stroke="#0366d6" stroke-width="2"/>
+                        </svg>
+                        Quick Installation
+                    </h4>
+                    <div class="code-block">
+                        <code>brew install neovim git gcc rust fzf ripgrep fd bat git-delta \<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lua-language-server pyright python@3.12 node<br>
+brew install --cask font-meslo-lg-nerd-font wezterm<br><br>
+cargo install ruff stylua<br>
+npm install -g typescript typescript-language-server vscode-langservers-extracted</code>
+                    </div>
+                </div>
+            </div>
+
+            <div id="installation"></div>
+            <h2 class="lang-content de active">Installation</h2>
+            <h2 class="lang-content en">Installation</h2>
+
+            <!-- German Installation -->
+            <div class="install-section lang-content de active">
+                <div class="tabs">
+                    <button class="tab active" onclick="switchTab('standalone')">Standalone Installation</button>
+                    <button class="tab" onclick="switchTab('parallel')">Parallel Installation</button>
+                </div>
+
+                <div id="standalone" class="tab-content active">
+                    <h3>Standalone Installation</h3>
+                    <p>Ersetzt deine bestehende ~/.config/nvim Konfiguration</p>
+                    <div class="code-block">
+                        <code># 1. Backup erstellen (WICHTIG!)<br>
+[ -d ~/.config/nvim ] && mv ~/.config/nvim ~/.config/nvim.backup.$(date +%Y%m%d_%H%M%S)<br><br>
+# 2. VelocityNvim installieren<br>
+git clone https://github.com/Maik-0000FF/VelocityNvim.git ~/.config/nvim<br><br>
+# 3. Neovim starten<br>
+nvim</code>
+                    </div>
+
+                    <h3 style="margin-top: 30px;">Deinstallation</h3>
+                    <div class="code-block">
+                        <code># VelocityNvim entfernen<br>
+rm -rf ~/.config/nvim<br>
+rm -rf ~/.local/share/nvim<br>
+rm -rf ~/.local/state/nvim<br>
+rm -rf ~/.cache/nvim<br><br>
+# Backup wiederherstellen (falls vorhanden)<br>
+mv ~/.config/nvim.backup.* ~/.config/nvim</code>
+                    </div>
+                </div>
+
+                <div id="parallel" class="tab-content">
+                    <h3>Parallel Installation</h3>
+                    <p>Installiert VelocityNvim neben deiner bestehenden Konfiguration</p>
+                    <div class="code-block">
+                        <code># 1. In separates Verzeichnis installieren<br>
+git clone https://github.com/Maik-0000FF/VelocityNvim.git ~/.config/VelocityNvim<br><br>
+# 2. Alias erstellen<br>
+echo 'alias velocity="NVIM_APPNAME=VelocityNvim nvim"' >> ~/.bashrc<br>
+source ~/.bashrc<br><br>
+# 3. VelocityNvim starten<br>
+velocity</code>
+                    </div>
+
+                    <h3 style="margin-top: 30px;">Deinstallation</h3>
+                    <div class="code-block">
+                        <code># VelocityNvim entfernen<br>
+rm -rf ~/.config/VelocityNvim<br>
+rm -rf ~/.local/share/VelocityNvim<br>
+rm -rf ~/.local/state/VelocityNvim<br>
+rm -rf ~/.cache/VelocityNvim<br><br>
+# Alias entfernen<br>
+sed -i '/alias velocity="NVIM_APPNAME=VelocityNvim nvim"/d' ~/.bashrc<br>
+source ~/.bashrc</code>
+                    </div>
+                </div>
+            </div>
+
+            <!-- English Installation -->
+            <div class="install-section lang-content en">
+                <div class="tabs">
+                    <button class="tab active" onclick="switchTab('standalone-en')">Standalone Installation</button>
+                    <button class="tab" onclick="switchTab('parallel-en')">Parallel Installation</button>
+                </div>
+
+                <div id="standalone-en" class="tab-content active">
+                    <h3>Standalone Installation</h3>
+                    <p>Replaces your existing ~/.config/nvim configuration</p>
+                    <div class="code-block">
+                        <code># 1. Create backup (IMPORTANT!)<br>
+[ -d ~/.config/nvim ] && mv ~/.config/nvim ~/.config/nvim.backup.$(date +%Y%m%d_%H%M%S)<br><br>
+# 2. Install VelocityNvim<br>
+git clone https://github.com/Maik-0000FF/VelocityNvim.git ~/.config/nvim<br><br>
+# 3. Start Neovim<br>
+nvim</code>
+                    </div>
+
+                    <h3 style="margin-top: 30px;">Uninstallation</h3>
+                    <div class="code-block">
+                        <code># Remove VelocityNvim<br>
+rm -rf ~/.config/nvim<br>
+rm -rf ~/.local/share/nvim<br>
+rm -rf ~/.local/state/nvim<br>
+rm -rf ~/.cache/nvim<br><br>
+# Restore backup (if available)<br>
+mv ~/.config/nvim.backup.* ~/.config/nvim</code>
+                    </div>
+                </div>
+
+                <div id="parallel-en" class="tab-content">
+                    <h3>Parallel Installation</h3>
+                    <p>Installs VelocityNvim alongside your existing configuration</p>
+                    <div class="code-block">
+                        <code># 1. Install to separate directory<br>
+git clone https://github.com/Maik-0000FF/VelocityNvim.git ~/.config/VelocityNvim<br><br>
+# 2. Create alias<br>
+echo 'alias velocity="NVIM_APPNAME=VelocityNvim nvim"' >> ~/.bashrc<br>
+source ~/.bashrc<br><br>
+# 3. Start VelocityNvim<br>
+velocity</code>
+                    </div>
+
+                    <h3 style="margin-top: 30px;">Uninstallation</h3>
+                    <div class="code-block">
+                        <code># Remove VelocityNvim<br>
+rm -rf ~/.config/VelocityNvim<br>
+rm -rf ~/.local/share/VelocityNvim<br>
+rm -rf ~/.local/state/VelocityNvim<br>
+rm -rf ~/.cache/VelocityNvim<br><br>
+# Remove alias<br>
+sed -i '/alias velocity="NVIM_APPNAME=VelocityNvim nvim"/d' ~/.bashrc<br>
+source ~/.bashrc</code>
+                    </div>
+                </div>
+            </div>
+
+            <div id="support"></div>
+            <!-- German Donation Section -->
+            <div class="donation-section lang-content de active">
+                <h2>
+                    <svg class="icon-inline" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 1.5em; height: 1.5em;">
+                        <path d="M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z" fill="none" stroke="white" stroke-width="2"/>
+                        <path d="M6 1v3M10 1v3M14 1v3" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    Unterstütze VelocityNvim
+                </h2>
+                <p style="font-size: 1.1em; margin-bottom: 10px;">
+                    Wenn dir VelocityNvim gefällt, unterstütze das Projekt!
+                </p>
+
+                <div class="support-grid">
+                    <div class="support-item">
+                        <span class="emoji">
+                            <svg width="60" height="60" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="16" cy="16" r="16" fill="#F7931A"/>
+                                <path d="M23.189 14.02c.314-2.096-1.283-3.223-3.465-3.975l.708-2.84-1.728-.43-.69 2.765c-.454-.114-.92-.22-1.385-.326l.695-2.783L15.596 6l-.708 2.839c-.376-.086-.746-.17-1.104-.26l.002-.009-2.384-.595-.46 1.846s1.283.294 1.256.312c.7.175.826.638.805 1.006l-.806 3.235c.048.012.11.03.18.057l-.183-.045-1.13 4.532c-.086.212-.303.531-.793.41.018.025-1.256-.313-1.256-.313l-.858 1.978 2.25.561c.418.105.828.215 1.231.318l-.715 2.872 1.727.43.708-2.84c.472.127.93.245 1.378.357l-.706 2.828 1.728.43.715-2.866c2.948.558 5.164.333 6.097-2.333.752-2.146-.037-3.385-1.588-4.192 1.13-.26 1.98-1.003 2.207-2.538zm-3.95 5.538c-.533 2.147-4.148.986-5.32.695l.95-3.805c1.172.293 4.929.872 4.37 3.11zm.535-5.569c-.487 1.953-3.495.96-4.47.717l.86-3.45c.975.243 4.118.696 3.61 2.733z" fill="white"/>
+                            </svg>
+                        </span>
+                        <h3>Bitcoin Spende</h3>
+                        <div class="bitcoin-address" style="margin-top: 15px; font-size: 0.75em;">
+                            <span id="btc-address-de">bc1q6gmpgfn4wx2hx2c3njgpep9tl00etma9k7w6d4</span>
+                            <button class="copy-btn" onclick="copyBitcoinAddress('de')" title="Adresse kopieren">📋</button>
+                            <div id="copy-feedback-de" class="copy-feedback">Kopiert! ✓</div>
+                        </div>
+                    </div>
+
+                    <div class="support-item">
+                        <a href="https://github.com/Maik-0000FF/VelocityNvim">
+                            <span class="emoji">
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="#ffc107" stroke="#f59e0b" stroke-width="1"/>
+                                </svg>
+                            </span>
+                            <h3>Repository starren</h3>
+                            <p>Zeig deine Wertschätzung</p>
+                        </a>
+                    </div>
+
+                    <div class="support-item">
+                        <a href="https://github.com/Maik-0000FF/VelocityNvim/issues">
+                            <span class="emoji">
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="12" cy="19" r="2" fill="white"/>
+                                    <circle cx="12" cy="12" r="7" fill="none" stroke="white" stroke-width="2"/>
+                                    <path d="M10 9c0-1.1.9-2 2-2s2 .9 2 2-.9 2-2 2" stroke="white" stroke-width="2" fill="none"/>
+                                    <circle cx="12" cy="19" r="1" fill="white"/>
+                                </svg>
+                            </span>
+                            <h3>Bugs melden</h3>
+                            <p>Hilf Fehler zu finden</p>
+                        </a>
+                    </div>
+
+                    <div class="support-item">
+                        <a href="https://github.com/Maik-0000FF/VelocityNvim/fork">
+                            <span class="emoji">
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M16 18l-4-4-4 4M8 6l4 4 4-4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <circle cx="12" cy="12" r="2" fill="white"/>
+                                </svg>
+                            </span>
+                            <h3>Code beitragen</h3>
+                            <p>Pull Requests willkommen</p>
+                        </a>
+                    </div>
+
+                    <div class="support-item">
+                        <a href="https://www.youtube.com/@Maik-0000FF">
+                            <span class="emoji">
+                                <svg width="60" height="60" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M47.52 14.4c0-1.92-.64-3.52-1.92-4.8-1.28-1.28-2.88-1.92-4.8-1.92h-33.6c-1.92 0-3.52.64-4.8 1.92-1.28 1.28-1.92 2.88-1.92 4.8v19.2c0 1.92.64 3.52 1.92 4.8 1.28 1.28 2.88 1.92 4.8 1.92h33.6c1.92 0 3.52-.64 4.8-1.92 1.28-1.28 1.92-2.88 1.92-4.8v-19.2zM19.2 30.4v-12.8l12.8 6.4-12.8 6.4z" fill="#FF0000"/>
+                                </svg>
+                            </span>
+                            <h3>YouTube Kanal</h3>
+                            <p>Installation & Setup</p>
+                        </a>
+                    </div>
+
+                    <div class="support-item">
+                        <span class="emoji">
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" fill="none" stroke="white" stroke-width="2"/>
+                                <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                        </span>
+                        <h3>Projekt teilen</h3>
+                        <p>Erzähl anderen davon</p>
+                    </div>
+
+                    <div class="support-item">
+                        <a href="https://github.com/Maik-0000FF/VelocityNvim/blob/main/README.md">
+                            <span class="emoji">
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" stroke="white" stroke-width="2"/>
+                                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" fill="none" stroke="white" stroke-width="2"/>
+                                    <line x1="9" y1="7" x2="15" y2="7" stroke="white" stroke-width="1.5"/>
+                                    <line x1="9" y1="11" x2="15" y2="11" stroke="white" stroke-width="1.5"/>
+                                </svg>
+                            </span>
+                            <h3>Docs verbessern</h3>
+                            <p>Dokumentation erweitern</p>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- English Donation Section -->
+            <div class="donation-section lang-content en">
+                <h2>
+                    <svg class="icon-inline" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 1.5em; height: 1.5em;">
+                        <path d="M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z" fill="none" stroke="white" stroke-width="2"/>
+                        <path d="M6 1v3M10 1v3M14 1v3" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    Support VelocityNvim
+                </h2>
+                <p style="font-size: 1.1em; margin-bottom: 10px;">
+                    If you like VelocityNvim, support the project!
+                </p>
+
+                <div class="support-grid">
+                    <div class="support-item">
+                        <span class="emoji">
+                            <svg width="60" height="60" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="16" cy="16" r="16" fill="#F7931A"/>
+                                <path d="M23.189 14.02c.314-2.096-1.283-3.223-3.465-3.975l.708-2.84-1.728-.43-.69 2.765c-.454-.114-.92-.22-1.385-.326l.695-2.783L15.596 6l-.708 2.839c-.376-.086-.746-.17-1.104-.26l.002-.009-2.384-.595-.46 1.846s1.283.294 1.256.312c.7.175.826.638.805 1.006l-.806 3.235c.048.012.11.03.18.057l-.183-.045-1.13 4.532c-.086.212-.303.531-.793.41.018.025-1.256-.313-1.256-.313l-.858 1.978 2.25.561c.418.105.828.215 1.231.318l-.715 2.872 1.727.43.708-2.84c.472.127.93.245 1.378.357l-.706 2.828 1.728.43.715-2.866c2.948.558 5.164.333 6.097-2.333.752-2.146-.037-3.385-1.588-4.192 1.13-.26 1.98-1.003 2.207-2.538zm-3.95 5.538c-.533 2.147-4.148.986-5.32.695l.95-3.805c1.172.293 4.929.872 4.37 3.11zm.535-5.569c-.487 1.953-3.495.96-4.47.717l.86-3.45c.975.243 4.118.696 3.61 2.733z" fill="white"/>
+                            </svg>
+                        </span>
+                        <h3>Bitcoin Donation</h3>
+                        <div class="bitcoin-address" style="margin-top: 15px; font-size: 0.75em;">
+                            <span id="btc-address-en">bc1q6gmpgfn4wx2hx2c3njgpep9tl00etma9k7w6d4</span>
+                            <button class="copy-btn" onclick="copyBitcoinAddress('en')" title="Copy address">📋</button>
+                            <div id="copy-feedback-en" class="copy-feedback">Copied! ✓</div>
+                        </div>
+                    </div>
+
+                    <div class="support-item">
+                        <a href="https://github.com/Maik-0000FF/VelocityNvim">
+                            <span class="emoji">
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="#ffc107" stroke="#f59e0b" stroke-width="1"/>
+                                </svg>
+                            </span>
+                            <h3>Star Repository</h3>
+                            <p>Show your appreciation</p>
+                        </a>
+                    </div>
+
+                    <div class="support-item">
+                        <a href="https://github.com/Maik-0000FF/VelocityNvim/issues">
+                            <span class="emoji">
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="12" cy="19" r="2" fill="white"/>
+                                    <circle cx="12" cy="12" r="7" fill="none" stroke="white" stroke-width="2"/>
+                                    <path d="M10 9c0-1.1.9-2 2-2s2 .9 2 2-.9 2-2 2" stroke="white" stroke-width="2" fill="none"/>
+                                    <circle cx="12" cy="19" r="1" fill="white"/>
+                                </svg>
+                            </span>
+                            <h3>Report Bugs</h3>
+                            <p>Help find issues</p>
+                        </a>
+                    </div>
+
+                    <div class="support-item">
+                        <a href="https://github.com/Maik-0000FF/VelocityNvim/fork">
+                            <span class="emoji">
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M16 18l-4-4-4 4M8 6l4 4 4-4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <circle cx="12" cy="12" r="2" fill="white"/>
+                                </svg>
+                            </span>
+                            <h3>Contribute Code</h3>
+                            <p>Pull requests welcome</p>
+                        </a>
+                    </div>
+
+                    <div class="support-item">
+                        <a href="https://www.youtube.com/@Maik-0000FF">
+                            <span class="emoji">
+                                <svg width="60" height="60" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M47.52 14.4c0-1.92-.64-3.52-1.92-4.8-1.28-1.28-2.88-1.92-4.8-1.92h-33.6c-1.92 0-3.52.64-4.8 1.92-1.28 1.28-1.92 2.88-1.92 4.8v19.2c0 1.92.64 3.52 1.92 4.8 1.28 1.28 2.88 1.92 4.8 1.92h33.6c1.92 0 3.52-.64 4.8-1.92 1.28-1.28 1.92-2.88 1.92-4.8v-19.2zM19.2 30.4v-12.8l12.8 6.4-12.8 6.4z" fill="#FF0000"/>
+                                </svg>
+                            </span>
+                            <h3>YouTube Channel</h3>
+                            <p>Installation & Setup</p>
+                        </a>
+                    </div>
+
+                    <div class="support-item">
+                        <span class="emoji">
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" fill="none" stroke="white" stroke-width="2"/>
+                                <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                        </span>
+                        <h3>Share Project</h3>
+                        <p>Tell others about it</p>
+                    </div>
+
+                    <div class="support-item">
+                        <a href="https://github.com/Maik-0000FF/VelocityNvim/blob/main/README.md">
+                            <span class="emoji">
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" stroke="white" stroke-width="2"/>
+                                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" fill="none" stroke="white" stroke-width="2"/>
+                                    <line x1="9" y1="7" x2="15" y2="7" stroke="white" stroke-width="1.5"/>
+                                    <line x1="9" y1="11" x2="15" y2="11" stroke="white" stroke-width="1.5"/>
+                                </svg>
+                            </span>
+                            <h3>Improve Docs</h3>
+                            <p>Enhance documentation</p>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div id="links"></div>
+            <!-- German Links -->
+            <h2 class="lang-content de active">Links</h2>
+            <ul class="links lang-content de active">
+                <li>
+                    <a href="https://github.com/Maik-0000FF/VelocityNvim">
+                        <svg class="icon-inline" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 1.2em; height: 1.2em;">
+                            <path d="M12 2L3 7v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-9-5z" fill="none" stroke="currentColor" stroke-width="2"/>
+                            <circle cx="12" cy="11" r="3" fill="currentColor"/>
+                        </svg>
+                        GitHub Repository
+                    </a>
+                </li>
+                <li>
+                    <a href="https://github.com/Maik-0000FF/VelocityNvim/blob/main/README.md">
+                        <svg class="icon-inline" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 1.2em; height: 1.2em;">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" stroke="currentColor" stroke-width="2"/>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" fill="none" stroke="currentColor" stroke-width="2"/>
+                            <line x1="9" y1="7" x2="15" y2="7" stroke="currentColor" stroke-width="1.5"/>
+                            <line x1="9" y1="11" x2="15" y2="11" stroke="currentColor" stroke-width="1.5"/>
+                        </svg>
+                        Dokumentation
+                    </a>
+                </li>
+                <li>
+                    <a href="https://github.com/Maik-0000FF/VelocityNvim/issues">
+                        <svg class="icon-inline" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 1.2em; height: 1.2em;">
+                            <circle cx="12" cy="19" r="2" fill="currentColor"/>
+                            <circle cx="12" cy="12" r="7" fill="none" stroke="currentColor" stroke-width="2"/>
+                            <path d="M10 9c0-1.1.9-2 2-2s2 .9 2 2-.9 2-2 2" stroke="currentColor" stroke-width="2" fill="none"/>
+                            <circle cx="12" cy="19" r="1" fill="currentColor"/>
+                        </svg>
+                        Issues & Support
+                    </a>
+                </li>
+                <li>
+                    <a href="https://github.com/Maik-0000FF/VelocityNvim/discussions">
+                        <svg class="icon-inline" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 1.2em; height: 1.2em;">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10z" fill="none" stroke="currentColor" stroke-width="2"/>
+                            <line x1="9" y1="9" x2="15" y2="9" stroke="currentColor" stroke-width="1.5"/>
+                            <line x1="9" y1="13" x2="15" y2="13" stroke="currentColor" stroke-width="1.5"/>
+                        </svg>
+                        Discussions
+                    </a>
+                </li>
+            </ul>
+
+            <!-- English Links -->
+            <h2 class="lang-content en">Links</h2>
+            <ul class="links lang-content en">
+                <li>
+                    <a href="https://github.com/Maik-0000FF/VelocityNvim">
+                        <svg class="icon-inline" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 1.2em; height: 1.2em;">
+                            <path d="M12 2L3 7v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-9-5z" fill="none" stroke="currentColor" stroke-width="2"/>
+                            <circle cx="12" cy="11" r="3" fill="currentColor"/>
+                        </svg>
+                        GitHub Repository
+                    </a>
+                </li>
+                <li>
+                    <a href="https://github.com/Maik-0000FF/VelocityNvim/blob/main/README.md">
+                        <svg class="icon-inline" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 1.2em; height: 1.2em;">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" stroke="currentColor" stroke-width="2"/>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" fill="none" stroke="currentColor" stroke-width="2"/>
+                            <line x1="9" y1="7" x2="15" y2="7" stroke="currentColor" stroke-width="1.5"/>
+                            <line x1="9" y1="11" x2="15" y2="11" stroke="currentColor" stroke-width="1.5"/>
+                        </svg>
+                        Documentation
+                    </a>
+                </li>
+                <li>
+                    <a href="https://github.com/Maik-0000FF/VelocityNvim/issues">
+                        <svg class="icon-inline" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 1.2em; height: 1.2em;">
+                            <circle cx="12" cy="19" r="2" fill="currentColor"/>
+                            <circle cx="12" cy="12" r="7" fill="none" stroke="currentColor" stroke-width="2"/>
+                            <path d="M10 9c0-1.1.9-2 2-2s2 .9 2 2-.9 2-2 2" stroke="currentColor" stroke-width="2" fill="none"/>
+                            <circle cx="12" cy="19" r="1" fill="currentColor"/>
+                        </svg>
+                        Issues & Support
+                    </a>
+                </li>
+                <li>
+                    <a href="https://github.com/Maik-0000FF/VelocityNvim/discussions">
+                        <svg class="icon-inline" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 1.2em; height: 1.2em;">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10z" fill="none" stroke="currentColor" stroke-width="2"/>
+                            <line x1="9" y1="9" x2="15" y2="9" stroke="currentColor" stroke-width="1.5"/>
+                            <line x1="9" y1="13" x2="15" y2="13" stroke="currentColor" stroke-width="1.5"/>
+                        </svg>
+                        Discussions
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="footer">
+            <p class="lang-content de active">VelocityNvim - Native vim.pack Neovim Distribution | MIT Lizenz</p>
+            <p class="lang-content en">VelocityNvim - Native vim.pack Neovim Distribution | MIT License</p>
+        </div>
+    </div>
+
+    <script>
+        // Toggle mobile menu
+        function toggleMobileMenu() {
+            const navLinks = document.getElementById('navLinks');
+            const hamburger = document.querySelector('.hamburger');
+            navLinks.classList.toggle('active');
+            hamburger.classList.toggle('active');
+        }
+
+        // Close mobile menu when clicking on a link
+        document.addEventListener('DOMContentLoaded', function() {
+            const navLinks = document.querySelectorAll('.nav-links a');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    if (window.innerWidth <= 768) {
+                        document.getElementById('navLinks').classList.remove('active');
+                        document.querySelector('.hamburger').classList.remove('active');
+                    }
+                });
+            });
+        });
+
+        function switchTab(tabName) {
+            // Find the parent install-section
+            const tabContent = document.getElementById(tabName);
+            const parentSection = tabContent.closest('.install-section');
+
+            // Hide only tab contents within this section
+            const contents = parentSection.querySelectorAll('.tab-content');
+            contents.forEach(content => content.classList.remove('active'));
+
+            // Remove active class from only tabs within this section
+            const tabs = parentSection.querySelectorAll('.tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+
+            // Show selected tab content
+            tabContent.classList.add('active');
+
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
+
+        function switchRequirementsTab(tabName) {
+            // Same logic as switchTab
+            switchTab(tabName);
+        }
+
+        function switchLanguage(lang) {
+            // Hide all language content
+            const langContents = document.querySelectorAll('.lang-content');
+            langContents.forEach(content => content.classList.remove('active'));
+
+            // Remove active class from all navigation language buttons
+            const navLangBtns = document.querySelectorAll('.nav-lang-btn');
+            navLangBtns.forEach(btn => btn.classList.remove('active'));
+
+            // Show selected language content
+            const selectedContents = document.querySelectorAll('.lang-content.' + lang);
+            selectedContents.forEach(content => content.classList.add('active'));
+
+            // Add active class to selected language button
+            if (lang === 'de') {
+                document.querySelectorAll('.nav-lang-btn')[0].classList.add('active');
+            } else {
+                document.querySelectorAll('.nav-lang-btn')[1].classList.add('active');
+            }
+
+            // Save language preference
+            localStorage.setItem('velocityLang', lang);
+        }
+
+        // Copy Bitcoin address to clipboard
+        function copyBitcoinAddress(lang) {
+            const address = 'bc1q6gmpgfn4wx2hx2c3njgpep9tl00etma9k7w6d4';
+            const feedback = document.getElementById('copy-feedback-' + lang);
+
+            // Copy to clipboard
+            navigator.clipboard.writeText(address).then(function() {
+                // Show feedback
+                feedback.classList.add('show');
+
+                // Hide feedback after 2 seconds
+                setTimeout(function() {
+                    feedback.classList.remove('show');
+                }, 2000);
+            }).catch(function(err) {
+                console.error('Copy failed:', err);
+                // Fallback for older browsers
+                const textarea = document.createElement('textarea');
+                textarea.value = address;
+                textarea.style.position = 'fixed';
+                textarea.style.opacity = '0';
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+
+                feedback.classList.add('show');
+                setTimeout(function() {
+                    feedback.classList.remove('show');
+                }, 2000);
+            });
+        }
+
+        // Copy oneliner command to clipboard
+        function copyOneliner(lang) {
+            const onelinerElement = document.getElementById('oneliner-' + lang);
+            const command = onelinerElement.textContent;
+            const feedback = document.getElementById('copy-feedback-oneliner-' + lang);
+
+            // Copy to clipboard
+            navigator.clipboard.writeText(command).then(function() {
+                // Show feedback
+                feedback.classList.add('show');
+
+                // Hide feedback after 2 seconds
+                setTimeout(function() {
+                    feedback.classList.remove('show');
+                }, 2000);
+            }).catch(function(err) {
+                console.error('Copy failed:', err);
+                // Fallback for older browsers
+                const textarea = document.createElement('textarea');
+                textarea.value = command;
+                textarea.style.position = 'fixed';
+                textarea.style.opacity = '0';
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+
+                feedback.classList.add('show');
+                setTimeout(function() {
+                    feedback.classList.remove('show');
+                }, 2000);
+            });
+        }
+
+        // Load saved language preference on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedLang = localStorage.getItem('velocityLang');
+            if (savedLang && savedLang === 'en') {
+                // Hide German content
+                document.querySelectorAll('.lang-content.de').forEach(el => el.classList.remove('active'));
+                // Show English content
+                document.querySelectorAll('.lang-content.en').forEach(el => el.classList.add('active'));
+                // Update navigation buttons
+                document.querySelectorAll('.nav-lang-btn').forEach(btn => btn.classList.remove('active'));
+                document.querySelectorAll('.nav-lang-btn')[1].classList.add('active');
+            }
+        });
+    </script>
+</body>
+</html>
