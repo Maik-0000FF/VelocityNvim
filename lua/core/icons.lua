@@ -200,6 +200,7 @@ M.status = {
   party = "󱁖", -- Party/Feier
   filter = "󰈳", -- Filter
   quit = "󰩈", -- Quit oder Exit
+  clock = "󰥔", -- Uhr/Zeit
 }
 
 -- Performance Icons (RUST-optimiert)

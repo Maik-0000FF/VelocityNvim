@@ -43,7 +43,7 @@ local function enable_ui_updates()
 
     -- WICHTIG: Diagnostics-Konfiguration NICHT zurücksetzen!
     -- Die Diagnostics sollen die in native-lsp.lua definierten Einstellungen behalten
-    -- mit Icons aus icons.lua und dauerhaftem Display
+    -- mit Icons aus core.icons und dauerhaftem Display
 
   end, 100)  -- 100ms delay nach Navigation
 end

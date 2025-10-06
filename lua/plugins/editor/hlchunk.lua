@@ -6,7 +6,7 @@ if not ok then
   return
 end
 
--- Embedded icons (keine Abhängigkeit zu icons.lua)
+-- Embedded icons (keine Abhängigkeit zu core.icons)
 local hlchunk_icons = {
   horizontal_line = "─",
   vertical_line = "│",

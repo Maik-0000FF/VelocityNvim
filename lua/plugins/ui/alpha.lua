@@ -5,7 +5,7 @@ local alpha = require("alpha")
 local dashboard = require("alpha.themes.dashboard")
 local icons = require("core.icons")
 
--- Header aus icons.lua verwenden
+-- Header aus core.icons verwenden
 dashboard.section.header.val = icons.alpha.header
 
 -- Menü-Buttons

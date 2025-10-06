@@ -97,9 +97,9 @@ cmd("LspHealth", function()
   -- Auto-Fix versuchen
   local fixes = health_checker.auto_fix()
   if #fixes > 0 then
-    print("🔧 Auto-Fixes angewendet:")
+    print(icons.status.gear .. " Auto-Fixes angewendet:")
     for _, fix in ipairs(fixes) do
-      print("  ✅ " .. fix)
+      print("  " .. icons.status.success .. " " .. fix)
     end
     print("")
   end
@@ -122,7 +122,7 @@ cmd("LspHealth", function()
 
   if #problematic > 0 then
     print("")
-    print("🩺 Installation-Commands für problematische LSPs:")
+    print(icons.status.health .. " Installation-Commands für problematische LSPs:")
     for _, problem in ipairs(problematic) do
       print("  " .. problem[2])
     end
@@ -226,14 +226,14 @@ cmd("LuaLibraryStatus", function()
 
   -- Zeige aktuelle optimierte Libraries
   local current_libs = get_targeted_lua_libraries()
-  print(".. icons.lsp.module .. " .. #current_libs .. " statt >2000):")
+  print(icons.lsp.module .. " Optimierte Libraries (" .. #current_libs .. " statt >2000):")
   for i, lib in ipairs(current_libs) do
     local short_path = lib:gsub(vim.fn.expand("~"), "~")
     print("  " .. i .. ". " .. short_path)
   end
 
   print("")
-  print(".. icons.misc.flash .. ")
+  print(icons.misc.flash .. " Performance-Verbesserungen:")
   print("  " .. icons.status.success .. " Startup-Zeit: ~75% schneller")
   print("  " .. icons.status.success .. " Memory-Usage: ~65% weniger")
   print("  " .. icons.status.success .. " Library-Count: " .. #current_libs .. " statt >2400")
@@ -243,7 +243,7 @@ cmd("LuaLibraryStatus", function()
   local lsp_clients = vim.lsp.get_clients({ name = "lua_ls" })
   if #lsp_clients > 0 then
     print("")
-    print(".. icons.status.gear .. ")
+    print(icons.status.gear .. " LSP Status:")
     print("  " .. icons.status.success .. " Client aktiv (ID: " .. lsp_clients[1].id .. ")")
     print("  " .. icons.status.success .. " Optimierte Libraries geladen")
     print("  " .. icons.status.success .. " maxPreload: 1500 (reduziert von 3000)")
@@ -258,7 +258,7 @@ cmd("LuaLibraryStatus", function()
   if vim.fn.filereadable(debug_file) == 1 then
     local count = tonumber(vim.fn.readfile(debug_file)[1]) or 0
     print("")
-    print(".. icons.status.stats .. " .. count .. "x aktiviert")
+    print(icons.status.stats .. " Optimization aktiviert: " .. count .. "x")
   end
 end, {
   desc = "Show Lua library optimization status and performance metrics",
@@ -268,7 +268,7 @@ end, {
 cmd("DiagnosticTest", function()
   -- Use global icons from top of file
   print(
-    ".. icons.status.gear .. "
+    icons.status.gear .. " "
       .. icons.diagnostics.error
       .. " LSP Diagnostic Icons & Navigation Test:"
   )
@@ -276,7 +276,7 @@ cmd("DiagnosticTest", function()
 
   -- Zeige aktuelle Diagnostic-Konfiguration
   local config = vim.diagnostic.config()
-  print(".. icons.misc.folder .. ")
+  print(icons.misc.folder .. " Diagnostic-Konfiguration:")
   print(
     "  "
       .. icons.status.success
@@ -303,7 +303,7 @@ cmd("DiagnosticTest", function()
   )
 
   print("")
-  print(".. icons.lsp.references .. ")
+  print(icons.lsp.references .. " Diagnostic Icons:")
   print(
     "  " .. icons.diagnostics.error .. " Error (Severity: " .. vim.diagnostic.severity.ERROR .. ")"
   )
@@ -322,7 +322,7 @@ cmd("DiagnosticTest", function()
   local diagnostics = vim.diagnostic.get(bufnr)
 
   print("")
-  print(".. icons.status.stats .. " .. vim.fn.bufname(bufnr) .. "):")
+  print(icons.status.stats .. " Buffer Diagnostics (" .. vim.fn.bufname(bufnr) .. "):")
   if #diagnostics == 0 then
     print("  " .. icons.status.success .. " Keine Probleme gefunden - Buffer ist sauber!")
   else
@@ -349,7 +349,7 @@ cmd("DiagnosticTest", function()
 
   -- Navigation-Shortcuts
   print("")
-  print("⌨️  Produktive Navigation-Shortcuts:")
+  print(icons.misc.gear .. " Produktive Navigation-Shortcuts:")
   print("  ]d / [d  - Nächste/Vorherige Diagnostic (mit Float-Info)")
   print("  ]e / [e  - Nächster/Vorheriger Error (nur Errors)")
   print("  <leader>dl - Diagnostic-Info unter Cursor anzeigen (KEYMAP KORRIGIERT!)")
@@ -586,9 +586,9 @@ cmd("BufferlineDiagnosticTest", function()
 
   -- Bufferline Konfiguration zeigen
   print("")
-  print(".. icons.status.gear .. ")
+  print(icons.status.gear .. " Bufferline Konfiguration:")
   print("  " .. icons.status.success .. " diagnostics = 'nvim_lsp' (LSP-Integration aktiv)")
-  print("  " .. icons.status.success .. " diagnostics_indicator mit icons.lua Icons")
+  print("  " .. icons.status.success .. " diagnostics_indicator mit core.icons Icons")
   print("  " .. icons.status.success .. " Highlighting für Error/Warning/Info/Hint konfiguriert")
   print("")
   print(icons.misc.build .. " Verwendete Icons in Bufferline:")
@@ -598,14 +598,14 @@ cmd("BufferlineDiagnosticTest", function()
   print("  Hint: " .. icons.diagnostics.hint .. " (Grau: #6c7b7f)")
 
   print("")
-  print(".. icons.status.hint .. ")
+  print(icons.status.hint .. " Verwendungshinweise:")
   print("  • Icons erscheinen neben Buffer-Namen mit Diagnostics")
   print("  • Anzahl der Diagnostics wird angezeigt (z.B.  2)")
   print("  • Farbe ändert sich je nach Severity-Level")
   print("  • Ausgewählte Buffers werden fett dargestellt")
   print("  • Performance-optimiert (keine Updates während Insert-Mode)")
 end, {
-  desc = "Test bufferline diagnostic icons integration with icons.lua",
+  desc = "Test bufferline diagnostic icons integration with core.icons",
 })
 
 -- Rust LSP 2025 Optimization Status

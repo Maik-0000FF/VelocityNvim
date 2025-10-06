@@ -11,7 +11,7 @@ require("bufferline").setup({
       require("bufferline").style_preset.no_italic,
       require("bufferline").style_preset.no_bold,
     },
-    -- Icons aus core/icons.lua verwenden
+    -- Icons aus core.icons verwenden
     close_icon = icons.ui.close,
     modified_icon = icons.files.modified,
     buffer_close_icon = icons.ui.close,
