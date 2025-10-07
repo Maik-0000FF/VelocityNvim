@@ -38,18 +38,41 @@ body {
     background: var(--bg-gradient-header);
     color: white;
     padding: var(--spacing-3xl) var(--spacing-2xl);
+    padding-top: 180px;
     text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.header::before {
+    content: '';
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 300px;
+    height: 150px;
+    background-image: url('../images/VelocityNvim_Logo.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    z-index: 1;
+    pointer-events: none;
 }
 
 .header h1 {
     font-size: 3em;
     margin-bottom: 10px;
     font-weight: 700;
+    position: relative;
+    z-index: 1;
 }
 
 .header .subtitle {
     font-size: 1.3em;
     opacity: 0.95;
+    position: relative;
+    z-index: 1;
 }
 
 .content {
@@ -86,6 +109,13 @@ h2 {
 
     .header {
         padding: var(--spacing-xl) var(--spacing-md);
+        padding-top: 140px;
+    }
+
+    .header::before {
+        width: 240px;
+        height: 120px;
+        top: 15px;
     }
 
     .header h1 {
@@ -112,6 +142,16 @@ h2 {
 }
 
 @media (max-width: 480px) {
+    .header {
+        padding-top: 120px;
+    }
+
+    .header::before {
+        width: 200px;
+        height: 100px;
+        top: 12px;
+    }
+
     .header h1 {
         font-size: 1.75em;
     }
