@@ -52,7 +52,7 @@ body {
     transform: translateX(-50%);
     width: 300px;
     height: 150px;
-    background-image: url('../images/VelocityNvim_Logo.svg');
+    background-image: url('../images/VelocityNvim_Logo.svg?v=2');
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
