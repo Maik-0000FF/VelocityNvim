@@ -43,6 +43,7 @@
     width: auto;
     display: block;
     object-fit: contain;
+    vertical-align: middle;
 }
 
 .nav-links {
