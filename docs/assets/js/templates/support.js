@@ -18,9 +18,9 @@ export const supportTemplate = () => `
             <div class="support-item bitcoin-item">
                 <span class="emoji"><span data-icon="bitcoin" data-size="60"></span></span>
                 <h3>Bitcoin Spende</h3>
-                <p style="font-family: monospace; font-size: 0.85em; word-break: break-all; line-height: 1.3; margin-bottom: 10px;">bc1q6gmpgfn4wx2hx2c3njgpep9tl00etma9k7w6d4</p>
-                <button class="copy-btn" onclick="copyBitcoinAddress('de')" title="Bitcoin-Adresse kopieren"><span data-icon="clipboard" data-size="16"></span> Kopieren</button>
-                <div id="copy-feedback-de" class="copy-feedback">Kopiert! <span data-icon="checkmarkSimple" data-color="white" data-size="16"></span></div>
+                <p style="font-family: monospace; font-size: 1em; word-break: break-all; line-height: 1.4; margin-bottom: 10px; font-weight: 600;">bc1q6gmpgfn4wx2hx2c3njgpep9tl00etma9k7w6d4</p>
+                <button class="copy-btn" onclick="copyBitcoinAddress('de')" title="Bitcoin-Adresse kopieren"><span data-icon="clipboard" data-color="white" data-size="16"></span> Kopieren</button>
+                <div id="copy-feedback-de" class="copy-feedback">Kopiert! ✓</div>
             </div>
 
             <div class="support-item">
@@ -94,9 +94,9 @@ export const supportTemplate = () => `
             <div class="support-item bitcoin-item">
                 <span class="emoji"><span data-icon="bitcoin" data-size="60"></span></span>
                 <h3>Bitcoin Donation</h3>
-                <p style="font-family: monospace; font-size: 0.85em; word-break: break-all; line-height: 1.3; margin-bottom: 10px;">bc1q6gmpgfn4wx2hx2c3njgpep9tl00etma9k7w6d4</p>
-                <button class="copy-btn" onclick="copyBitcoinAddress('en')" title="Copy Bitcoin address"><span data-icon="clipboard" data-size="16"></span> Copy</button>
-                <div id="copy-feedback-en" class="copy-feedback">Copied! <span data-icon="checkmarkSimple" data-color="white" data-size="16"></span></div>
+                <p style="font-family: monospace; font-size: 1em; word-break: break-all; line-height: 1.4; margin-bottom: 10px; font-weight: 600;">bc1q6gmpgfn4wx2hx2c3njgpep9tl00etma9k7w6d4</p>
+                <button class="copy-btn" onclick="copyBitcoinAddress('en')" title="Copy Bitcoin address"><span data-icon="clipboard" data-color="white" data-size="16"></span> Copy</button>
+                <div id="copy-feedback-en" class="copy-feedback">Copied! ✓</div>
             </div>
 
             <div class="support-item">

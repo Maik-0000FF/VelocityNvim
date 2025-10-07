@@ -91,14 +91,28 @@
     right: 10px;
     background: rgba(34, 197, 94, 0.95);
     color: white;
-    padding: var(--spacing-xs) var(--spacing-md);
+    padding: var(--spacing-sm) var(--spacing-lg);
     border-radius: var(--radius-md);
-    font-size: 0.9em;
+    font-size: 0.95em;
     font-family: var(--font-family);
     opacity: 0;
     transition: opacity var(--transition-normal);
     pointer-events: none;
     box-shadow: var(--shadow-code);
+    white-space: nowrap;
+    min-width: 100px;
+}
+
+.copy-feedback span {
+    display: inline;
+    vertical-align: middle;
+}
+
+.copy-feedback svg,
+.copy-feedback .icon-inline {
+    display: inline-block;
+    vertical-align: middle;
+    margin: 0;
 }
 
 .copy-feedback.show {
