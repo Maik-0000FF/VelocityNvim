@@ -20,7 +20,7 @@ jobs:
 
       - name: Update sitemap timestamp
         run: |
-          sed -i "s/<lastmod>.*<\/lastmod>/<lastmod>$(date +%Y-%m-%d)<\/lastmod>/g" sitemap.xml
+          sed -i "s/<lastmod>.*<\/lastmod>/<lastmod>$(date +%Y-%m-%d)<\/lastmod>/g" docs/sitemap.xml
 
       - name: Create Pull Request
         id: create-pr

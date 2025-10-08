@@ -1,0 +1,7 @@
+# robots.txt for VelocityNvim Landing Page
+
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://maik-0000ff.github.io/VelocityNvim/sitemap.xml
