@@ -47,14 +47,13 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Submit sitemap to Google
+      - name: SEO Information
         run: |
-          curl -s "https://www.google.com/ping?sitemap=https://maik-0000ff.github.io/VelocityNvim/sitemap.xml"
-
-      - name: Submit sitemap to Bing
-        run: |
-          curl -s "https://www.bing.com/ping?sitemap=https://maik-0000ff.github.io/VelocityNvim/sitemap.xml"
-
-      - name: Manual indexing requests
-        run: |
-          echo "Auto-submitted sitemap to search engines on $(date)"
+          echo "Sitemap updated: $(date)"
+          echo "Sitemap URL: https://maik-0000ff.github.io/VelocityNvim/sitemap.xml"
+          echo ""
+          echo "Note: Google/Bing ping services deprecated as of June 2023"
+          echo "Search engines will discover updated sitemap automatically via:"
+          echo "1. robots.txt reference"
+          echo "2. Regular crawling"
+          echo "3. Manual submission via Search Console (one-time setup)"
