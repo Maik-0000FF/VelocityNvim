@@ -1,9 +1,0 @@
-# GitHub Pages Configuration for VelocityNvim
-title: VelocityNvim
-description: Modern Neovim configuration focused on performance
-theme: jekyll-theme-minimal
-
-# Exclude unnecessary files from Pages build
-exclude:
-  - scripts/
-  - generate-rss.sh

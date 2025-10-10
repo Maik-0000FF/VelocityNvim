@@ -1,9 +1,0 @@
-[
-  {
-    "title": "Welcome to r/VelocityNvim!",
-    "date": "2025-10-04T14:00:00Z",
-    "content": "🎉 **Welcome to r/VelocityNvim!**\n\nThis is the official subreddit for VelocityNvim - a native vim.pack based Neovim distribution focused on performance and transparency.\n\n🚀 **What is VelocityNvim?**\n- Native vim.pack architecture (no plugin manager overhead)\n- 0.16s average startup time\n- Modern LSP integration with Neovim 0.11+\n- 25 carefully selected plugins\n- Rust-powered performance tools\n\n📺 **Getting Started:**\n- [Installation Video](https://youtube.com/@VelocityNvim)\n- [Documentation](https://github.com/Maik-0000FF/VelocityNvim)\n- [Latest Release](https://github.com/Maik-0000FF/VelocityNvim/releases)\n\n💬 **Join the Discussion:**\nFeel free to ask questions, share your experience, or suggest improvements!\n\n🔗 **Links:**\n- GitHub: https://github.com/Maik-0000FF/VelocityNvim\n- Landing Page: https://maik-0000ff.github.io/VelocityNvim/",
-    "url": "https://github.com/Maik-0000FF/VelocityNvim",
-    "type": "announcement"
-  }
-]
