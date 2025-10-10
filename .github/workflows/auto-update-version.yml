@@ -44,15 +44,6 @@ jobs:
 
           echo "✅ project-info.json aktualisiert auf $VERSION"
 
-      - name: Update index.html
-        run: |
-          VERSION="${{ steps.extract_version.outputs.version }}"
-
-          # Update "softwareVersion" in JSON-LD structured data
-          sed -i "s/\"softwareVersion\": \"[0-9.]*\"/\"softwareVersion\": \"$VERSION\"/" index.html
-
-          echo "✅ index.html aktualisiert auf $VERSION"
-
       - name: Check for changes
         id: check_changes
         run: |
@@ -81,7 +72,6 @@ jobs:
             **Changes:**
             - Update README.md version header to v${{ steps.extract_version.outputs.version }}
             - Update project-info.json version field to ${{ steps.extract_version.outputs.version }}
-            - Update index.html softwareVersion to ${{ steps.extract_version.outputs.version }}
 
             **Source:** lua/core/version.lua
           labels: automation, documentation
@@ -107,7 +97,6 @@ jobs:
           echo "Aktualisierte Dateien:"
           echo "  ✅ README.md"
           echo "  ✅ .github/project-info.json"
-          echo "  ✅ index.html"
           echo ""
           echo "Auto-merge aktiviert - PR wird automatisch gemerged"
           echo "════════════════════════════════════════"
