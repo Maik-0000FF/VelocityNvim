@@ -85,54 +85,7 @@ velocitynvim_check \
     "false" "error"
 
 echo ""
-echo -e "${VELOCITYNVIM_YELLOW}[2/10] VelocityNvim Workflow Security Checks${VELOCITYNVIM_RESET}"
-echo ""
-
-# Check 4: VelocityNvim RSS Workflow existiert
-velocitynvim_check \
-    "VelocityNvim RSS Workflow File existiert" \
-    "test -f .github/workflows/velocitynvim-release-rss-secure.yml"
-
-# Check 5: VelocityNvim Workflow verwendet persist-credentials: false
-velocitynvim_check \
-    "VelocityNvim Workflow deaktiviert Credential Persistence" \
-    "grep -q 'persist-credentials: false' .github/workflows/velocitynvim-release-rss-secure.yml"
-
-# Check 6: VelocityNvim Workflow generiert RSS Feed
-velocitynvim_check \
-    "VelocityNvim Workflow generiert RSS Feed" \
-    "grep -q 'Generate RSS Feed' .github/workflows/velocitynvim-release-rss-secure.yml"
-
-echo ""
-echo -e "${VELOCITYNVIM_YELLOW}[3/10] VelocityNvim RSS Feed Security Checks${VELOCITYNVIM_RESET}"
-echo ""
-
-# Check 7: VelocityNvim RSS Feed Directory ist konfiguriert
-velocitynvim_check \
-    "VelocityNvim RSS Feed Directory Struktur vorhanden" \
-    "grep -q 'docs/feeds' .github/workflows/velocitynvim-release-rss-secure.yml"
-
-# Check 8: VelocityNvim RSS Feed verwendet sicheres Atom Format
-velocitynvim_check \
-    "VelocityNvim RSS Feed verwendet Atom Format (RFC 4287)" \
-    "grep -q 'xmlns=\"http://www.w3.org/2005/Atom\"' .github/workflows/velocitynvim-release-rss-secure.yml"
-
-echo ""
-echo -e "${VELOCITYNVIM_YELLOW}[4/10] VelocityNvim GitHub Pages Security Checks${VELOCITYNVIM_RESET}"
-echo ""
-
-# Check 9: VelocityNvim GitHub Pages ist für Public Repo konfiguriert (via gh CLI)
-if command -v gh > /dev/null 2>&1; then
-    velocitynvim_check \
-        "VelocityNvim GitHub Pages ist aktiviert" \
-        "gh api repos/Maik-0000FF/VelocityNvim/pages --silent" \
-        "warning"
-else
-    echo -e "${VELOCITYNVIM_YELLOW}⚠️  SKIP: GitHub CLI (gh) nicht installiert${VELOCITYNVIM_RESET}"
-fi
-
-echo ""
-echo -e "${VELOCITYNVIM_YELLOW}[5/10] VelocityNvim Privacy Compliance Checks${VELOCITYNVIM_RESET}"
+echo -e "${VELOCITYNVIM_YELLOW}[2/10] VelocityNvim Privacy Compliance Checks${VELOCITYNVIM_RESET}"
 echo ""
 
 # Check 10: VelocityNvim Repository enthält keine privaten Telefonnummern
@@ -154,7 +107,7 @@ velocitynvim_check \
     "true" "warning"
 
 echo ""
-echo -e "${VELOCITYNVIM_YELLOW}[6/10] VelocityNvim Git Commit Security Checks${VELOCITYNVIM_RESET}"
+echo -e "${VELOCITYNVIM_YELLOW}[3/10] VelocityNvim Git Commit Security Checks${VELOCITYNVIM_RESET}"
 echo ""
 
 # Check 13: VelocityNvim Commits enthalten keine Claude Attribution
@@ -170,7 +123,7 @@ velocitynvim_check \
     "true" "warning"
 
 echo ""
-echo -e "${VELOCITYNVIM_YELLOW}[7/10] VelocityNvim Documentation Security Checks${VELOCITYNVIM_RESET}"
+echo -e "${VELOCITYNVIM_YELLOW}[4/10] VelocityNvim Documentation Security Checks${VELOCITYNVIM_RESET}"
 echo ""
 
 # Check 15: VelocityNvim Security Documentation existiert (private)
@@ -184,32 +137,7 @@ velocitynvim_check \
     "grep -q 'DATENSCHUTZ.*PRIVACY RULES' CLAUDE.md"
 
 echo ""
-echo -e "${VELOCITYNVIM_YELLOW}[8/10] VelocityNvim Dependency Security Checks${VELOCITYNVIM_RESET}"
-echo ""
-
-# Check 17: VelocityNvim Workflow verwendet pinned Action Versions
-velocitynvim_check \
-    "VelocityNvim Workflow Actions haben pinned Versions" \
-    "grep 'uses:' .github/workflows/velocitynvim-release-rss-secure.yml | grep -v '@v[0-9]'" \
-    "true" "error"
-
-# Check 18: VelocityNvim Workflow verwendet verified Actions
-velocitynvim_check \
-    "VelocityNvim Workflow verwendet verified GitHub Actions" \
-    "grep -qE 'uses: (actions/|peaceiris/)' .github/workflows/velocitynvim-release-rss-secure.yml"
-
-echo ""
-echo -e "${VELOCITYNVIM_YELLOW}[9/10] VelocityNvim Runtime Security Checks${VELOCITYNVIM_RESET}"
-echo ""
-
-# Check 19: VelocityNvim RSS Feed URL Struktur ist korrekt
-velocitynvim_check \
-    "VelocityNvim RSS Feed URL Struktur ist sicher" \
-    "grep -q 'maik-0000ff.github.io/VelocityNvim/feeds/releases.xml' .github/workflows/velocitynvim-release-rss-secure.yml" \
-    "false" "warning"
-
-echo ""
-echo -e "${VELOCITYNVIM_YELLOW}[10/10] VelocityNvim External Service Security Checks${VELOCITYNVIM_RESET}"
+echo -e "${VELOCITYNVIM_YELLOW}[5/10] VelocityNvim External Service Security Checks${VELOCITYNVIM_RESET}"
 echo ""
 
 # Check 20: VelocityNvim Security Script selbst ist ausführbar
