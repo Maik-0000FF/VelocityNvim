@@ -27,6 +27,8 @@
 
 VelocityNvim leverages Neovim's built-in plugin system and **modern vim.lsp.config API** for enhanced performance, stability, and simplicity.
 
+**Website**: https://velocitynvim.com
+
 ### ⚡ **Eager Loading Philosophy**
 
 Unlike most Neovim distributions, VelocityNvim uses **eager loading** - all plugins load at startup instead of on-demand.
