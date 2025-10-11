@@ -17,7 +17,6 @@
 - Multi-layer protection system for donation information
 - GitHub CODEOWNERS implementation for critical files
 - Branch protection rules with code owner reviews
-- Automated CodeQL security scanning for JavaScript/HTML
 - Public security policy with responsible disclosure guidelines
 
 ### 📋 **Protected Files**
@@ -25,12 +24,6 @@
 - Core configuration files under review protection
 - CI/CD workflows with security controls
 - Security policy and gitignore files protected
-
-### 🤖 **Automated Security**
-- CodeQL analysis for vulnerability detection
-- Weekly security scans on schedule
-- Automated alerts for security issues
-- GitHub Security tab integration
 
 ### 📖 **Documentation**
 - Add public SECURITY.md with disclosure policy
