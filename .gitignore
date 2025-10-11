@@ -146,6 +146,10 @@ TODO.txt
 notes/
 scratch/
 
+# Migration plans (internal development only)
+SNACKS_MIGRATION_PLAN.md
+*_MIGRATION_PLAN.md
+
 # Data exports
 *.mbox
 *.vcf
