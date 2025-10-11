@@ -547,6 +547,16 @@ bc1q6gmpgfn4wx2hx2c3njgpep9tl00etma9k7w6d4
 
 VelocityNvim is licensed under the [MIT License](LICENSE).
 
+## ™️ Trademark
+
+**VelocityNvim™** and the VelocityNvim logo are trademarks registered with the German Patent and Trademark Office (DPMA).
+
+- **Protection**: Name and logo (Germany)
+- **Status**: Registered trademark (™)
+- **Usage**: See [TRADEMARK.md](TRADEMARK.md) for usage guidelines
+
+The MIT License grants rights to use the **source code**, but does not grant rights to use the VelocityNvim trademark. See [TRADEMARK.md](TRADEMARK.md) for details on permitted and prohibited uses.
+
 ## 🙏 Acknowledgments
 
 VelocityNvim exists thanks to the incredible work of many talented developers and communities. We are deeply grateful to:
