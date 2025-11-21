@@ -55,19 +55,6 @@ function M.get_file_path(bufnr)
   return name ~= "" and name or nil
 end
 
---- Get buffer relative file path (relative to cwd)
----@param bufnr integer|nil Buffer number (current buffer if nil)
----@return string|nil
-function M.get_relative_path(bufnr)
-  local path = M.get_file_path(bufnr)
-  if not path then
-    return nil
-  end
-
-  -- PERFORMANCE: Native vim.fs.relpath ist 50-70% schneller als custom string logic
-  return vim.fs.relpath(path, vim.fn.getcwd())
-end
-
 --- Close buffer safely
 ---@param bufnr integer|nil Buffer number (current buffer if nil)
 ---@param force boolean|nil Force close without saving

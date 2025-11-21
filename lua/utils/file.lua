@@ -63,34 +63,6 @@ function M.get_name_without_ext(path)
   return name:match("(.+)%..+$") or name
 end
 
---- Get file basename
----@param path string File path
----@return string File basename
-function M.get_basename(path)
-  return vim.fs.basename(path)  -- Native vim.fs function
-end
-
---- Get directory name
----@param path string File path
----@return string Directory path
-function M.get_dirname(path)
-  return vim.fs.dirname(path)  -- Native vim.fs function
-end
-
---- Get absolute path
----@param path string File path
----@return string Absolute path
-function M.get_absolute_path(path)
-  return vim.fs.abspath(path)  -- Native vim.fs function
-end
-
---- Get relative path (relative to cwd)
----@param path string File path
----@return string|nil Relative path
-function M.get_relative_path(path)
-  return vim.fs.relpath(path, vim.fn.getcwd())  -- Native vim.fs function (much simpler!)
-end
-
 --- Create directory (mkdir -p)
 ---@param path string Directory path
 ---@param mode integer|nil File mode (default: 755)
@@ -179,7 +151,7 @@ function M.write_file(path, content, mode)
   mode = mode or "w"
 
   -- Create directory if it doesn't exist
-  local dir = M.get_dirname(path)
+  local dir = vim.fs.dirname(path)  -- Native vim.fs API
   if not M.is_directory(dir) then
     if not M.mkdir(dir) then
       return false
@@ -315,11 +287,11 @@ function M.get_info(path)
 
   return {
     path = path,
-    absolute_path = M.get_absolute_path(path),
-    name = M.get_basename(path),
+    absolute_path = vim.fs.abspath(path),  -- Native vim.fs API
+    name = vim.fs.basename(path),  -- Native vim.fs API
     name_without_ext = M.get_name_without_ext(path),
     extension = M.get_extension(path),
-    directory = M.get_dirname(path),
+    directory = vim.fs.dirname(path),  -- Native vim.fs API
     size = stat.size,
     mtime = stat.mtime.sec,
     is_directory = M.is_directory(path),
