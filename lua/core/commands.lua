@@ -1111,8 +1111,7 @@ end, {
 })
 
 cmd("WindowBalance", function()
-  local utils = require("utils")
-  utils.window().balance()
+  vim.cmd('wincmd =')
 end, {
   desc = "Balance all windows",
 })
