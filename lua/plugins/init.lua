@@ -63,7 +63,6 @@ vim.defer_fn(function()
   safe_require("plugins.editor.hlchunk")
   safe_require("plugins.editor.nvim-window-picker")
   safe_require("plugins.editor.hop")
-  safe_require("plugins.editor.german-chars")
   safe_require("plugins.editor.mini-pairs")
   safe_require("plugins.editor.render-markdown") -- Markdown-rendering für .md Dateien
 end, 50) -- 50ms delay für non-kritische Editor-Features
