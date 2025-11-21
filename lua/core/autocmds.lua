@@ -4,7 +4,8 @@
 local augroup = vim.api.nvim_create_augroup
 local autocmd = vim.api.nvim_create_autocmd
 
--- Cross-version compatibility layer für fs_stat access
+-- Cross-version compatibility layer für fs_stat access (cached at module level)
+local fs_stat_func = rawget(vim.uv, 'fs_stat') or rawget(vim.loop, 'fs_stat')
 
 -- VelocityNvim Autocommand Gruppen
 local velocity_general = augroup("VelocityGeneral", { clear = true })
@@ -142,7 +143,6 @@ autocmd("BufReadPre", {
   group = velocity_general,
   desc = "Optimize settings for large files (ultra-performance)",
   callback = function()
-    local fs_stat_func = rawget(vim.uv, 'fs_stat') or rawget(vim.loop, 'fs_stat')
     local ok, stats = fs_stat_func and pcall(fs_stat_func, vim.fn.expand("<afile>")) or false, nil
     if ok and stats and stats.size > 512 * 1024 then -- 512KB (more aggressive than 1MB)
       -- Ultra-performance settings for large files

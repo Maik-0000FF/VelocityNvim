@@ -196,9 +196,11 @@ map("n", "\\c", function()
     return
   end
 
-  local file_dir = vim.fn.fnamemodify(file, ":h")
-  local filename = vim.fn.fnamemodify(file, ":t")
-  local basename = vim.fn.fnamemodify(file, ":t:r")
+  -- Cache path components (optimized: batch fnamemodify calls)
+  local file_dir, filename, basename =
+    vim.fn.fnamemodify(file, ":h"),
+    vim.fn.fnamemodify(file, ":t"),
+    vim.fn.fnamemodify(file, ":t:r")
 
   if file:match("%.tex$") then
     -- Check if pdflatex is available
@@ -258,8 +260,10 @@ map("n", "\\v", function()
     return
   end
 
-  local file_dir = vim.fn.fnamemodify(current_file, ":h")
-  local basename = vim.fn.fnamemodify(current_file, ":t:r")
+  -- Cache path components (optimized)
+  local file_dir, basename =
+    vim.fn.fnamemodify(current_file, ":h"),
+    vim.fn.fnamemodify(current_file, ":t:r")
   local file = file_dir .. "/" .. basename .. ".pdf"
 
   if vim.fn.filereadable(file) == 1 then
@@ -280,8 +284,10 @@ map("n", "\\x", function()
     { "aux", "log", "out", "toc", "bbl", "blg", "fdb_latexmk", "fls", "synctex.gz" }
   local cleaned = {}
   local current_file = vim.fn.expand("%:p")
-  local file_dir = vim.fn.fnamemodify(current_file, ":h")
-  local basename = vim.fn.fnamemodify(current_file, ":t:r")
+  -- Cache path components (optimized)
+  local file_dir, basename =
+    vim.fn.fnamemodify(current_file, ":h"),
+    vim.fn.fnamemodify(current_file, ":t:r")
 
   for _, ext in ipairs(extensions) do
     local file = file_dir .. "/" .. basename .. "." .. ext

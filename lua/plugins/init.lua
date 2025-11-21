@@ -7,13 +7,12 @@ local vim = vim
 -- Load manage.lua
 local manage = require("plugins.manage")
 
--- Check for missing plugins
+-- Check for missing plugins (optimized with cached base path)
 local required_plugins = vim.tbl_keys(manage.plugins)
 local missing_plugins = {}
+local pack_base = vim.fn.stdpath("data") .. "/site/pack/user/start/"
 for _, plugin in ipairs(required_plugins) do
-  local pack_path = vim.fn.stdpath("data") .. "/site/pack/user/start/" .. plugin
-
-  if vim.fn.isdirectory(pack_path) == 0 then
+  if vim.fn.isdirectory(pack_base .. plugin) == 0 then
     table.insert(missing_plugins, plugin)
   end
 end

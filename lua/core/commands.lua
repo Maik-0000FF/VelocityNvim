@@ -327,15 +327,21 @@ cmd("DiagnosticTest", function()
     print("  " .. icons.status.success .. " No problems found - buffer is clean!")
   else
     local counts = { error = 0, warn = 0, info = 0, hint = 0 }
+    local sev_err, sev_warn, sev_info, sev_hint =
+      vim.diagnostic.severity.ERROR,
+      vim.diagnostic.severity.WARN,
+      vim.diagnostic.severity.INFO,
+      vim.diagnostic.severity.HINT
 
     for _, diagnostic in ipairs(diagnostics) do
-      if diagnostic.severity == vim.diagnostic.severity.ERROR then
+      local sev = diagnostic.severity
+      if sev == sev_err then
         counts.error = counts.error + 1
-      elseif diagnostic.severity == vim.diagnostic.severity.WARN then
+      elseif sev == sev_warn then
         counts.warn = counts.warn + 1
-      elseif diagnostic.severity == vim.diagnostic.severity.INFO then
+      elseif sev == sev_info then
         counts.info = counts.info + 1
-      elseif diagnostic.severity == vim.diagnostic.severity.HINT then
+      elseif sev == sev_hint then
         counts.hint = counts.hint + 1
       end
     end
@@ -535,16 +541,23 @@ cmd("BufferlineDiagnosticTest", function()
       local filename = vim.fn.fnamemodify(buf.name, ":t")
 
       if #diagnostics > 0 then
-        -- Count diagnostics by severity
+        -- Count diagnostics by severity (optimized with cached severity constants)
         local counts = { error = 0, warn = 0, info = 0, hint = 0 }
+        local sev_err, sev_warn, sev_info, sev_hint =
+          vim.diagnostic.severity.ERROR,
+          vim.diagnostic.severity.WARN,
+          vim.diagnostic.severity.INFO,
+          vim.diagnostic.severity.HINT
+
         for _, d in ipairs(diagnostics) do
-          if d.severity == vim.diagnostic.severity.ERROR then
+          local sev = d.severity
+          if sev == sev_err then
             counts.error = counts.error + 1
-          elseif d.severity == vim.diagnostic.severity.WARN then
+          elseif sev == sev_warn then
             counts.warn = counts.warn + 1
-          elseif d.severity == vim.diagnostic.severity.INFO then
+          elseif sev == sev_info then
             counts.info = counts.info + 1
-          elseif d.severity == vim.diagnostic.severity.HINT then
+          elseif sev == sev_hint then
             counts.hint = counts.hint + 1
           end
         end

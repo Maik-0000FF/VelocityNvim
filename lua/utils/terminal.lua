@@ -6,6 +6,7 @@ local M = {}
 -- Compatibility layer
 local uv = vim.uv or vim.loop
 local api = vim.api
+local icons = require("core.icons")
 
 -- Stores active terminal buffers
 local terminals = {
@@ -131,9 +132,6 @@ function M.toggle_floating_terminal()
     local buf = api.nvim_create_buf(false, true)
     local width, height, row, col = get_floating_dimensions()
 
-    -- Icons for consistent styling
-    local icons = require("core.icons")
-
     local win = api.nvim_open_win(buf, true, {
       relative = "editor",
       width = width,
@@ -161,7 +159,6 @@ end
 function M.close_all_terminals()
   local closed_count = 0
   local failed_count = 0
-  local icons = require("core.icons")
 
   -- EDGE CASE: More than 10 terminals could pose performance problem
   local terminal_count = 0
@@ -231,7 +228,6 @@ end
 --- Show terminal status
 function M.get_terminal_status()
   local status = {}
-  local icons = require("core.icons")
 
   for term_type, buf in pairs(terminals) do
     if buf and api.nvim_buf_is_valid(buf) then
@@ -252,7 +248,6 @@ end
 --- Print terminal information
 function M.print_terminal_info()
   local status = M.get_terminal_status()
-  local icons = require("core.icons")
 
   print(icons.misc.terminal .. " Terminal Status:")
 
@@ -357,7 +352,6 @@ function M.setup()
   vim.defer_fn(function()
     local ok, which_key = pcall(require, "which-key")
     if ok then
-      local icons = require("core.icons")
       which_key.add({
         { "<leader>t", group = icons.misc.terminal .. " Terminal" },
         { "<leader>tf", desc = "Floating Terminal" },

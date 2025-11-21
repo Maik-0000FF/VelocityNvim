@@ -9,11 +9,13 @@ local M = {}
 function M.get_valid_buffers(listed_only)
   listed_only = listed_only ~= false
 
+  local all_bufs = vim.api.nvim_list_bufs()
   local buffers = {}
-  for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
+  for i = 1, #all_bufs do
+    local bufnr = all_bufs[i]
     if vim.api.nvim_buf_is_valid(bufnr) then
       if not listed_only or vim.bo[bufnr].buflisted then
-        table.insert(buffers, bufnr)
+        buffers[#buffers + 1] = bufnr
       end
     end
   end
