@@ -4,5 +4,5 @@
 -- Track startup time for performance monitoring
 vim.g.velocitynvim_start_time = vim.loop.hrtime()
 
--- Lade Core-Konfiguration
+-- Load core configuration
 require("core")

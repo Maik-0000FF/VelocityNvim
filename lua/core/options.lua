@@ -1,135 +1,135 @@
 -- ~/.config/VelocityNvim/lua/core/options.lua
--- Native Neovim Options - Grundlegende Einstellungen
+-- Native Neovim Options - Basic settings
 
--- PERFORMANCE: Deaktiviere unnötige Standard-Plugins (~7ms Einsparung)
--- netrw: Alter Datei-Browser (ersetzt durch neo-tree)
+-- PERFORMANCE: Disable unnecessary default plugins (~7ms savings)
+-- netrw: Old file browser (replaced by neo-tree)
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
--- rplugin: Remote-Plugins Python/Node (VelocityNvim nutzt nur Lua/Rust)
+-- rplugin: Remote plugins Python/Node (VelocityNvim uses only Lua/Rust)
 vim.g.loaded_remote_plugins = 1
 
 -- Python formatting handled by conform.nvim + ruff
 -- Ruff replaces black + isort with better performance
--- Deaktiviere system-weites black.vim Plugin (~5ms Einsparung)
--- WICHTIG: black.vim prüft nur ob g:load_black existiert (if exists("g:load_black"))
--- Der Wert ist egal - jeder Wert (0, 1, "foo") verhindert das Laden
--- Quelle: https://github.com/psf/black/blob/main/plugin/black.vim (Zeile 10-13)
+-- Disable system-wide black.vim plugin (~5ms savings)
+-- IMPORTANT: black.vim only checks if g:load_black exists (if exists("g:load_black"))
+-- The value doesn't matter - any value (0, 1, "foo") prevents loading
+-- Source: https://github.com/psf/black/blob/main/plugin/black.vim (lines 10-13)
 vim.g.load_black = 1
 
 local opt = vim.opt
 local g = vim.g
 
--- Leader-Taste setzen
+-- Set leader key
 g.mapleader = " "
 g.maplocalleader = " "
 
--- Grundlegende UI-Optionen
-opt.number = true -- Zeilennummern
-opt.relativenumber = true -- Relative Zeilennummern
-opt.cursorline = true -- Aktuelle Zeile hervorheben
-opt.signcolumn = "yes" -- Zeichenspalte für Markierungen
-opt.scrolloff = 10 -- Kontext beim Scrollen
-opt.sidescrolloff = 8 -- Horizontaler Kontext
+-- Basic UI options
+opt.number = true -- Line numbers
+opt.relativenumber = true -- Relative line numbers
+opt.cursorline = true -- Highlight current line
+opt.signcolumn = "yes" -- Sign column for markers
+opt.scrolloff = 10 -- Context when scrolling
+opt.sidescrolloff = 8 -- Horizontal context
 
--- Tab- und Einrückung (für bessere hlchunk Sichtbarkeit)
-opt.tabstop = 2 -- 2 Leerzeichen für Tab (kleinere Abstände)
-opt.shiftwidth = 2 -- Einrückungsbreite 2
-opt.softtabstop = 2 -- Soft Tab Stop
-opt.expandtab = true -- Tabs zu Leerzeichen
-opt.smartindent = true -- Intelligente Einrückung
--- opt.autoindent = true -- Auto-Einrückung
--- opt.cindent = true -- C-Style Einrückung für bessere Struktur
+-- Tab and indentation (for better hlchunk visibility)
+opt.tabstop = 2 -- 2 spaces for tab (smaller spacing)
+opt.shiftwidth = 2 -- Indentation width 2
+opt.softtabstop = 2 -- Soft tab stop
+opt.expandtab = true -- Tabs to spaces
+opt.smartindent = true -- Smart indentation
+-- opt.autoindent = true -- Auto indentation
+-- opt.cindent = true -- C-style indentation for better structure
 
--- Native Einrückungslinien (ersetzt hlchunk indent)
-opt.list = true -- Aktiviere native indent lines
+-- Native indent lines (replaces hlchunk indent)
+opt.list = true -- Enable native indent lines
 opt.listchars = {
-  tab = "  ", -- Tab-Zeichen unsichtbar (werden als normale Spaces angezeigt)
-  -- space = "·", -- Space-Zeichen sichtbar machen
-  trail = "•", -- Trailing Spaces anzeigen (wichtig!)
-  -- nbsp = "␣", -- Non-breaking Space
-  extends = "⟩", -- Zeilen die rechts abgeschnitten sind
-  precedes = "⟨", -- Zeilen die links abgeschnitten sind
-  leadmultispace = "│ ", -- Native indent lines (ersetzt hlchunk indent)
+  tab = "  ", -- Tab characters invisible (displayed as normal spaces)
+  -- space = "·", -- Make space characters visible
+  trail = "•", -- Show trailing spaces (important!)
+  -- nbsp = "␣", -- Non-breaking space
+  extends = "⟩", -- Lines cut off on the right
+  precedes = "⟨", -- Lines cut off on the left
+  leadmultispace = "│ ", -- Native indent lines (replaces hlchunk indent)
 }
 
--- Visual Block Optionen
-vim.opt.virtualedit = "block" -- Ermöglicht Cursor-Position jenseits des Zeilenendes im Visual Block Mode
--- vim.opt.selection = "exclusive" -- Bessere Visual Block Auswahl
-vim.opt.selectmode = "" -- Verhindert Select Mode, bevorzugt Visual Mode
+-- Visual Block options
+vim.opt.virtualedit = "block" -- Allows cursor position beyond line end in Visual Block mode
+-- vim.opt.selection = "exclusive" -- Better Visual Block selection
+vim.opt.selectmode = "" -- Prevents Select Mode, prefers Visual Mode
 
--- Suche
-opt.ignorecase = true -- Groß-/Kleinschreibung ignorieren
-opt.smartcase = true -- Beachten wenn Großbuchstaben verwendet
-opt.hlsearch = true -- Suchergebnisse hervorheben
-opt.incsearch = true -- Inkrementelle Suche
+-- Search
+opt.ignorecase = true -- Ignore case
+opt.smartcase = true -- Case-sensitive if uppercase used
+opt.hlsearch = true -- Highlight search results
+opt.incsearch = true -- Incremental search
 
--- Fenster und Splits
-opt.splitbelow = true -- Horizontale Splits unten
-opt.splitright = true -- Vertikale Splits rechts
+-- Windows and splits
+opt.splitbelow = true -- Horizontal splits below
+opt.splitright = true -- Vertical splits right
 
--- Dateien
-opt.clipboard = "unnamedplus" -- System-Zwischenablage
-opt.fileencoding = "utf-8" -- Standard-Dateikodierung
-opt.swapfile = false -- Keine Swap-Dateien
-opt.backup = false -- Keine Backup-Dateien
-opt.undofile = true -- Persistente Undo-Geschichte
-opt.autoread = true -- Automatisches Neuladen von extern geänderten Dateien
+-- Files
+opt.clipboard = "unnamedplus" -- System clipboard
+opt.fileencoding = "utf-8" -- Default file encoding
+opt.swapfile = false -- No swap files
+opt.backup = false -- No backup files
+opt.undofile = true -- Persistent undo history
+opt.autoread = true -- Automatically reload externally modified files
 
--- Performance (WezTerm optimiert + Ultra Responsiveness)
-opt.updatetime = 250 -- Optimiert für WezTerm Responsivität
-opt.timeoutlen = 500 -- Timeout für Tastenkombinationen
-opt.ttimeoutlen = 10 -- Sehr schnelle Terminal-Escapes (kritisch für WezTerm)
-opt.lazyredraw = false -- Sofortiges Redraw für flüssige Cursor-Bewegungen
-opt.ttyfast = true -- Terminal-Optimierung für WezTerm
-opt.redrawtime = 10000 -- Mehr Zeit für komplexe Syntax-Highlighting
+-- Performance (WezTerm optimized + ultra responsiveness)
+opt.updatetime = 250 -- Optimized for WezTerm responsiveness
+opt.timeoutlen = 500 -- Timeout for key combinations
+opt.ttimeoutlen = 10 -- Very fast terminal escapes (critical for WezTerm)
+opt.lazyredraw = false -- Immediate redraw for smooth cursor movement
+opt.ttyfast = true -- Terminal optimization for WezTerm
+opt.redrawtime = 10000 -- More time for complex syntax highlighting
 
--- Ultra-Performance Optimierungen
-opt.regexpengine = 0 -- Auto-select regex engine (zurück zu default für Kompatibilität)
-opt.maxmempattern = 2000 -- Erhöhte Pattern-Speicher für bessere Performance
-opt.synmaxcol = 300 -- Syntax-Highlighting begrenzen für lange Zeilen
-opt.matchtime = 1 -- Sehr kurze Bracket-Match-Zeit
-opt.complete:remove("i") -- Keine include-file Completion (langsam)
-opt.complete:remove("t") -- Keine tag-file Completion (langsam)
+-- Ultra-performance optimizations
+opt.regexpengine = 0 -- Auto-select regex engine (back to default for compatibility)
+opt.maxmempattern = 2000 -- Increased pattern memory for better performance
+opt.synmaxcol = 300 -- Limit syntax highlighting for long lines
+opt.matchtime = 1 -- Very short bracket match time
+opt.complete:remove("i") -- No include-file completion (slow)
+opt.complete:remove("t") -- No tag-file completion (slow)
 
--- Aussehen (WezTerm-optimiert)
-opt.termguicolors = true -- True-Color Support
-opt.wrap = false -- Keine Zeilenumbrüche
-opt.showmode = false -- Modusanzeige deaktivieren (wird von Statuszeile ersetzt)
-opt.ruler = false -- Keine native ruler (lualine zeigt Position)
-opt.title = true -- Fenstertitel setzen
-opt.pumheight = 10 -- Popup-Menühöhe begrenzen
-opt.showtabline = 0 -- Keine native tabline (bufferline plugin übernimmt)
-opt.laststatus = 0 -- Keine native statusline (lualine plugin übernimmt)
+-- Appearance (WezTerm-optimized)
+opt.termguicolors = true -- True-color support
+opt.wrap = false -- No line wrapping
+opt.showmode = false -- Disable mode display (replaced by statusline)
+opt.ruler = false -- No native ruler (lualine shows position)
+opt.title = true -- Set window title
+opt.pumheight = 10 -- Limit popup menu height
+opt.showtabline = 0 -- No native tabline (bufferline plugin handles it)
+opt.laststatus = 0 -- No native statusline (lualine plugin handles it)
 
--- Leerzeichen-Darstellung (Neo-tree Tilden entfernen)
+-- Whitespace display (remove Neo-tree tildes)
 opt.fillchars = {
-  eob = " ", -- End-of-buffer Zeichen (entfernt ~ Tilden in leeren Zeilen)
+  eob = " ", -- End-of-buffer character (removes ~ tildes in empty lines)
 }
 
--- WezTerm-spezifische Performance-Optimierungen
-opt.mouse = "a" -- Mouse support für WezTerm
-opt.display = "lastline" -- Zeige so viel wie möglich von der letzten Zeile
+-- WezTerm-specific performance optimizations
+opt.mouse = "a" -- Mouse support for WezTerm
+opt.display = "lastline" -- Show as much as possible of the last line
 
--- Advanced Performance Tweaks
-opt.eventignore = "" -- Keine Events ignorieren (aber bereit für selective ignoring)
-opt.maxfuncdepth = 200 -- Erhöhte Funktionstiefe für komplexe Syntax
+-- Advanced performance tweaks
+opt.eventignore = "" -- Don't ignore events (but ready for selective ignoring)
+opt.maxfuncdepth = 200 -- Increased function depth for complex syntax
 
--- Memory & History Optimierungen (MyNvim-inspiriert)
-opt.history = 1000 -- Command history begrenzt (weniger RAM)
--- ShaDa (Shared Data) - Moderne Session-Persistierung für Neovim
--- '100 = 100 markierte Dateien merken (Marks: ma, mb, etc.)
--- <50 = 50 Zeilen aus Registern/Yanks session-übergreifend speichern
---       WICHTIG: Aktuelle Session Yank/Paste bleibt unbegrenzt (1222 Zeilen → 1222 Zeilen paste)
---       Limit gilt nur für Session-übergreifende Persistierung nach Neustart
--- s10 = 10KB Maximum pro Register/Item (verhindert Memory-Bloat)
--- h = Highlight-Search deaktiviert beim Start (sauberer Start)
-opt.shada = "'100,<50,s10,h" -- Performance-optimierte ShaDa (15-25% schnelleres Startup)
-opt.foldnestmax = 10 -- Fold-Level begrenzt für Performance
-opt.viminfo = "" -- Legacy VimInfo deaktiviert (ShaDa ist moderne Alternative)
+-- Memory & history optimizations (MyNvim-inspired)
+opt.history = 1000 -- Command history limited (less RAM)
+-- ShaDa (Shared Data) - Modern session persistence for Neovim
+-- '100 = Remember 100 marked files (Marks: ma, mb, etc.)
+-- <50 = Save 50 lines from registers/yanks across sessions
+--       IMPORTANT: Current session yank/paste remains unlimited (1222 lines → 1222 lines paste)
+--       Limit only applies to cross-session persistence after restart
+-- s10 = 10KB maximum per register/item (prevents memory bloat)
+-- h = Highlight-search disabled at startup (clean start)
+opt.shada = "'100,<50,s10,h" -- Performance-optimized ShaDa (15-25% faster startup)
+opt.foldnestmax = 10 -- Fold level limited for performance
+opt.viminfo = "" -- Legacy VimInfo disabled (ShaDa is modern alternative)
 
--- Folding - wird von Treesitter überschrieben für bessere Code-Struktur
--- opt.foldmethod = "indent" -- Falten basierend auf Einrückung
--- opt.foldlevel = 99 -- Alle Folds standardmäßig offen
--- opt.foldlevelstart = 99 -- Start mit offenen Folds
-opt.foldminlines = 2 -- Minimum 2 Zeilen für Fold
+-- Folding - overridden by Treesitter for better code structure
+-- opt.foldmethod = "indent" -- Folding based on indentation
+-- opt.foldlevel = 99 -- All folds open by default
+-- opt.foldlevelstart = 99 -- Start with open folds
+opt.foldminlines = 2 -- Minimum 2 lines for fold

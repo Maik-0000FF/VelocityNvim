@@ -1,11 +1,11 @@
--- STANDARD-BASED gitsigns.nvim Konfiguration (CLAUDE.md konform)
--- BEGRÜNDUNG: Plugin funktioniert "No setup required" mit sensible Defaults
--- VALIDATION: WebSearch + WebFetch bestätigt - 95% der Config ist überflüssig
+-- STANDARD-BASED gitsigns.nvim Configuration (CLAUDE.md compliant)
+-- RATIONALE: Plugin works "No setup required" with sensible defaults
+-- VALIDATION: WebSearch + WebFetch confirmed - 95% of config is unnecessary
 
--- Prüfe ob Gitsigns verfügbar ist
+-- Check if Gitsigns is available
 local ok, gitsigns = pcall(require, "gitsigns")
 if not ok then
-  print("Gitsigns nicht verfügbar. Führe :PluginSync aus und starte Neovim neu.")
+  print("Gitsigns not available. Run :PluginSync and restart Neovim.")
   return
 end
 
@@ -13,33 +13,33 @@ end
 local use_delta = vim.fn.executable("delta") == 1
 
 gitsigns.setup({
-  -- MINIMAL Custom-Overrides nur wo Standard nicht ausreicht:
+  -- MINIMAL custom overrides only where standard is insufficient:
 
-  -- BEGRÜNDUNG: Delta-Integration für VelocityNvim Rust Performance Suite
+  -- RATIONALE: Delta integration for VelocityNvim Rust Performance Suite
   diff_opts = use_delta and {
     algorithm = "histogram",
     internal = false,
     external = "delta --color-only --features=interactive",
   } or nil,
 
-  -- BEGRÜNDUNG: Performance-Optimierung aus Phase 12 (WezTerm cursor responsiveness)
-  update_debounce = 200, -- Weniger frequent Git-Updates für bessere Navigation
+  -- RATIONALE: Performance optimization from Phase 12 (WezTerm cursor responsiveness)
+  update_debounce = 200, -- Less frequent Git updates for better navigation
 
-  -- BEGRÜNDUNG: Performance-Limit für große Dateien (VelocityNvim Standard)
-  max_file_length = 10000, -- 40k->10k für Phase 12 Performance-Optimierung
+  -- RATIONALE: Performance limit for large files (VelocityNvim standard)
+  max_file_length = 10000, -- 40k->10k for Phase 12 performance optimization
 
-  -- BEGRÜNDUNG: Auto-refresh bei externen Git-Operationen (Standard-Plugin-Option)
+  -- RATIONALE: Auto-refresh on external Git operations (standard plugin option)
   watch_gitdir = {
-    enable = true,      -- Standard: true (explizit gesetzt für Dokumentation)
-    follow_files = true, -- Standard: true (verfolgt git mv Operationen)
+    enable = true,      -- Standard: true (explicitly set for documentation)
+    follow_files = true, -- Standard: true (tracks git mv operations)
   },
 })
 
--- ALLE ANDEREN FEATURES NUTZEN STANDARD-DEFAULTS:
--- ✅ Signs: Identische Defaults verfügbar (┃, _, ‾, ~, ┆)
--- ✅ Navigation: ]c und [c funktionieren automatisch
+-- ALL OTHER FEATURES USE STANDARD DEFAULTS:
+-- ✅ Signs: Identical defaults available (┃, _, ‾, ~, ┆)
+-- ✅ Navigation: ]c and [c work automatically
 -- ✅ Commands: :Gitsigns stage_hunk, :Gitsigns preview_hunk, etc.
 -- ✅ Staged signs: Standard enabled
 -- ✅ Blame: :Gitsigns toggle_current_line_blame
 -- ✅ Preview: :Gitsigns preview_hunk_inline
--- ✅ Text objects: 'ih' für hunk selection automatisch verfügbar
+-- ✅ Text objects: 'ih' for hunk selection automatically available

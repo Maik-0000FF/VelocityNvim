@@ -1,5 +1,5 @@
 -- ~/.config/VelocityNvim/lua/core/autocmds.lua
--- Autocommands und Event-Handler
+-- Autocommands and event handlers
 
 local augroup = vim.api.nvim_create_augroup
 local autocmd = vim.api.nvim_create_autocmd
@@ -12,7 +12,7 @@ local velocity_lsp = augroup("VelocityLsp", { clear = true })
 local velocity_ui = augroup("VelocityUI", { clear = true })
 local velocity_format = augroup("VelocityFormat", { clear = true })
 
--- Allgemeine Autocommands
+-- General autocommands
 autocmd("TextYankPost", {
   group = velocity_general,
   desc = "Highlight yanked text",
@@ -22,7 +22,7 @@ autocmd("TextYankPost", {
   end,
 })
 
--- Cursor-Position bei Datei-Öffnung wiederherstellen
+-- Restore cursor position when opening file
 autocmd("BufReadPost", {
   group = velocity_general,
   desc = "Restore cursor position",
@@ -36,7 +36,7 @@ autocmd("BufReadPost", {
   end,
 })
 
--- Trailing Whitespace entfernen vor dem Speichern
+-- Remove trailing whitespace before saving
 autocmd("BufWritePre", {
   group = velocity_format,
   desc = "Remove trailing whitespace",
@@ -48,32 +48,32 @@ autocmd("BufWritePre", {
   end,
 })
 
--- UI Verbesserungen
+-- UI improvements
 autocmd("VimEnter", {
   group = velocity_ui,
   desc = "Setup UI on vim enter",
   pattern = "*",
   callback = function()
-    -- Startmeldungen verbergen
+    -- Hide startup messages
     vim.opt.shortmess:append("I")
-    -- Nur Fehler melden, erfolgreiche Ladung ist selbstverständlich
+    -- Only report errors, successful loading is expected
   end,
 })
 
--- Colorscheme Updates für Plugins
+-- Colorscheme updates for plugins
 autocmd("ColorScheme", {
   group = velocity_ui,
   desc = "Update plugin colors on colorscheme change",
   pattern = "*",
   callback = function()
-    -- Trigger Farb-Updates für verschiedene Plugins
+    -- Trigger color updates for various plugins
     vim.defer_fn(function()
       vim.cmd.doautocmd("User", "ColorSchemeChanged")
     end, 100)
   end,
 })
 
--- Buffer-spezifische Einstellungen
+-- Buffer-specific settings
 autocmd("FileType", {
   group = velocity_general,
   desc = "Set filetype specific options",
@@ -88,7 +88,7 @@ autocmd("FileType", {
   end,
 })
 
--- LSP-spezifische Autocommands
+-- LSP-specific autocommands
 autocmd("LspAttach", {
   group = velocity_lsp,
   desc = "LSP keymaps and options on attach",
@@ -100,10 +100,10 @@ autocmd("LspAttach", {
       return
     end
 
-    -- Buffer-lokale Einstellungen
+    -- Buffer-local settings
     vim.bo[bufnr].omnifunc = "v:lua.vim.lsp.omnifunc"
 
-    -- Inlay Hints aktivieren (wenn verfügbar)
+    -- Enable inlay hints (if available)
     if client and client.supports_method then
       local supports_inlay = pcall(client.supports_method, client, "textDocument/inlayHint")
       if supports_inlay then
@@ -115,13 +115,13 @@ autocmd("LspAttach", {
   end,
 })
 
--- Diagnostics Update für Neo-tree (Performance-optimiert)
+-- Diagnostics update for Neo-tree (performance-optimized)
 local diagnostic_timer = nil
 autocmd("DiagnosticChanged", {
   group = velocity_lsp,
   desc = "Update neo-tree diagnostics display (debounced)",
   callback = function()
-    -- Debounced updates: Verhindert excessive Updates bei schnellen Änderungen
+    -- Debounced updates: Prevents excessive updates during rapid changes
     if diagnostic_timer then
       diagnostic_timer:stop()
     end
@@ -133,36 +133,36 @@ autocmd("DiagnosticChanged", {
         end
       end
       diagnostic_timer = nil
-    end, 500) -- Längere Verzögerung für weniger frequent updates
+    end, 500) -- Longer delay for less frequent updates
   end,
 })
 
--- Performance: Große Dateien optimieren (aggressiver)
+-- Performance: Optimize large files (aggressive)
 autocmd("BufReadPre", {
   group = velocity_general,
   desc = "Optimize settings for large files (ultra-performance)",
   callback = function()
     local fs_stat_func = rawget(vim.uv, 'fs_stat') or rawget(vim.loop, 'fs_stat')
     local ok, stats = fs_stat_func and pcall(fs_stat_func, vim.fn.expand("<afile>")) or false, nil
-    if ok and stats and stats.size > 512 * 1024 then -- 512KB (aggressiver als 1MB)
-      -- Ultra-Performance Einstellungen für große Dateien
+    if ok and stats and stats.size > 512 * 1024 then -- 512KB (more aggressive than 1MB)
+      -- Ultra-performance settings for large files
       vim.opt_local.swapfile = false
       vim.opt_local.foldmethod = "manual"
       vim.opt_local.undolevels = -1
       vim.opt_local.undoreload = 0
       vim.opt_local.list = false
-      vim.opt_local.cursorline = false  -- Cursor-Line deaktivieren
-      vim.opt_local.cursorcolumn = false -- Cursor-Column deaktivieren
-      vim.opt_local.relativenumber = false -- Relative Nummern deaktivieren
-      vim.opt_local.spell = false       -- Spell-Check deaktivieren
-      vim.opt_local.synmaxcol = 200     -- Syntax nur für erste 200 Spalten
+      vim.opt_local.cursorline = false  -- Disable cursor line
+      vim.opt_local.cursorcolumn = false -- Disable cursor column
+      vim.opt_local.relativenumber = false -- Disable relative numbers
+      vim.opt_local.spell = false       -- Disable spell check
+      vim.opt_local.synmaxcol = 200     -- Syntax only for first 200 columns
       vim.b.large_buf = true
-      -- Silent success - keine Notification für bessere UX
+      -- Silent success - no notification for better UX
     end
   end,
 })
 
--- Terminal-spezifische Einstellungen
+-- Terminal-specific settings
 autocmd("TermOpen", {
   group = velocity_general,
   desc = "Terminal specific settings",

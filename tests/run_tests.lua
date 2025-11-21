@@ -1,5 +1,5 @@
 -- tests/run_tests.lua
--- Main Test Runner für VelocityNvim
+-- Main test runner for VelocityNvim
 
 local M = {}
 

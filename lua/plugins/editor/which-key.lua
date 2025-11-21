@@ -4,7 +4,7 @@ wk.setup({
   -- win = { border = "single" },
 })
 
--- Gruppierungen definieren für bessere Übersicht
+-- Define groupings for better overview
 wk.add({
   { "<leader>f", group = "Find/File" },
   { "<leader>l", group = "LSP" },
@@ -19,11 +19,11 @@ wk.add({
   -- LaTeX Mappings (Backslash Leader)
   { "\\", group = "LaTeX" },
   { "\\s", desc = "LaTeX: Performance Status" },
-  { "\\i", desc = "LaTeX: Live Preview aktivieren" },
-  { "\\b", desc = "LaTeX: Build mit Tectonic (Ultra-Fast)" },
-  { "\\B", desc = "LaTeX: Build mit Typst (Modern)" },
-  { "\\c", desc = "LaTeX: Compile aktueller Datei + Anzeige" },
-  { "\\v", desc = "LaTeX: PDF Viewer öffnen" },
-  { "\\x", desc = "LaTeX: Auxiliary files bereinigen" },
-  { "\\<CR>", desc = "LaTeX: Quick Build + Anzeige" },
+  { "\\i", desc = "LaTeX: Enable live preview" },
+  { "\\b", desc = "LaTeX: Build with Tectonic (Ultra-Fast)" },
+  { "\\B", desc = "LaTeX: Build with Typst (Modern)" },
+  { "\\c", desc = "LaTeX: Compile current file + display" },
+  { "\\v", desc = "LaTeX: Open PDF viewer" },
+  { "\\x", desc = "LaTeX: Clean auxiliary files" },
+  { "\\<CR>", desc = "LaTeX: Quick build + display" },
 })

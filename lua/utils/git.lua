@@ -27,7 +27,7 @@ end
 function M.get_root(path)
   if not M.is_available() then return nil end
 
-  -- PERFORMANCE: Native git command ist schneller als custom path walking
+  -- PERFORMANCE: Native git command is faster than custom path walking
   local output, exit_code = M.exec({ "rev-parse", "--show-toplevel" }, { cwd = path })
   return exit_code == 0 and output or nil
 end
@@ -45,8 +45,8 @@ function M.exec(cmd, opts)
   local full_cmd = { "git" }
   vim.list_extend(full_cmd, cmd)
 
-  -- PERFORMANCE: Native vim.system() ist 30-50% schneller als vim.fn.system()
-  -- Neovim 0.10+ API mit besserer Fehlerbehandlung und async-Fähigkeit
+  -- PERFORMANCE: Native vim.system() is 30-50% faster than vim.fn.system()
+  -- Neovim 0.10+ API with better error handling and async capability
   local result = vim.system(full_cmd, {
     cwd = opts.cwd,
     timeout = opts.timeout or 10000, -- 10s timeout
@@ -64,7 +64,7 @@ end
 ---@param path string|nil Repository path
 ---@return string|nil Branch name
 function M.get_branch(path)
-  -- PERFORMANCE: Eliminiere directory changes - nutze cwd parameter direkt
+  -- PERFORMANCE: Eliminate directory changes - use cwd parameter directly
   local branch, exit_code = M.exec({ "branch", "--show-current" }, { cwd = path })
   return exit_code == 0 and branch or nil
 end
@@ -73,7 +73,7 @@ end
 ---@param path string|nil Repository path
 ---@return table|nil Status information
 function M.get_status(path)
-  -- PERFORMANCE: Eliminiere directory changes - nutze cwd parameter
+  -- PERFORMANCE: Eliminate directory changes - use cwd parameter
   local output, exit_code = M.exec({ "status", "--porcelain" }, { cwd = path })
 
   if exit_code ~= 0 then
@@ -130,7 +130,7 @@ end
 function M.get_commits(count, path)
   count = count or 10
 
-  -- PERFORMANCE: Eliminiere directory changes - nutze cwd parameter
+  -- PERFORMANCE: Eliminate directory changes - use cwd parameter
   local output, exit_code = M.exec({
     "log",
     "--oneline",
@@ -163,7 +163,7 @@ end
 ---@param path string|nil Repository path
 ---@return string|nil Configuration value
 function M.get_config(key, path)
-  -- PERFORMANCE: Eliminiere directory changes - nutze cwd parameter
+  -- PERFORMANCE: Eliminate directory changes - use cwd parameter
   local output, exit_code = M.exec({ "config", "--get", key }, { cwd = path })
   return exit_code == 0 and output or nil
 end

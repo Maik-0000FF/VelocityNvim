@@ -4,36 +4,36 @@
 
 local ok, mini_pairs = pcall(require, "mini.pairs")
 if not ok then
-  vim.notify("mini.pairs nicht verfügbar - mini.nvim erforderlich", vim.log.levels.WARN)
+  vim.notify("mini.pairs not available - mini.nvim required", vim.log.levels.WARN)
   return
 end
 
--- Ultra-performante Konfiguration für VelocityNvim
+-- Ultra-performant configuration for VelocityNvim
 mini_pairs.setup({
-  -- Modi in denen Autopairs aktiv ist
+  -- Modes in which autopairs is active
   modes = {
-    insert = true, -- Insert Mode - Standard für Typing
-    command = false, -- Command Mode - deaktiviert für Performance
-    terminal = false, -- Terminal Mode - deaktiviert für Shell-Kompatibilität
+    insert = true, -- Insert Mode - default for typing
+    command = false, -- Command Mode - disabled for performance
+    terminal = false, -- Terminal Mode - disabled for shell compatibility
   },
 
-  -- Skip-Pattern für intelligentes Pairing
-  -- Überspringt Pairing wenn nächstes Zeichen matched
+  -- Skip pattern for intelligent pairing
+  -- Skips pairing if next character matches
   skip_next = [=[[%w%%%'%[%"%.%`%$]]=],
 
-  -- Treesitter Integration - überspringt Pairing in String-Nodes
+  -- Treesitter integration - skips pairing in string nodes
   skip_ts = { "string" },
 
-  -- Überspringt unbalanced pairs für bessere Code-Qualität
+  -- Skips unbalanced pairs for better code quality
   skip_unbalanced = true,
 
-  -- Markdown-Support für Dokumentation
+  -- Markdown support for documentation
   markdown = true,
 
-  -- WICHTIG: Deaktiviere Backtick-Pairing für German Characters Plugin
-  -- Das German Characters Plugin verwendet ` als Präfix für Umlaute (`a → ä)
+  -- IMPORTANT: Disable backtick pairing for German Characters Plugin
+  -- The German Characters Plugin uses ` as prefix for umlauts (`a → ä)
   mappings = {
-    ["`"] = false, -- Backtick-Pairing deaktiviert - Konflikt mit German chars
+    ["`"] = false, -- Backtick pairing disabled - conflict with German chars
   },
 })
 
@@ -43,12 +43,12 @@ local function check_mini_pairs_health()
 
   health.report_start("Mini.pairs Autopairs")
 
-  -- Test ob mini.pairs korrekt geladen wurde
+  -- Test if mini.pairs loaded correctly
   local pairs_ok, pairs_module = pcall(require, "mini.pairs")
   if pairs_ok and pairs_module then
-    health.report_ok("Mini.pairs aktiv und funktional")
+    health.report_ok("Mini.pairs active and functional")
 
-    -- Test grundlegende Funktionalität
+    -- Test basic functionality
     local test_pairs = {
       { "(", ")" },
       { "[", "]" },
@@ -57,15 +57,15 @@ local function check_mini_pairs_health()
       { "'", "'" },
     }
 
-    health.report_info("Verfügbare Pairs: " .. table.concat(vim.iter(test_pairs):flatten():totable(), " "))
-    health.report_info("Performance: Ultra-schnell (<200 LoC, Pure Lua)")
+    health.report_info("Available pairs: " .. table.concat(vim.iter(test_pairs):flatten():totable(), " "))
+    health.report_info("Performance: Ultra-fast (<200 LoC, Pure Lua)")
     health.report_info("Features: Treesitter-aware, Skip-Pattern, Markdown-Support")
   else
-    health.report_error("Mini.pairs konnte nicht geladen werden")
+    health.report_error("Mini.pairs could not be loaded")
   end
 end
 
--- Registriere Health Check
+-- Register health check
 local health_ok, health = pcall(require, "core.health")
 if health_ok and health.register then
   health.register("mini_pairs", check_mini_pairs_health)

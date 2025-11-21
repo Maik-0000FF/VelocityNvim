@@ -1,14 +1,14 @@
 -- ~/.config/VelocityNvim/lua/plugins/alpha.lua
--- Alpha Dashboard Konfiguration
+-- Alpha Dashboard Configuration
 
 local alpha = require("alpha")
 local dashboard = require("alpha.themes.dashboard")
 local icons = require("core.icons")
 
--- Header aus core.icons verwenden
+-- Use header from core.icons
 dashboard.section.header.val = icons.alpha.header
 
--- Menü-Buttons
+-- Menu buttons
 dashboard.section.buttons.val = {
   dashboard.button("e", icons.status.file .. " New file", "<cmd>ene <BAR> startinsert <CR>"),
   dashboard.button("f", icons.status.find_file .. " Find file", "<cmd>FzfLua files<CR>"),
@@ -20,20 +20,20 @@ dashboard.section.buttons.val = {
   dashboard.button("q", icons.status.quit .. " Quit", "<cmd>qa<CR>"),
 }
 
--- Dynamischer Footer mit Version-Info
+-- Dynamic footer with version info
 local function get_footer()
   local version = require("core.version")
   local nvim_ver = version.get_nvim_version()
   local change_type = version.check_version_change()
 
-  -- Plugin-Anzahl ermitteln
+  -- Determine plugin count
   local plugin_count = 0
   local ok, manage = pcall(require, "plugins.manage")
   if ok and manage.plugins then
     plugin_count = vim.tbl_count(manage.plugins)
   end
 
-  -- Native Startup-Zeit berechnen (vom init.lua Start bis jetzt)
+  -- Calculate native startup time (from init.lua start to now)
   local startup_time = "N/A"
   if vim.g.velocitynvim_start_time then
     local elapsed_ns = vim.loop.hrtime() - vim.g.velocitynvim_start_time
@@ -51,7 +51,7 @@ local function get_footer()
     "                                   ",
   }
 
-  -- Status-Zeile basierend auf Version-Change
+  -- Status line based on version change
   local status_line = ""
   if change_type == "fresh_install" then
     status_line = "    " .. icons.status.fresh .. " Welcome to your fresh installation!"
@@ -80,9 +80,9 @@ end
 
 dashboard.section.footer.val = get_footer()
 
--- Layout konfigurieren
+-- Configure layout
 dashboard.config.layout = {
-  { type = "padding", val = 2 }, -- Standard-padding (bufferline lädt bereits vor alpha)
+  { type = "padding", val = 2 }, -- Standard padding (bufferline loads before alpha)
   dashboard.section.header,
   { type = "padding", val = 2 },
   dashboard.section.buttons,
@@ -90,5 +90,5 @@ dashboard.config.layout = {
   dashboard.section.footer,
 }
 
--- Dashboard aktivieren
+-- Activate dashboard
 alpha.setup(dashboard.config)

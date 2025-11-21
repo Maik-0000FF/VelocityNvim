@@ -3,7 +3,7 @@
 
 local M = {}
 
--- Sichere Cross-Version Kompatibilität
+-- Safe cross-version compatibility
 local fs_stat_func = rawget(vim.uv, 'fs_stat') or rawget(vim.loop, 'fs_stat')
 local new_fs_event_func = rawget(vim.uv, 'new_fs_event') or rawget(vim.loop, 'new_fs_event')
 

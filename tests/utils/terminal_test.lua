@@ -1,5 +1,5 @@
 -- tests/utils/terminal_test.lua
--- Test Suite für Terminal Utility System
+-- Test suite for terminal utility system
 
 local M = {}
 

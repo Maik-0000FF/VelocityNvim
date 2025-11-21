@@ -1,15 +1,15 @@
 -- ~/.config/VelocityNvim/lua/plugins/tokyonight.lua
--- Tokyonight Colorscheme Konfiguration
+-- Tokyonight Colorscheme Configuration
 
 -- Tokyonight Setup
 require("tokyonight").setup({
   -- Tokyonight storm variant
   style = "night",
 
-  -- Performance: Cache kompilierte Highlights
+  -- Performance: Cache compiled highlights
   cache = true,
 
-  -- Andere Optionen
+  -- Other options
   light_style = "day",
   transparent = false,
   terminal_colors = true,
@@ -33,5 +33,5 @@ require("tokyonight").setup({
   on_highlights = function(_, _) end,
 })
 
--- Colorscheme aktivieren
+-- Activate colorscheme
 vim.cmd.colorscheme("tokyonight-night")

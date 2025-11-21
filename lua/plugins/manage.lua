@@ -1,12 +1,12 @@
--- Dieses Skript wird nur manuell ausgeführt, um Plugins zu verwalten.
--- Alle Plugins werden als 'start'-Plugins behandelt und immer geladen.
+-- This script is only executed manually to manage plugins.
+-- All plugins are treated as 'start' plugins and always loaded.
 
 local M = {}
 
--- Sichere fs_stat Funktion für Cross-Version Kompatibilität
+-- Safe fs_stat function for cross-version compatibility
 local fs_stat_func = rawget(vim.uv, 'fs_stat') or rawget(vim.loop, 'fs_stat')
 
--- Eine einfache Liste für alle deine Plugins
+-- A simple list for all your plugins
 M.plugins = {
   ["plenary.nvim"] = "https://github.com/nvim-lua/plenary.nvim",
   ["nvim-web-devicons"] = "https://github.com/nvim-tree/nvim-web-devicons",
@@ -20,45 +20,45 @@ M.plugins = {
   ["lualine.nvim"] = "https://github.com/nvim-lualine/lualine.nvim",
   ["noice.nvim"] = "https://github.com/folke/noice.nvim",
   ["nvim-notify"] = "https://github.com/rcarriga/nvim-notify",
-  -- Ultra-performante Lua Development
+  -- Ultra-performant Lua Development
   ["blink.cmp"] = "https://github.com/Saghen/blink.cmp",
   ["friendly-snippets"] = "https://github.com/rafamadriz/friendly-snippets",
   ["nvim-treesitter"] = "https://github.com/nvim-treesitter/nvim-treesitter",
-  -- Ultra-schneller Fuzzy Finder
+  -- Ultra-fast Fuzzy Finder
   ["fzf-lua"] = "https://github.com/ibhagwan/fzf-lua",
-  -- Ultra-schneller Autoformatter
+  -- Ultra-fast Autoformatter
   ["conform.nvim"] = "https://github.com/stevearc/conform.nvim",
-  -- Code-Block Highlighting
+  -- Code-block Highlighting
   ["hlchunk.nvim"] = "https://github.com/shellRaining/hlchunk.nvim",
   -- Git Integration
   ["gitsigns.nvim"] = "https://github.com/lewis6991/gitsigns.nvim",
-  -- Ultra-performanter Window Picker (Pure Lua, <300 LoC)
+  -- Ultra-performant Window Picker (Pure Lua, <300 LoC)
   ["nvim-window-picker"] = "https://github.com/s1n7ax/nvim-window-picker",
-  -- LSP File Operations für automatische Import-Updates
+  -- LSP File Operations for automatic import updates
   ["nvim-lsp-file-operations"] = "https://github.com/antosha417/nvim-lsp-file-operations",
-  -- SudaWrite für Sudo-Berechtigungen beim Schreiben
+  -- SudaWrite for sudo privileges when writing
   ["suda.vim"] = "https://github.com/lambdalisue/suda.vim",
-  -- Hop für ultra-schnelle Cursor-Navigation
+  -- Hop for ultra-fast cursor navigation
   ["hop.nvim"] = "https://github.com/phaazon/hop.nvim",
   ["nvim-colorizer.lua"] = "https://github.com/NvChad/nvim-colorizer.lua",
-  -- Ultra-performantes Markdown Rendering (löst Treesitter Performance-Probleme)
+  -- Ultra-performant Markdown Rendering (solves Treesitter performance issues)
   ["render-markdown.nvim"] = "https://github.com/MeanderingProgrammer/render-markdown.nvim",
-  -- Startup Time Profiling und Benchmark-Analyse
+  -- Startup Time Profiling and Benchmark Analysis
   ["vim-startuptime"] = "https://github.com/dstein64/vim-startuptime",
 }
 
--- Automatische blink.cmp Rust-Kompilierung nach Updates
+-- Automatic blink.cmp Rust compilation after updates
 local function auto_build_blink_rust(pack_dir)
   local blink_path = pack_dir .. "blink.cmp"
   if fs_stat_func and fs_stat_func(blink_path .. "/Cargo.toml") then
     local icons = require("core.icons")
-    print(icons.status.sync .. " Kompiliere blink.cmp Rust-Binaries...")
+    print(icons.status.sync .. " Compiling blink.cmp Rust binaries...")
 
-    -- Cross-Platform Script Detection
+    -- Cross-platform script detection
     local config_path = vim.fn.stdpath("config") .. "/scripts/setup/"
     local script_name = "blink-cmp-rust-builder-linux.sh"
 
-    -- macOS Detection
+    -- macOS detection
     if vim.fn.has("mac") == 1 or vim.fn.has("macunix") == 1 then
       script_name = "blink-cmp-rust-builder-macos.sh"
     end
@@ -66,34 +66,34 @@ local function auto_build_blink_rust(pack_dir)
     local script_path = config_path .. script_name
     if fs_stat_func and fs_stat_func(script_path) then
       vim.fn.system({ "bash", script_path })
-      print(icons.status.success .. " blink.cmp Rust-Performance aktiviert!")
+      print(icons.status.success .. " blink.cmp Rust performance enabled!")
     else
-      print(icons.status.warn .. " Build-Script nicht gefunden: " .. script_name)
+      print(icons.status.warn .. " Build script not found: " .. script_name)
     end
   end
 end
 
--- Funktion zum Installieren und Aktualisieren
+-- Function for installing and updating
 
 function M.sync()
   local pack_dir = vim.fn.stdpath("data") .. "/site/pack/user/start/"
   if not (fs_stat_func and fs_stat_func(pack_dir)) then
-    vim.fn.mkdir(pack_dir, "p") -- Erstellt den Ordner, falls er nicht existiert
+    vim.fn.mkdir(pack_dir, "p") -- Creates directory if it doesn't exist
   end
   local icons = require("core.icons")
-  print(icons.status.sync .. " Plugin-Synchronisation wird gestartet...")
+  print(icons.status.sync .. " Plugin synchronization starting...")
 
   local blink_updated = false
   for name, url in pairs(M.plugins) do
     local plugin_path = pack_dir .. name
     if not (fs_stat_func and fs_stat_func(plugin_path)) then
-      print("Installiere " .. name .. "...")
+      print("Installing " .. name .. "...")
       vim.fn.system({ "git", "clone", "--depth", "1", url, plugin_path })
       if name == "blink.cmp" then
         blink_updated = true
       end
     else
-      print("Aktualisiere " .. name .. "...")
+      print("Updating " .. name .. "...")
       vim.fn.system({ "git", "-C", plugin_path, "pull" })
       if name == "blink.cmp" then
         blink_updated = true
@@ -101,16 +101,16 @@ function M.sync()
     end
   end
 
-  vim.cmd.packloadall() -- Optional, da 'start'-Plugins beim Neustart automatisch geladen werden
+  vim.cmd.packloadall() -- Optional, as 'start' plugins are automatically loaded on restart
 
-  -- Automatische Rust-Kompilierung nach blink.cmp Updates
+  -- Automatic Rust compilation after blink.cmp updates
   if blink_updated then
     auto_build_blink_rust(pack_dir)
   end
 
   print(
     icons.status.success
-      .. " Plugin-Synchronisation abgeschlossen! Starte Neovim neu, um neue Plugins zu laden."
+      .. " Plugin synchronization complete! Restart Neovim to load new plugins."
   )
 end
 

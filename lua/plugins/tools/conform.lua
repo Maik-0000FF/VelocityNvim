@@ -2,7 +2,7 @@
 -- Prettier-based Formatter System
 
 require("conform").setup({
-  -- Formatter pro Dateityp (Performance Optimized with Intelligent Fallback)
+  -- Formatter per file type (Performance Optimized with Intelligent Fallback)
   formatters_by_ft = {
     -- Lua (Rust-based, fast)
     lua = { "stylua" },
@@ -40,29 +40,29 @@ require("conform").setup({
     rust = { "rustfmt" },
     c = { "clang_format" },
     cpp = { "clang_format" },
-    -- Fallback für unbekannte Dateitypen
+    -- Fallback for unknown file types
     ["_"] = { "trim_whitespace" },
   },
 
-  -- Globale Formatter-Einstellungen
+  -- Global formatter settings
   format_on_save = {
-    -- Automatisches Formatieren beim Speichern
+    -- Automatic formatting on save
     timeout_ms = 2000,
     lsp_fallback = true,
   },
 
-  -- Format nach Delay im Insert-Modus (optional)
+  -- Format after delay in insert mode (optional)
   format_after_save = {
     lsp_fallback = true,
   },
 
-  -- Notify-Level für Formatierungs-Fehler
+  -- Notify level for formatting errors
   notify_on_error = true,
 
-  -- Custom Formatter-Konfigurationen
+  -- Custom formatter configurations
   formatters = {
 
-    -- StyLua für Lua (bessere Performance-Einstellungen)
+    -- StyLua for Lua (better performance settings)
     stylua = {
       prepend_args = {
         "--column-width",
@@ -105,7 +105,7 @@ require("conform").setup({
       stdin = true,
     },
 
-    -- Ruff Import Organizer - Ersetzt isort (deutlich schneller)
+    -- Ruff Import Organizer - Replaces isort (significantly faster)
     ruff_organize_imports = {
       command = "ruff",
       args = {
@@ -119,12 +119,12 @@ require("conform").setup({
       stdin = true,
     },
 
-    -- Shfmt für Shell-Scripts
+    -- Shfmt for shell scripts
     shfmt = {
       prepend_args = { "-i", "2", "-ci" },
     },
 
-    -- ClangFormat für C/C++
+    -- ClangFormat for C/C++
     clang_format = {
       prepend_args = {
         "--style={IndentWidth: 2, TabWidth: 2, UseTab: Never}",
@@ -133,7 +133,7 @@ require("conform").setup({
   },
 })
 
--- Keymaps für manuelles Formatieren
+-- Keymaps for manual formatting
 vim.keymap.set({ "n", "v" }, "<leader>mp", function()
   require("conform").format({
     lsp_fallback = true,
@@ -146,10 +146,10 @@ end, { desc = "Format file or range (in visual mode)" })
 vim.keymap.set("n", "<leader>uf", function()
   local conform = require("conform")
   if conform.will_fallback_lsp() then
-    -- Silent success - Auto-format toggle ist erwartetes Verhalten
+    -- Silent success - auto-format toggle is expected behavior
     conform.setup({ format_on_save = false })
   else
-    -- Silent success - Auto-format toggle ist erwartetes Verhalten
+    -- Silent success - auto-format toggle is expected behavior
     conform.setup({
       format_on_save = {
         timeout_ms = 500,
@@ -167,7 +167,7 @@ vim.keymap.set("n", "<leader>ml", function()
   })
 end, { desc = "Format with StyLua" })
 
--- Format nur bestimmte Zeilen (Visual Mode)
+-- Format only specific lines (Visual Mode)
 vim.keymap.set("v", "<leader>mp", function()
   require("conform").format({
     lsp_fallback = true,
@@ -180,9 +180,9 @@ vim.keymap.set("v", "<leader>mp", function()
   })
 end, { desc = "Format selected lines" })
 
--- Trailing whitespace wird jetzt in core/autocmds.lua behandelt
+-- Trailing whitespace is now handled in core/autocmds.lua
 
--- ConformInfo Command wird jetzt in core/commands.lua als FormatInfo behandelt
+-- ConformInfo command is now handled in core/commands.lua as FormatInfo
 
 -- Performance Status Command
 vim.api.nvim_create_user_command("FormatterPerformanceStatus", function()

@@ -1,16 +1,16 @@
 -- ~/.config/VelocityNvim/lua/plugins/noice.lua
--- Noice Plugin Konfiguration
+-- Noice Plugin Configuration
 
--- Icons laden
+-- Load icons
 local icons = require("core.icons")
 
--- Moderne UI-Einstellungen
+-- Modern UI settings
 vim.opt.cmdheight = 0
 
 -- Noice Setup
 require("noice").setup({
   -- ============================================================================
-  -- CMDLINE-KONFIGURATION
+  -- CMDLINE CONFIGURATION
   -- ============================================================================
   cmdline = {
     enabled = true,
@@ -28,14 +28,14 @@ require("noice").setup({
   },
 
   -- ============================================================================
-  -- NACHRICHTEN-HANDLING
+  -- MESSAGE HANDLING
   -- ============================================================================
   messages = {
-    enabled = false, -- Deaktiviert für saubere UI
+    enabled = false, -- Disabled for clean UI
   },
 
   -- ============================================================================
-  -- POPUP-MENÜ
+  -- POPUP MENU
   -- ============================================================================
   popupmenu = {
     enabled = true,
@@ -44,7 +44,7 @@ require("noice").setup({
   },
 
   -- ============================================================================
-  -- WEITERLEITUNG
+  -- REDIRECT
   -- ============================================================================
   redirect = {
     view = "popup",
@@ -52,7 +52,7 @@ require("noice").setup({
   },
 
   -- ============================================================================
-  -- BEFEHLE
+  -- COMMANDS
   -- ============================================================================
   commands = {
     history = {
@@ -91,7 +91,7 @@ require("noice").setup({
   },
 
   -- ============================================================================
-  -- BENACHRICHTIGUNGEN
+  -- NOTIFICATIONS
   -- ============================================================================
   notify = {
     enabled = true,
@@ -99,7 +99,7 @@ require("noice").setup({
   },
 
   -- ============================================================================
-  -- LSP-INTEGRATION
+  -- LSP INTEGRATION
   -- ============================================================================
   lsp = {
     progress = {
@@ -149,7 +149,7 @@ require("noice").setup({
   },
 
   -- ============================================================================
-  -- MARKDOWN-UNTERSTÜTZUNG
+  -- MARKDOWN SUPPORT
   -- ============================================================================
   markdown = {
     hover = {
@@ -169,7 +169,7 @@ require("noice").setup({
   },
 
   -- ============================================================================
-  -- SYSTEM-OPTIONEN
+  -- SYSTEM OPTIONS
   -- ============================================================================
   health = {
     checker = false,
@@ -188,7 +188,7 @@ require("noice").setup({
   throttle = 1000 / 30,
 
   -- ============================================================================
-  -- VIEW-KONFIGURATION
+  -- VIEW CONFIGURATION
   -- ============================================================================
   views = {
     cmdline_popup = {
@@ -246,7 +246,7 @@ require("noice").setup({
   },
 
   -- ============================================================================
-  -- ROUTE-FILTER
+  -- ROUTE FILTERS
   -- ============================================================================
   routes = {
     {
@@ -269,7 +269,7 @@ require("noice").setup({
       },
       opts = { skip = true },
     },
-    -- Unterdrücke Befehlsanzeige für Leader-Key Befehle
+    -- Suppress command display for leader key commands
     {
       filter = {
         event = "msg_show",
@@ -282,7 +282,7 @@ require("noice").setup({
       },
       opts = { skip = true },
     },
-    -- Unterdrücke spezifische Befehle
+    -- Suppress specific commands
     {
       filter = {
         event = "msg_show",
@@ -301,7 +301,7 @@ require("noice").setup({
 -- Removed force redraw - caused cursor jumping and performance impact
 
 -- ============================================================================
--- STARTUP-CLEANUP
+-- STARTUP CLEANUP
 -- ============================================================================
 vim.api.nvim_create_autocmd("VimEnter", {
   callback = function()
@@ -313,15 +313,15 @@ vim.api.nvim_create_autocmd("VimEnter", {
 })
 
 -- ============================================================================
--- NOICE-BEFEHLE
+-- NOICE COMMANDS
 -- ============================================================================
--- NOTE: Noice Commands deaktiviert weil messages = false für saubere Statusline
+-- NOTE: Noice commands disabled because messages = false for clean statusline
 -- vim.keymap.set("n", "<leader>nh", "<cmd>Noice history<cr>", { desc = "Noice History" })
 -- vim.keymap.set("n", "<leader>nl", "<cmd>Noice last<cr>", { desc = "Noice Last Message" })
 -- vim.keymap.set("n", "<leader>ne", "<cmd>Noice errors<cr>", { desc = "Noice Errors" })
 
 -- ============================================================================
--- NOTIFY-INTEGRATION
+-- NOTIFY INTEGRATION
 -- ============================================================================
 local notify = require("notify")
 
@@ -344,5 +344,5 @@ notify.setup({
   },
 })
 
--- Setze notify als Standard-Handler
+-- Set notify as default handler
 vim.notify = notify

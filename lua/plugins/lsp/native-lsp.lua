@@ -4,7 +4,7 @@
 
 local icons = require("core.icons")
 
--- Standard-Ausschlussverzeichnisse für LSP-Scanning (shared zwischen Funktionen)
+-- Standard exclude directories for LSP scanning (shared between functions)
 local default_exclude_dirs = {
   -- Python
   "venv",
@@ -170,7 +170,7 @@ end
 -- Call global setup
 setup_global_lsp_config()
 
--- Intelligente Lua-Bibliothek-Erkennung (MyNvim-Style - NO SYSTEM CALLS)
+-- Intelligent Lua library detection (MyNvim-Style - NO SYSTEM CALLS)
 local function get_targeted_lua_libraries()
   local libraries = {}
   local project_root = vim.fn.getcwd()
@@ -201,7 +201,7 @@ local function get_targeted_lua_libraries()
     return nil
   end
 
-  -- Check für häufig verwendete Plugins (nur wenn geladen - MyNvim-Style)
+  -- Check for frequently used plugins (only if loaded - MyNvim-Style)
   local common_plugins = {
     { module = "telescope", dir = "telescope.nvim" },
     { module = "fzf-lua", dir = "fzf-lua" },
@@ -241,7 +241,7 @@ local function get_targeted_lua_libraries()
     table.insert(libraries, velocitynvim_lua_dir)
   end
 
-  -- Libraries sind optimiert - keine Debug-Ausgabe nötig
+  -- Libraries are optimized - no debug output needed
 
   return libraries
 end
@@ -574,10 +574,10 @@ vim.lsp.config("jsonls", {
   },
 })
 
--- Cache für bereits gescannte Workspaces
+-- Cache for already scanned workspaces
 local scanned_workspaces = {}
 
--- Funktion zum Scannen aller Dateien im Workspace mit erweiterten Edge Cases
+-- Function for scanning all files in workspace with extended edge cases
 local function scan_workspace_files(client)
   -- EDGE CASE: Client ohne root_dir oder bereits gescannt
   if not client.config.root_dir or scanned_workspaces[client.config.root_dir] then
@@ -834,34 +834,34 @@ vim.api.nvim_create_autocmd("LspAttach", {
     vim.keymap.set({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, opts)
     vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
 
-    -- PRODUKTIVE Diagnostic-Navigation mit Icons
+    -- PRODUCTIVE Diagnostic navigation with icons
     vim.keymap.set("n", "]d", function()
       vim.diagnostic.jump({ count = 1, float = true })
-    end, vim.tbl_extend("force", opts, { desc = "Nächste Diagnostic (mit Float-Info)" }))
+    end, vim.tbl_extend("force", opts, { desc = "Next diagnostic (with float info)" }))
 
     vim.keymap.set("n", "[d", function()
       vim.diagnostic.jump({ count = -1, float = true })
-    end, vim.tbl_extend("force", opts, { desc = "Vorherige Diagnostic (mit Float-Info)" }))
+    end, vim.tbl_extend("force", opts, { desc = "Previous diagnostic (with float info)" }))
 
     vim.keymap.set("n", "]e", function()
       vim.diagnostic.jump({ count = 1, severity = vim.diagnostic.severity.ERROR, float = true })
-    end, vim.tbl_extend("force", opts, { desc = "Nächster Error (mit Float-Info)" }))
+    end, vim.tbl_extend("force", opts, { desc = "Next error (with float info)" }))
 
     vim.keymap.set("n", "[e", function()
       vim.diagnostic.jump({ count = -1, severity = vim.diagnostic.severity.ERROR, float = true })
-    end, vim.tbl_extend("force", opts, { desc = "Vorheriger Error (mit Float-Info)" }))
+    end, vim.tbl_extend("force", opts, { desc = "Previous error (with float info)" }))
 
-    -- Diagnostic-Floating-Window für aktuelle Zeile (KOLLISION BEHOBEN: <leader>e -> <leader>dl)
+    -- Diagnostic floating window for current line (COLLISION FIXED: <leader>e -> <leader>dl)
     vim.keymap.set("n", "<leader>dl", function()
       vim.diagnostic.open_float({ bufnr = bufnr, scope = "cursor" })
-    end, vim.tbl_extend("force", opts, { desc = "Zeige Diagnostic unter Cursor" }))
+    end, vim.tbl_extend("force", opts, { desc = "Show diagnostic under cursor" }))
 
-    -- Alle Diagnostics für Buffer anzeigen
+    -- Show all diagnostics for buffer
     vim.keymap.set("n", "<leader>dq", function()
       vim.diagnostic.setqflist({ open = true })
-    end, vim.tbl_extend("force", opts, { desc = "Alle Diagnostics in Quickfix" }))
+    end, vim.tbl_extend("force", opts, { desc = "All diagnostics in quickfix" }))
 
-    -- LaTeX-spezifische Keymaps
+    -- LaTeX-specific keymaps
     if client.name == "texlab" then
       vim.keymap.set("n", "<leader>lb", function()
         vim.lsp.buf_request(bufnr, "workspace/executeCommand", {
@@ -888,7 +888,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
       end, vim.tbl_extend("force", opts, { desc = "Clean LaTeX" }))
     end
 
-    -- Triggere Workspace-Scan bei erstem Attach
+    -- Trigger workspace scan on first attach
     scan_workspace_files(client)
   end,
 })

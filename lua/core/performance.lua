@@ -1,5 +1,5 @@
 -- ~/core/performance.lua
--- ULTIMATE Performance Mode - Cursor-responsive wie reines Neovim
+-- ULTIMATE Performance Mode - Cursor-responsive like pure Neovim
 
 local M = {}
 
@@ -10,26 +10,26 @@ local performance_mode = {
   cursor_busy = false,
 }
 
--- Deaktiviere UI-Updates während Cursor-Navigation (DIAGNOSTICS AUSGESCHLOSSEN)
+-- Disable UI updates during cursor navigation (DIAGNOSTICS EXCLUDED)
 local function disable_ui_updates()
   if performance_mode.ultra_active then return end
 
   performance_mode.ultra_active = true
   performance_mode.original_updatetime = vim.o.updatetime
 
-  -- Drastisch reduzierte Update-Frequenz während Navigation
-  vim.opt.updatetime = 2000  -- 2 Sekunden statt 250ms
+  -- Drastically reduced update frequency during navigation
+  vim.opt.updatetime = 2000  -- 2 seconds instead of 250ms
 
-  -- KRITISCHE ÄNDERUNG: LSP diagnostics NICHT deaktivieren - sie sollen sichtbar bleiben!
-  -- Die Diagnostics sind bereits optimal konfiguriert und sollen bei Cursor-Bewegung sichtbar bleiben
-  -- Nur die automatischen Updates pausieren, nicht die Anzeige
+  -- CRITICAL CHANGE: Do NOT disable LSP diagnostics - they should remain visible!
+  -- Diagnostics are already optimally configured and should remain visible during cursor movement
+  -- Only pause automatic updates, not the display
   vim.diagnostic.config({
-    update_in_insert = false,  -- Keine Updates während Typing
-    -- virtual_text und signs bleiben aktiviert für dauerhaftes Display!
+    update_in_insert = false,  -- No updates during typing
+    -- virtual_text and signs remain enabled for permanent display!
   })
 end
 
--- Reaktiviere UI-Updates nach Navigation (DIAGNOSTICS BLEIBEN AKTIV)
+-- Re-enable UI updates after navigation (DIAGNOSTICS REMAIN ACTIVE)
 local function enable_ui_updates()
   if not performance_mode.ultra_active then return end
 
@@ -41,16 +41,16 @@ local function enable_ui_updates()
       vim.opt.updatetime = performance_mode.original_updatetime
     end
 
-    -- WICHTIG: Diagnostics-Konfiguration NICHT zurücksetzen!
-    -- Die Diagnostics sollen die in native-lsp.lua definierten Einstellungen behalten
-    -- mit Icons aus core.icons und dauerhaftem Display
+    -- IMPORTANT: Do NOT reset diagnostics configuration!
+    -- Diagnostics should keep the settings defined in native-lsp.lua
+    -- with icons from core.icons and permanent display
 
-  end, 100)  -- 100ms delay nach Navigation
+  end, 100)  -- 100ms delay after navigation
 end
 
 -- ULTRA Performance Mode Setup
 function M.setup()
-  -- Navigation-basierte Performance-Optimierung
+  -- Navigation-based performance optimization
   local navigation_keys = {'j', 'k', 'h', 'l', 'w', 'b', 'e', 'g', 'G', 'f', 'F', 't', 'T', '/', '?', 'n', 'N'}
 
   for _, key in ipairs(navigation_keys) do
@@ -71,7 +71,7 @@ function M.setup()
     end
   })
 
-  -- Silent setup - Performance-Optimierung läuft im Hintergrund
+  -- Silent setup - performance optimization runs in background
 end
 
 -- Status check
@@ -87,10 +87,10 @@ end
 function M.toggle()
   if performance_mode.ultra_active then
     enable_ui_updates()
-    print("Ultra Performance Mode DEAKTIVIERT")
+    print("Ultra Performance Mode DISABLED")
   else
     disable_ui_updates()
-    print("Ultra Performance Mode AKTIVIERT")
+    print("Ultra Performance Mode ENABLED")
   end
 end
 

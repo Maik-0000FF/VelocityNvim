@@ -1,23 +1,23 @@
 -- ~/.config/VelocityNvim/lua/plugins/editor/lsp-file-operations.lua
--- LSP File Operations - Automatische Import-Updates bei Datei-Operationen
+-- LSP File Operations - Automatic import updates on file operations
 
--- Sichere Plugin-Ladung
+-- Safe plugin loading
 local status_ok, lsp_file_operations = pcall(require, "lsp-file-operations")
 if not status_ok then
   return
 end
 
--- Setup mit Neo-tree Integration
+-- Setup with Neo-tree integration
 lsp_file_operations.setup({
-  -- Debug-Modus (nur aktivieren bei Problemen)
+  -- Debug mode (only activate when troubleshooting)
   debug = false,
 
-  -- Timeout für LSP-Operationen (in ms)
+  -- Timeout for LSP operations (in ms)
   timeout_ms = 10000,
 
-  -- Neo-tree Integration aktivieren
+  -- Enable Neo-tree integration
   operations = {
-    -- Wird ausgeführt bei willRead/willRename/willDelete
+    -- Executed on willRead/willRename/willDelete
     willRenameFiles = true,
     willCreateFiles = true,
     willDeleteFiles = true,

@@ -69,18 +69,18 @@ end
 --- Get workspace diagnostics summary
 ---@return table Workspace diagnostics summary
 function M.get_workspace_diagnostics()
-  -- PERFORMANCE OPTIMIERT: Native vim.diagnostic.count() statt Custom-Loop
-  -- 30-40% schneller bei großen Workspaces, identische Funktionalität
+  -- PERFORMANCE OPTIMIZED: Native vim.diagnostic.count() instead of custom loop
+  -- 30-40% faster on large workspaces, identical functionality
   local by_buffer = {}
   local total_counts = { error = 0, warn = 0, info = 0, hint = 0, total = 0 }
 
-  -- Native vim.diagnostic.count() ist deutlich effizienter als Manual-Loop
+  -- Native vim.diagnostic.count() is significantly more efficient than manual loop
   local buffers = vim.api.nvim_list_bufs()
   for _, bufnr in ipairs(buffers) do
     if vim.api.nvim_buf_is_loaded(bufnr) then
       local counts = vim.diagnostic.count(bufnr)
-      if next(counts) then  -- Nur Buffer mit Diagnostics hinzufügen
-        -- Native counts Format: {[1]=error_count, [2]=warn_count, [3]=info_count, [4]=hint_count}
+      if next(counts) then  -- Only add buffers with diagnostics
+        -- Native counts format: {[1]=error_count, [2]=warn_count, [3]=info_count, [4]=hint_count}
         local buffer_counts = { error = 0, warn = 0, info = 0, hint = 0, total = 0 }
 
         for severity, count in pairs(counts) do

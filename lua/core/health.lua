@@ -1,11 +1,11 @@
 -- ~/.config/VelocityNvim/lua/core/health.lua
--- Health checks für VelocityNvim Native Configuration
+-- Health checks for VelocityNvim Native Configuration
 
 local health = vim.health or require("health")
 
 local M = {}
 
--- Helper function für health checks
+-- Helper function for health checks
 local function check_executable(cmd, name, required)
   if vim.fn.executable(cmd) == 1 then
     health.ok(name .. " is installed")
@@ -17,7 +17,7 @@ local function check_executable(cmd, name, required)
   end
 end
 
--- Helper function für Lua module checks
+-- Helper function for Lua module checks
 local function check_module(module_name, description, required)
   local ok, _ = pcall(require, module_name)
   if ok then

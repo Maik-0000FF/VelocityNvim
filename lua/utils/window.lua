@@ -34,13 +34,13 @@ function M.toggle_zoom(winid)
     -- Restore
     vim.api.nvim_command("wincmd =")
     vim.w[winid].zoomed = nil
-    -- Silent success - window operations sind erwartetes Verhalten
+    -- Silent success - window operations are expected behavior
   else
     -- Maximize
     vim.api.nvim_command("wincmd |")
     vim.api.nvim_command("wincmd _")
     vim.w[winid].zoomed = true
-    -- Silent success - window operations sind erwartetes Verhalten
+    -- Silent success - window operations are expected behavior
   end
 
   return true

@@ -52,8 +52,8 @@ end
 function M.close_all(force)
   if not force then
     local choice = vim.fn.confirm(
-      "Alle Buffer schließen? Ungespeicherte Änderungen gehen verloren!",
-      "&Ja\n&Nein",
+      "Close all buffers? Unsaved changes will be lost!",
+      "&Yes\n&No",
       2
     )
     if choice ~= 1 then
@@ -76,7 +76,7 @@ end
 function M.get_stats()
   local all_buffers = vim.api.nvim_list_bufs()
 
-  -- PERFORMANCE: Single-pass counting statt multiple function calls
+  -- PERFORMANCE: Single-pass counting instead of multiple function calls
   local stats = {
     total = #all_buffers,
     valid = 0,

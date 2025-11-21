@@ -1,161 +1,161 @@
 -- ~/.config/VelocityNvim/lua/core/keymaps.lua
--- Native Neovim Keymaps - Minimal und funktional
+-- Native Neovim Keymaps - Minimal and functional
 
 local map = vim.keymap.set
 local opts = { noremap = true, silent = true }
 
--- Befehlsmodus einfacher aufrufen
+-- Enter command mode easier
 map("n", ";", ":", { desc = "CMD: Enter command mode" })
 
--- ESC mit jk im Insert-Modus
+-- ESC with jk in insert mode
 map("i", "jk", "<ESC>", { silent = true, desc = "Exit insert mode" })
 
--- Folding Keymaps (Treesitter-basiert)
-map("n", "zO", "zR", { desc = "Alle Folds öffnen (global)" })
-map("n", "zC", "zM", { desc = "Alle Folds schließen (global)" })
+-- Folding keymaps (Treesitter-based)
+map("n", "zO", "zR", { desc = "Open all folds (global)" })
+map("n", "zC", "zM", { desc = "Close all folds (global)" })
 
 ----------------------------------------
 -- Navigation
 ----------------------------------------
 
--- Effizientere Zeilen-Navigation
-map("n", "j", "gj", { desc = "Visuell nach unten" })
-map("n", "k", "gk", { desc = "Visuell nach oben" })
+-- More efficient line navigation
+map("n", "j", "gj", { desc = "Move down visually" })
+map("n", "k", "gk", { desc = "Move up visually" })
 
--- Schnellere horizontale Bewegung
+-- Faster horizontal movement
 map("n", "<S-h>", "^", { desc = "Go to beginning of line" })
 map("n", "<S-l>", "g_", { desc = "Go to end of line" })
 
--- Insert-Modus Navigation
+-- Insert mode navigation
 map("i", "<C-h>", "<left>", { desc = "Move left in insert mode" })
 map("i", "<C-j>", "<down>", { desc = "Move down in insert mode" })
 map("i", "<C-k>", "<up>", { desc = "Move up in insert mode" })
 map("i", "<C-l>", "<right>", { desc = "Move right in insert mode" })
 
 ----------------------------------------
--- Fenster-Navigation
+-- Window Navigation
 ----------------------------------------
 
--- Einfache Fenster-Navigation
-map("n", "<C-h>", "<C-w>h", { desc = "Fenster links" })
-map("n", "<C-l>", "<C-w>l", { desc = "Fenster rechts" })
-map("n", "<C-j>", "<C-w>j", { desc = "Fenster unten" })
-map("n", "<C-k>", "<C-w>k", { desc = "Fenster oben" })
+-- Simple window navigation
+map("n", "<C-h>", "<C-w>h", { desc = "Window left" })
+map("n", "<C-l>", "<C-w>l", { desc = "Window right" })
+map("n", "<C-j>", "<C-w>j", { desc = "Window below" })
+map("n", "<C-k>", "<C-w>k", { desc = "Window above" })
 
--- Fenster-Größe ändern
+-- Resize windows
 map("n", "<C-Up>", ":resize +1<CR>", opts)
 map("n", "<C-Down>", ":resize -1<CR>", opts)
 map("n", "<C-Left>", ":vertical resize -1<CR>", opts)
 map("n", "<C-Right>", ":vertical resize +1<CR>", opts)
 
 ----------------------------------------
--- Textbearbeitung
+-- Text Editing
 ----------------------------------------
 
--- Suchhervorhebung ausschalten
+-- Turn off search highlighting
 map("n", "<ESC>", ":nohlsearch<CR>", opts)
 
--- Besseres Einrücken
+-- Better indenting
 map("v", "<", "<gv", opts)
 map("v", ">", ">gv", opts)
 
--- Text verschieben
+-- Move text
 map("v", "J", ":m '>+1<CR>gv=gv", opts)
 map("v", "K", ":m '<-2<CR>gv=gv", opts)
 
 ----------------------------------------
--- Buffer und Dateien
+-- Buffers and Files
 ----------------------------------------
 
--- Buffer-Navigation
-map("n", "<leader>j", "<cmd>bnext<CR>", { desc = "Nächster Buffer" })
-map("n", "<leader>k", "<cmd>bprevious<CR>", { desc = "Vorheriger Buffer" })
-map("n", "<leader>bn", "<cmd>enew<CR>", { desc = "Neuer leerer Buffer" })
-map("n", "<leader>bi", "<cmd>enew<CR><cmd>startinsert<CR>", { desc = "Neuer Buffer (Insert-Mode)" })
+-- Buffer navigation
+map("n", "<leader>j", "<cmd>bnext<CR>", { desc = "Next buffer" })
+map("n", "<leader>k", "<cmd>bprevious<CR>", { desc = "Previous buffer" })
+map("n", "<leader>bn", "<cmd>enew<CR>", { desc = "New empty buffer" })
+map("n", "<leader>bi", "<cmd>enew<CR><cmd>startinsert<CR>", { desc = "New buffer (insert mode)" })
 
--- Fenster-Operationen
+-- Window operations
 map("n", "<leader>s\\", ":vsplit<CR>", opts)
 map("n", "<leader>s-", ":split<CR>", opts)
 map("n", "<leader>q", ":q<CR>", opts)
 
--- Datei-Operationen
-map("n", "<leader>w", ":w<CR>", { desc = "Datei speichern" })
-map("n", "<leader>wa", ":wa<CR>", { desc = "Alle Dateien speichern" })
+-- File operations
+map("n", "<leader>w", ":w<CR>", { desc = "Save file" })
+map("n", "<leader>wa", ":wa<CR>", { desc = "Save all files" })
 
--- Buffer schließen
-map("n", "<leader>x", ":%bd|e#|bd#<CR>", { desc = "Alle Buffer außer aktuellen schließen" })
+-- Close buffer
+map("n", "<leader>x", ":%bd|e#|bd#<CR>", { desc = "Close all buffers except current" })
 
--- Sicheres Buffer-Schließen mit Bestätigungsabfrage
+-- Safe buffer close with confirmation prompt
 map("n", "<leader>cc", function()
   local current_buf = vim.api.nvim_get_current_buf()
   local current_name = vim.fn.expand("%:t")
 
-  -- Prüfe ob Buffer modifiziert ist
+  -- Check if buffer is modified
   if vim.bo[current_buf].modified then
-    -- Frage Benutzer, was zu tun ist
+    -- Ask user what to do
     local choice = vim.fn.confirm(
-      "Buffer '" .. current_name .. "' wurde geändert. Was möchten Sie tun?",
-      "&Speichern\n&Verwerfen\n&Abbrechen",
-      1 -- Standard: Speichern
+      "Buffer '" .. current_name .. "' has been modified. What do you want to do?",
+      "&Save\n&Discard\n&Cancel",
+      1 -- Default: Save
     )
 
     if choice == 1 then
-      -- Speichern und schließen
+      -- Save and close
       local ok, err = pcall(function()
         vim.api.nvim_command("w")
       end)
       if not ok then
-        vim.notify("Fehler beim Speichern: " .. err, vim.log.levels.ERROR)
+        vim.notify("Error saving: " .. err, vim.log.levels.ERROR)
         return
       end
     elseif choice == 2 then
-      -- Erzwinge Schließen ohne Speichern
+      -- Force close without saving
       vim.bo[current_buf].modified = false
     else
-      -- Abbrechen
+      -- Cancel
       return
     end
   end
 
-  -- Zähle normale Buffer (nicht speziell, gültig und gelistet)
+  -- Count normal buffers (not special, valid and listed)
   local buf_count = #vim.tbl_filter(function(buf)
     return vim.bo[buf].buflisted and vim.api.nvim_buf_is_valid(buf) and vim.bo[buf].buftype == ""
   end, vim.api.nvim_list_bufs())
 
   if buf_count <= 1 then
-    -- Es ist der letzte normale Buffer
-    -- Speichere den aktuellen Buffer für die Löschung
+    -- It's the last normal buffer
+    -- Save current buffer for deletion
     local buffer_to_delete = current_buf
 
-    -- Erstelle zuerst einen neuen Buffer
+    -- Create a new buffer first
     vim.api.nvim_command("enew")
 
-    -- Lösche den alten Buffer direkt mit seiner ID
+    -- Delete the old buffer directly with its ID
     local ok, err = pcall(vim.api.nvim_buf_delete, buffer_to_delete, { force = true })
     if not ok then
-      -- Falls Löschen fehlschlägt, informiere den Nutzer
-      vim.notify("Konnte Buffer nicht löschen: " .. tostring(err), vim.log.levels.WARN)
+      -- If deletion fails, inform the user
+      vim.notify("Could not delete buffer: " .. tostring(err), vim.log.levels.WARN)
     end
-    -- Silent success - keine Meldung bei erfolgreichem Schließen
+    -- Silent success - no message on successful close
   else
-    -- Mehrere Buffer vorhanden
-    -- Speichere Buffer-ID vor dem Wechsel
+    -- Multiple buffers present
+    -- Save buffer ID before switching
     local buffer_to_delete = current_buf
 
-    -- Wechsle zuerst zu einem anderen Buffer
+    -- Switch to another buffer first
     vim.api.nvim_command("bprevious")
 
-    -- Lösche den spezifischen Buffer
+    -- Delete the specific buffer
     local ok, err = pcall(vim.api.nvim_buf_delete, buffer_to_delete, { force = true })
     if not ok then
-      vim.notify("Fehler beim Schließen: " .. tostring(err), vim.log.levels.ERROR)
+      vim.notify("Error closing: " .. tostring(err), vim.log.levels.ERROR)
     end
-    -- Silent success - keine Meldung bei erfolgreichem Schließen
+    -- Silent success - no message on successful close
   end
-end, { noremap = true, silent = true, desc = "Buffer: Sicher schließen" })
+end, { noremap = true, silent = true, desc = "Buffer: Safe close" })
 
 ----------------------------------------
--- Neo-tree (Dateibrowser)
+-- Neo-tree (File Browser)
 ----------------------------------------
 
 map("n", "<leader>e", "<cmd>Neotree focus<CR>", { desc = "Focus NeoTree" })
@@ -177,22 +177,22 @@ map("n", "<leader>W", "<cmd>SudaWrite<CR>", { desc = "Write with sudo" })
 -- LaTeX Keymaps (Leader: \)
 ----------------------------------------
 
--- LaTeX Status und Info
+-- LaTeX status and info
 map("n", "\\s", "<cmd>LaTeXStatus<CR>", { desc = "LaTeX: Performance Status" })
-map("n", "\\i", "<cmd>LaTeXLivePreview<CR>", { desc = "LaTeX: Live Preview aktivieren" })
+map("n", "\\i", "<cmd>LaTeXLivePreview<CR>", { desc = "LaTeX: Enable live preview" })
 
--- LaTeX Building
-map("n", "\\b", "<cmd>LaTeXBuildTectonic<CR>", { desc = "LaTeX: Build mit Tectonic (Ultra-Fast)" })
-map("n", "\\B", "<cmd>LaTeXBuildTypst<CR>", { desc = "LaTeX: Build mit Typst (Modern)" })
+-- LaTeX building
+map("n", "\\b", "<cmd>LaTeXBuildTectonic<CR>", { desc = "LaTeX: Build with Tectonic (ultra-fast)" })
+map("n", "\\B", "<cmd>LaTeXBuildTypst<CR>", { desc = "LaTeX: Build with Typst (modern)" })
 
--- LaTeX Compilation (traditionell)
+-- LaTeX compilation (traditional)
 map("n", "\\c", function()
   local file = vim.fn.expand("%:p")
   local bufname = vim.fn.bufname()
 
-  -- Prüfe ob es ein gültiger Dateibuffer ist
+  -- Check if it's a valid file buffer
   if not file or file == "" or bufname:match("^neo%-tree") then
-    vim.notify("Kein LaTeX-Dokument geöffnet", vim.log.levels.WARN)
+    vim.notify("No LaTeX document open", vim.log.levels.WARN)
     return
   end
 
@@ -201,60 +201,60 @@ map("n", "\\c", function()
   local basename = vim.fn.fnamemodify(file, ":t:r")
 
   if file:match("%.tex$") then
-    -- Prüfe ob pdflatex verfügbar ist
+    -- Check if pdflatex is available
     if vim.fn.executable("pdflatex") ~= 1 then
-      vim.notify("pdflatex nicht gefunden - installiere texlive-core", vim.log.levels.ERROR)
+      vim.notify("pdflatex not found - install texlive-core", vim.log.levels.ERROR)
       return
     end
 
-    -- Wechsle ins Verzeichnis der .tex-Datei für pdflatex
+    -- Change to .tex file directory for pdflatex
     local original_dir = vim.fn.getcwd()
     vim.fn.chdir(file_dir)
     vim.api.nvim_command("!pdflatex " .. filename)
     vim.fn.chdir(original_dir)
 
-    -- Nach erfolgreichem Kompilieren PDF öffnen
+    -- Open PDF after successful compilation
     vim.defer_fn(function()
       local pdf_file = file_dir .. "/" .. basename .. ".pdf"
       if vim.fn.filereadable(pdf_file) == 1 then
         if vim.fn.executable("zathura") == 1 then
           vim.fn.system("zathura " .. pdf_file .. " &")
         else
-          vim.notify("Zathura nicht verfügbar", vim.log.levels.WARN)
+          vim.notify("Zathura not available", vim.log.levels.WARN)
         end
       else
-        vim.notify("PDF nicht gefunden: " .. pdf_file, vim.log.levels.ERROR)
+        vim.notify("PDF not found: " .. pdf_file, vim.log.levels.ERROR)
       end
-    end, 1000) -- 1s Verzögerung für pdflatex completion
+    end, 1000) -- 1s delay for pdflatex completion
   elseif file:match("%.typ$") then
     vim.api.nvim_command("LaTeXBuildTypst")
 
-    -- Nach Typst-Kompilierung PDF öffnen
+    -- Open PDF after Typst compilation
     vim.defer_fn(function()
       local pdf_file = file_dir .. "/" .. basename .. ".pdf"
       if vim.fn.filereadable(pdf_file) == 1 then
         if vim.fn.executable("zathura") == 1 then
           vim.fn.system("zathura " .. pdf_file .. " &")
         else
-          vim.notify("Zathura nicht verfügbar", vim.log.levels.WARN)
+          vim.notify("Zathura not available", vim.log.levels.WARN)
         end
       else
-        vim.notify("PDF nicht gefunden: " .. pdf_file, vim.log.levels.ERROR)
+        vim.notify("PDF not found: " .. pdf_file, vim.log.levels.ERROR)
       end
-    end, 500) -- 500ms Verzögerung für Typst completion
+    end, 500) -- 500ms delay for Typst completion
   else
-    vim.notify("Keine LaTeX/Typst-Datei", vim.log.levels.WARN)
+    vim.notify("Not a LaTeX/Typst file", vim.log.levels.WARN)
   end
-end, { desc = "LaTeX: Compile aktueller Datei + Anzeige" })
+end, { desc = "LaTeX: Compile current file + display" })
 
--- LaTeX Viewer
+-- LaTeX viewer
 map("n", "\\v", function()
   local current_file = vim.fn.expand("%:p")
   local bufname = vim.fn.bufname()
 
-  -- Prüfe ob es ein gültiger Dateibuffer ist
+  -- Check if it's a valid file buffer
   if not current_file or current_file == "" or bufname:match("^neo%-tree") then
-    vim.notify("Kein LaTeX-Dokument geöffnet", vim.log.levels.WARN)
+    vim.notify("No LaTeX document open", vim.log.levels.WARN)
     return
   end
 
@@ -265,16 +265,16 @@ map("n", "\\v", function()
   if vim.fn.filereadable(file) == 1 then
     if vim.fn.executable("zathura") == 1 then
       vim.fn.system("zathura " .. file .. " &")
-      -- Silent success - PDF öffnen ist erwartetes Verhalten
+      -- Silent success - opening PDF is expected behavior
     else
-      vim.notify("Zathura nicht verfügbar", vim.log.levels.WARN)
+      vim.notify("Zathura not available", vim.log.levels.WARN)
     end
   else
-    vim.notify("PDF nicht gefunden: " .. file, vim.log.levels.ERROR)
+    vim.notify("PDF not found: " .. file, vim.log.levels.ERROR)
   end
-end, { desc = "LaTeX: PDF Viewer öffnen" })
+end, { desc = "LaTeX: Open PDF viewer" })
 
--- LaTeX Cleanup
+-- LaTeX cleanup
 map("n", "\\x", function()
   local extensions =
     { "aux", "log", "out", "toc", "bbl", "blg", "fdb_latexmk", "fls", "synctex.gz" }
@@ -294,14 +294,14 @@ map("n", "\\x", function()
   if #cleaned > 0 then
     vim.notify("Auxiliary files cleaned: " .. table.concat(cleaned, ", "), vim.log.levels.INFO)
   else
-    vim.notify("Keine Auxiliary files gefunden", vim.log.levels.INFO)
+    vim.notify("No auxiliary files found", vim.log.levels.INFO)
   end
-end, { desc = "LaTeX: Auxiliary files bereinigen" })
+end, { desc = "LaTeX: Clean auxiliary files" })
 
--- LaTeX Schnell-Kompilierung + Anzeige
+-- LaTeX quick compilation + display
 map("n", "\\<CR>", function()
   local latex_perf = require("utils.latex-performance")
   local current_file = vim.fn.expand("%:p")
   latex_perf.build_with_tectonic(current_file)
-  -- PDF-Öffnen ist bereits in build_with_tectonic() integriert
-end, { desc = "LaTeX: Quick Build + Anzeige" })
+  -- Opening PDF is already integrated in build_with_tectonic()
+end, { desc = "LaTeX: Quick build + display" })

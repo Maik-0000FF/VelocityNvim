@@ -1,27 +1,27 @@
 -- ~/.config/VelocityNvim/lua/utils/rust-performance.lua
--- Rust Performance-Tools für VelocityNvim
+-- Rust performance tools for VelocityNvim
 
 local M = {}
 
--- Sichere Cross-Version Kompatibilität für uv API functions
+-- Safe cross-version compatibility for uv API functions
 local fs_stat_func = rawget(vim.uv, 'fs_stat') or rawget(vim.loop, 'fs_stat')
 local fs_mkdir_func = rawget(vim.uv, 'fs_mkdir') or rawget(vim.loop, 'fs_mkdir')
 local fs_unlink_func = rawget(vim.uv, 'fs_unlink') or rawget(vim.loop, 'fs_unlink')
 local fs_symlink_func = rawget(vim.uv, 'fs_symlink') or rawget(vim.loop, 'fs_symlink')
 
--- Rust-basierte Tools Checker
+-- Rust-based tools checker
 M.rust_tools = {
-  fzf = "fzf",           -- Fuzzy finder (für fzf-lua und blink.cmp)
-  rg = "rg",             -- ripgrep für schnelle Suche
-  fd = "fd",             -- fd für schnelle Dateifindung
-  bat = "bat",           -- bat für Syntax-Highlighting in Previews
-  ["git-delta"] = "delta", -- git-delta für Git-Diffs (INTEGRATION AKTIV!)
-  eza = "eza",           -- eza für bessere ls-Alternative (Community-Fork von exa)
-  hexyl = "hexyl",       -- hexyl für Hex-Dumps
-  hyperfine = "hyperfine", -- Benchmarking-Tool
+  fzf = "fzf",           -- Fuzzy finder (for fzf-lua and blink.cmp)
+  rg = "rg",             -- ripgrep for fast search
+  fd = "fd",             -- fd for fast file finding
+  bat = "bat",           -- bat for syntax highlighting in previews
+  ["git-delta"] = "delta", -- git-delta for Git diffs (INTEGRATION ACTIVE!)
+  eza = "eza",           -- eza for better ls alternative (community fork of exa)
+  hexyl = "hexyl",       -- hexyl for hex dumps
+  hyperfine = "hyperfine", -- Benchmarking tool
 }
 
--- Prüfe verfügbare Rust-Tools
+-- Check available Rust tools
 function M.check_rust_tools()
   local available = {}
   local missing = {}
@@ -46,22 +46,22 @@ function M.get_delta_status()
   local use_delta = vim.fn.executable("delta") == 1
 
   if use_delta then
-    print(icons.status.success .. " Delta Git Performance: AKTIV")
+    print(icons.status.success .. " Delta Git Performance: ACTIVE")
     print("  " .. icons.git.branch .. " gitsigns.nvim: Enhanced diffs activated")
     print("  " .. icons.git.branch .. " fzf-lua: Git commits/status with delta previews")
     print("  " .. icons.misc.gear .. " Command: delta --version")
     local version = vim.fn.system("delta --version"):gsub("\n", "")
     print("  " .. icons.misc.info .. " Version: " .. version)
   else
-    print(icons.status.warn .. " Delta Git Performance: NICHT INSTALLIERT")
+    print(icons.status.warn .. " Delta Git Performance: NOT INSTALLED")
     print("  " .. icons.misc.gear .. " Installation: sudo pacman -S git-delta")
-    print("  " .. icons.misc.info .. " Benefit: 10x bessere Git-Diffs mit Syntax-Highlighting")
+    print("  " .. icons.misc.info .. " Benefit: 10x better Git diffs with syntax highlighting")
   end
 
   return use_delta
 end
 
--- Performance-Status für Rust-basierte Plugins
+-- Performance status for Rust-based plugins
 function M.get_performance_status()
   local icons = require("core.icons")
   local status = M.check_rust_tools()
@@ -70,22 +70,22 @@ function M.get_performance_status()
   print("")
 
   -- Blink.cmp Status
-  local blink_status = icons.status.info .. " Unbekannt"
+  local blink_status = icons.status.info .. " Unknown"
   local ok, _ = pcall(require, "blink.cmp")
   if ok then
-    -- Versuche Konfiguration zu lesen (kann je nach Version variieren)
-    blink_status = icons.status.success .. " Rust FZF aktiv"
+    -- Try reading configuration (may vary by version)
+    blink_status = icons.status.success .. " Rust FZF active"
   end
 
   print(icons.misc.folder .. " Plugin Status:")
   print("  • blink.cmp:   " .. blink_status)
   print("  • fzf-lua:     " .. (status.available.fzf and
-        icons.status.success .. " Native fzf aktiv" or
-        icons.status.error .. " Native fzf fehlt"))
+        icons.status.success .. " Native fzf active" or
+        icons.status.error .. " Native fzf missing"))
   print("  • treesitter:  " .. icons.status.success .. " Native C-Parser")
   print("")
 
-  print(icons.misc.build .. " Verfügbare Tools:")
+  print(icons.misc.build .. " Available Tools:")
   for name, cmd in pairs(status.available) do
     local display_cmd = name == "git-delta" and "git-delta" or cmd
     print(string.format("  • %-12s %s %s", name, icons.status.success, display_cmd))
@@ -93,13 +93,13 @@ function M.get_performance_status()
 
   if next(status.missing) then
     print("")
-    print(icons.status.error .. " Fehlende Tools:")
+    print(icons.status.error .. " Missing Tools:")
     for name, cmd in pairs(status.missing) do
       local display_cmd = name == "git-delta" and "git-delta" or cmd
       print(string.format("  • %-12s %s %s", name, icons.status.error, display_cmd))
     end
     print("")
-    -- Mapping: Tool-Name -> Package-Namen (Arch & Homebrew sind identisch)
+    -- Mapping: Tool name -> package name (Arch & Homebrew are identical)
     local package_names = {
       fzf = "fzf",
       rg = "ripgrep",
@@ -111,7 +111,7 @@ function M.get_performance_status()
       hyperfine = "hyperfine",
     }
 
-    -- Installation-Hinweise mit korrekten Package-Namen
+    -- Installation instructions with correct package names
     local install_pkgs = {}
     for name, _ in pairs(status.missing) do
       local pkg_name = package_names[name] or name
@@ -129,19 +129,19 @@ function M.build_blink_rust()
   local icons = require("core.icons")
 
   if not (fs_stat_func and fs_stat_func(blink_path)) then
-    print(icons.status.error .. " Blink.cmp Plugin nicht gefunden!")
+    print(icons.status.error .. " Blink.cmp plugin not found!")
     return false
   end
 
-  -- Rust-Check
+  -- Rust check
   if vim.fn.executable("cargo") ~= 1 then
-    print(icons.status.error .. " Cargo nicht gefunden! Installiere Rust: https://rustup.rs/")
+    print(icons.status.error .. " Cargo not found! Install Rust: https://rustup.rs/")
     return false
   end
 
-  print(icons.status.sync .. " Kompiliere Blink.cmp Rust-Binary...")
+  print(icons.status.sync .. " Compiling Blink.cmp Rust binary...")
 
-  -- In blink.cmp Verzeichnis wechseln und bauen
+  -- Switch to blink.cmp directory and build
   local old_cwd = vim.fn.getcwd()
   vim.api.nvim_command("cd " .. blink_path)
 
@@ -152,14 +152,14 @@ function M.build_blink_rust()
   vim.api.nvim_command("cd " .. old_cwd)
 
   if exit_code == 0 then
-    print(icons.status.success .. " Rust-Binary erfolgreich kompiliert!")
+    print(icons.status.success .. " Rust binary compiled successfully!")
 
-    -- Symlink von ultra zu release erstellen für Plugin-Kompatibilität
+    -- Create symlink from ultra to release for plugin compatibility
     local ultra_path = blink_path .. "/target/ultra/libblink_cmp_fuzzy.so"
     local release_path = blink_path .. "/target/release/libblink_cmp_fuzzy.so"
 
     if fs_stat_func and fs_stat_func(ultra_path) then
-      -- Erstelle release-Verzeichnis falls es nicht existiert
+      -- Create release directory if it doesn't exist
       local release_dir = blink_path .. "/target/release"
       if not (fs_stat_func and fs_stat_func(release_dir)) then
         if fs_mkdir_func then
@@ -167,7 +167,7 @@ function M.build_blink_rust()
         end
       end
 
-      -- Entferne alten Symlink und erstelle neuen
+      -- Remove old symlink and create new one
       if fs_unlink_func then
         pcall(fs_unlink_func, release_path)
       end
@@ -177,33 +177,33 @@ function M.build_blink_rust()
       end
 
       if link_ok then
-        print(icons.performance.fast .. " Ultra-Profile Binary zu release verlinkt!")
+        print(icons.performance.fast .. " Ultra-Profile binary linked to release!")
       else
-        print(icons.status.warn .. " Symlink-Erstellung fehlgeschlagen: " .. (link_err or "unknown"))
+        print(icons.status.warn .. " Symlink creation failed: " .. (link_err or "unknown"))
       end
     end
 
-    print(icons.performance.fast .. " Blink.cmp nutzt jetzt Ultra-Performance Rust-Fuzzy-Matching!")
+    print(icons.performance.fast .. " Blink.cmp now uses Ultra-Performance Rust fuzzy matching!")
     return true
   else
-    print(icons.status.error .. " Kompilierung fehlgeschlagen:")
+    print(icons.status.error .. " Compilation failed:")
     print(output)
     return false
   end
 end
 
--- Performance-Benchmark für Fuzzy-Matching
+-- Performance benchmark for fuzzy matching
 function M.benchmark_fuzzy_performance()
   local icons = require("core.icons")
 
   if vim.fn.executable("hyperfine") ~= 1 then
-    print(icons.status.warn .. " hyperfine nicht verfügbar - installiere mit: cargo install hyperfine")
+    print(icons.status.warn .. " hyperfine not available - install with: cargo install hyperfine")
     return
   end
 
-  print(icons.performance.benchmark .. " Benchmark läuft...")
+  print(icons.performance.benchmark .. " Benchmark running...")
 
-  -- Einfacher Test mit fzf vs grep
+  -- Simple test with fzf vs grep
   local test_cmd = [[
     hyperfine --warmup 3 \
       'echo "test\nother\nstring\nmatch" | fzf -f "te"' \
@@ -214,23 +214,23 @@ function M.benchmark_fuzzy_performance()
   vim.fn.system(test_cmd)
 
   if vim.fn.filereadable("/tmp/fuzzy_benchmark.md") == 1 then
-    print(icons.status.success .. " Benchmark abgeschlossen - siehe /tmp/fuzzy_benchmark.md")
+    print(icons.status.success .. " Benchmark completed - see /tmp/fuzzy_benchmark.md")
   end
 end
 
--- Mold Linker Detection und Setup
+-- Mold Linker Detection and Setup
 function M.check_mold_linker()
   local icons = require("core.icons")
   local has_mold = vim.fn.executable("mold") == 1
 
   if has_mold then
-    print(icons.status.success .. " Mold Linker: VERFÜGBAR")
-    print("  " .. icons.performance.fast .. " 300-500% schnelleres Rust-Linking aktiv!")
+    print(icons.status.success .. " Mold Linker: AVAILABLE")
+    print("  " .. icons.performance.fast .. " 300-500% faster Rust linking active!")
     return true
   else
-    print(icons.status.warn .. " Mold Linker: NICHT INSTALLIERT")
+    print(icons.status.warn .. " Mold Linker: NOT INSTALLED")
     print("  " .. icons.misc.gear .. " Installation: sudo pacman -S mold clang")
-    print("  " .. icons.performance.fast .. " Benefit: 5-10x schnelleres Rust-Linking")
+    print("  " .. icons.performance.fast .. " Benefit: 5-10x faster Rust linking")
     return false
   end
 end
@@ -245,40 +245,40 @@ function M.setup_cargo_ultra_profile()
 [profile.ultra]
 inherits = "release"
 lto = "fat"                    # Fat Link-Time-Optimization
-codegen-units = 1              # Single codegen unit für maximale Optimierung
-panic = "abort"                # Kleinere Binaries
-opt-level = 3                  # Maximale Optimierung
+codegen-units = 1              # Single codegen unit for maximum optimization
+panic = "abort"                # Smaller binaries
+opt-level = 3                  # Maximum optimization
 
 [profile.dev.package."*"]
-opt-level = 2                  # Dependencies optimiert für dev builds
+opt-level = 2                  # Dependencies optimized for dev builds
 
 [build]
-rustflags = ["-C", "target-cpu=native"]  # CPU-spezifische Optimierungen
+rustflags = ["-C", "target-cpu=native"]  # CPU-specific optimizations
 ]]
 
-  -- Prüfe ob mold verfügbar ist und füge es hinzu
+  -- Check if mold is available and add it
   if vim.fn.executable("mold") == 1 then
     ultra_profile = ultra_profile .. [[
 rustflags = ["-C", "link-arg=-fuse-ld=mold", "-C", "target-cpu=native"]
 ]]
   end
 
-  -- Schreibe config (append mode)
+  -- Write config (append mode)
   local file = io.open(cargo_config, "a")
   if file then
     file:write("\n" .. ultra_profile)
     file:close()
-    print(icons.status.success .. " Cargo Ultra-Profile konfiguriert!")
+    print(icons.status.success .. " Cargo Ultra-Profile configured!")
     print("  " .. icons.misc.gear .. " Location: " .. cargo_config)
     print("  " .. icons.performance.fast .. " Usage: cargo build --profile ultra")
     return true
   else
-    print(icons.status.error .. " Konnte Cargo-Config nicht schreiben!")
+    print(icons.status.error .. " Could not write Cargo config!")
     return false
   end
 end
 
--- ERWEITERTE Performance-Analyse
+-- EXTENDED Performance Analysis
 function M.analyze_rust_ecosystem()
   local analysis = {
     toolchain = {},
@@ -350,7 +350,7 @@ function M.generate_adaptive_lsp_config()
     }
   end
 
-  print(icons.performance.optimize .. " Adaptive rust-analyzer Konfiguration generiert:")
+  print(icons.performance.optimize .. " Adaptive rust-analyzer configuration generated:")
   print("  " .. icons.misc.gear .. " RAM: " .. analysis.toolchain.total_memory_gb .. "GB -> " ..
     (analysis.toolchain.total_memory_gb >= 16 and "High-Performance" or
      analysis.toolchain.total_memory_gb >= 8 and "Balanced" or "Conservative"))
@@ -375,15 +375,15 @@ function M.setup_cross_compilation()
   for _, target in ipairs(targets) do
     local has_target = installed_list:find(target, 1, true) ~= nil
     if has_target then
-      print("  " .. icons.status.success .. " " .. target .. " (installiert)")
+      print("  " .. icons.status.success .. " " .. target .. " (installed)")
     else
-      print("  " .. icons.status.warn .. " " .. target .. " - installiere mit: rustup target add " .. target)
+      print("  " .. icons.status.warn .. " " .. target .. " - install with: rustup target add " .. target)
     end
   end
 
-  -- Cargo.toml Template für Cross-Compilation
+  -- Cargo.toml Template for Cross-Compilation
   local cross_config = [[
-# Cross-Compilation Konfiguration für VelocityNvim
+# Cross-Compilation Configuration for VelocityNvim
 [target.x86_64-unknown-linux-musl]
 linker = "x86_64-linux-musl-gcc"
 
@@ -397,7 +397,7 @@ linker = "aarch64-linux-gnu-gcc"
   return cross_config
 end
 
--- Ultimate-Setup: Alles in einem Command (ERWEITERT)
+-- Ultimate Setup: All in one command (EXTENDED)
 function M.ultimate_setup()
   local icons = require("core.icons")
   local status = M.check_rust_tools()
@@ -414,7 +414,7 @@ function M.ultimate_setup()
   print("  " .. icons.misc.gear .. " Cargo: " .. analysis.toolchain.cargo_version)
 
   -- 1. Tool Status
-  print("\n1. " .. icons.misc.gear .. " Rust-Tools Status:")
+  print("\n1. " .. icons.misc.gear .. " Rust Tools Status:")
   local available_count = 0
   local total_count = 0
 
@@ -424,7 +424,7 @@ function M.ultimate_setup()
       available_count = available_count + 1
       print("  " .. icons.status.success .. " " .. name)
     else
-      print("  " .. icons.status.error .. " " .. name .. " - installiere mit: cargo install " .. cmd)
+      print("  " .. icons.status.error .. " " .. name .. " - install with: cargo install " .. cmd)
     end
   end
 
@@ -440,37 +440,37 @@ function M.ultimate_setup()
   local blink_path = vim.fn.stdpath("data") .. "/site/pack/user/start/blink.cmp"
   local has_blink_rust = fs_stat_func and fs_stat_func(blink_path .. "/target/release") ~= nil
   if has_blink_rust then
-    print("  " .. icons.status.success .. " Rust-Binaries kompiliert")
+    print("  " .. icons.status.success .. " Rust binaries compiled")
   else
-    print("  " .. icons.status.warn .. " Rust-Binaries fehlen - führe :RustBuildBlink aus")
+    print("  " .. icons.status.warn .. " Rust binaries missing - run :RustBuildBlink")
   end
 
   -- 4. LSP Adaptive Configuration
   print("\n4. " .. icons.performance.optimize .. " rust-analyzer Adaptive Config:")
   M.generate_adaptive_lsp_config()
 
-  -- 5. Performance Score (ERWEITERT)
+  -- 5. Performance Score (EXTENDED)
   print("\n5. " .. icons.status.rocket .. " ULTIMATE Performance Score:")
-  local score = available_count / total_count * 30  -- 30% für Tools
-  score = score + (has_mold and 25 or 0)             -- 25% für mold
-  score = score + (has_blink_rust and 25 or 0)       -- 25% für blink
-  score = score + (analysis.toolchain.has_nightly and 10 or 0)  -- 10% für nightly
-  score = score + (analysis.toolchain.total_memory_gb >= 16 and 10 or 5)  -- 10%/5% für RAM
+  local score = available_count / total_count * 30  -- 30% for tools
+  score = score + (has_mold and 25 or 0)             -- 25% for mold
+  score = score + (has_blink_rust and 25 or 0)       -- 25% for blink
+  score = score + (analysis.toolchain.has_nightly and 10 or 0)  -- 10% for nightly
+  score = score + (analysis.toolchain.total_memory_gb >= 16 and 10 or 5)  -- 10%/5% for RAM
 
-  print(string.format("  " .. icons.performance.benchmark .. " Aktuelle Bewertung: %.1f/10", score/10))
+  print(string.format("  " .. icons.performance.benchmark .. " Current Rating: %.1f/10", score/10))
 
   if score >= 95 then
-    print("  " .. icons.status.success .. " ULTIMATE PERFORMANCE erreicht! " .. icons.misc.party)
+    print("  " .. icons.status.success .. " ULTIMATE PERFORMANCE achieved! " .. icons.misc.party)
   elseif score >= 85 then
-    print("  " .. icons.performance.fast .. " HERVORRAGEND - nur minimale Verbesserungen möglich")
+    print("  " .. icons.performance.fast .. " EXCELLENT - only minimal improvements possible")
   elseif score >= 70 then
-    print("  " .. icons.status.success .. " SEHR GUT - einige Optimierungen verfügbar")
+    print("  " .. icons.status.success .. " VERY GOOD - some optimizations available")
   else
-    print("  " .. icons.status.warn .. " VERBESSERUNGEN empfohlen - siehe Empfehlungen")
+    print("  " .. icons.status.warn .. " IMPROVEMENTS recommended - see recommendations")
   end
 
-  -- 6. Konkrete Empfehlungen (ERWEITERT)
-  print("\n6. " .. icons.misc.lightbulb .. " ULTIMATE Optimierungsplan:")
+  -- 6. Concrete Recommendations (EXTENDED)
+  print("\n6. " .. icons.misc.lightbulb .. " ULTIMATE Optimization Plan:")
 
   if available_count < total_count then
     print("  " .. icons.status.warn .. " Tools: cargo install " .. table.concat(vim.tbl_values(status.missing), " "))
@@ -489,7 +489,7 @@ function M.ultimate_setup()
   end
 
   if analysis.toolchain.total_memory_gb < 16 then
-    print("  " .. icons.misc.info .. " RAM: " .. analysis.toolchain.total_memory_gb .. "GB -> Adaptive LSP Config aktiv")
+    print("  " .. icons.misc.info .. " RAM: " .. analysis.toolchain.total_memory_gb .. "GB -> Adaptive LSP Config active")
   end
 
   print("  " .. icons.performance.fast .. " Ultra-Profile: :RustCargoUltra (Fat-LTO + native CPU)")
@@ -505,33 +505,33 @@ function M.ultimate_setup()
   }
 end
 
--- Auto-Setup für optimale Rust-Performance
+-- Auto-Setup for optimal Rust performance
 function M.optimize_for_rust()
   local status = M.check_rust_tools()
   local icons = require("core.icons")
 
-  print(icons.misc.gear .. " Optimiere für Rust-Performance...")
+  print(icons.misc.gear .. " Optimizing for Rust performance...")
 
-  -- Konfiguriere vim.opt für bessere Performance
-  vim.opt.updatetime = 50        -- Schnellere Updates
+  -- Configure vim.opt for better performance
+  vim.opt.updatetime = 50        -- Faster updates
   vim.opt.timeout = true
-  vim.opt.timeoutlen = 500       -- Schnellere Keymap-Timeouts
-  vim.opt.ttimeoutlen = 10       -- Sehr schnelle Terminal-Escapes
+  vim.opt.timeoutlen = 500       -- Faster keymap timeouts
+  vim.opt.ttimeoutlen = 10       -- Very fast terminal escapes
 
-  -- Lazy-Loading für bessere Startzeit
-  vim.opt.lazyredraw = false     -- Keine lazy redraws (kann bei Rust-Tools stören)
-  vim.opt.synmaxcol = 200        -- Syntax nur bis Spalte 200 (Performance)
+  -- Lazy-loading for better startup time
+  vim.opt.lazyredraw = false     -- No lazy redraws (can interfere with Rust tools)
+  vim.opt.synmaxcol = 200        -- Syntax only up to column 200 (performance)
 
-  print(icons.status.success .. " Vim-Optionen für Rust-Performance optimiert!")
+  print(icons.status.success .. " Vim options optimized for Rust performance!")
 
-  -- Empfehlungen ausgeben
+  -- Output recommendations
   print("")
-  print(icons.status.rocket .. " Performance-Empfehlungen:")
-  print("  1. Nutze native fzf: " .. (status.available.fzf and icons.status.success or icons.status.error .. " cargo install fzf"))
-  print("  2. Nutze ripgrep: " .. (status.available.rg and icons.status.success or icons.status.error .. " cargo install ripgrep"))
-  print("  3. Nutze fd: " .. (status.available.fd and icons.status.success or icons.status.error .. " cargo install fd-find"))
-  print("  4. Nutze bat: " .. (status.available.bat and icons.status.success or icons.status.error .. " cargo install bat"))
-  print("  5. Blink.cmp Rust: " .. icons.status.sync .. " Führe :RustBuildBlink aus")
+  print(icons.status.rocket .. " Performance Recommendations:")
+  print("  1. Use native fzf: " .. (status.available.fzf and icons.status.success or icons.status.error .. " cargo install fzf"))
+  print("  2. Use ripgrep: " .. (status.available.rg and icons.status.success or icons.status.error .. " cargo install ripgrep"))
+  print("  3. Use fd: " .. (status.available.fd and icons.status.success or icons.status.error .. " cargo install fd-find"))
+  print("  4. Use bat: " .. (status.available.bat and icons.status.success or icons.status.error .. " cargo install bat"))
+  print("  5. Blink.cmp Rust: " .. icons.status.sync .. " Run :RustBuildBlink")
 end
 
 -- COMPREHENSIVE Performance Benchmarking System (ULTIMATE)

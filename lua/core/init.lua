@@ -1,45 +1,45 @@
 -- ~/.config/VelocityNvim/lua/core/init.lua
 -- Core Module Loader - Native Neovim Configuration
 
--- PERFORMANCE: Inline first-run check (vermeidet 580-Zeilen-Load bei jedem Start)
--- Prüfe direkt ob Version-Datei existiert, statt first-run.lua zu laden
+-- PERFORMANCE: Inline first-run check (avoids loading 580 lines on every start)
+-- Check directly if version file exists instead of loading first-run.lua
 local version_file = vim.fn.stdpath("data") .. "/velocitynvim_version"
 if vim.fn.filereadable(version_file) == 0 then
-  -- Erste Installation - lade vollständiges first-run System
+  -- First installation - load complete first-run system
   local first_run = require("core.first-run")
 
-  -- Interaktiver Start: Zeige Installation UI
+  -- Interactive start: Show installation UI
   if first_run.is_needed() then
     first_run.run_installation()
     return  -- Exit early - installation will reload config when complete
   end
 
-  -- Headless/script mode mit fehlenden Plugins: Warnung
+  -- Headless/script mode with missing plugins: Warning
   if not first_run.quick_check() then
     vim.notify("VelocityNvim: First-run installation required. Start interactively.", vim.log.levels.WARN)
     return
   end
 end
--- Normaler Start - first-run.lua wurde NICHT geladen (~2.2ms gespart)
+-- Normal start - first-run.lua was NOT loaded (~2.2ms saved)
 
--- Version-System initialisieren (nach first-run check)
+-- Initialize version system (after first-run check)
 local version = require("core.version")
 version.init()
 
--- Lade Basis-Module (Reihenfolge wichtig!)
-require("core.options")    -- Grundlegende Einstellungen
+-- Load base modules (order is important!)
+require("core.options")    -- Basic settings
 
--- ULTIMATE Performance System (nach options, vor plugins)
+-- ULTIMATE Performance System (after options, before plugins)
 require("core.performance").setup()
 
-require("core.keymaps")    -- Tastenkürzel
-require("core.autocmds")   -- Event-Handler
-require("core.commands")   -- Benutzerbefehle
+require("core.keymaps")    -- Keybindings
+require("core.autocmds")   -- Event handlers
+require("core.commands")   -- User commands
 
--- Lade Plugins (nach Core-Setup)
+-- Load plugins (after core setup)
 require("plugins")
 
--- Terminal-Utilities initialisieren (nach Plugins für Icons)
+-- Initialize terminal utilities (after plugins for icons)
 vim.defer_fn(function()
   local utils = require("utils")
   utils.terminal().setup()

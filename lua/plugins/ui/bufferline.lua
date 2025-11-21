@@ -1,7 +1,7 @@
 -- ~/.config/VelocityNvim/lua/plugins/bufferline.lua
--- Bufferline Plugin Konfiguration
+-- Bufferline Plugin Configuration
 
--- Icons laden
+-- Load icons
 local icons = require("core.icons")
 
 -- Bufferline Setup
@@ -11,20 +11,20 @@ require("bufferline").setup({
       require("bufferline").style_preset.no_italic,
       require("bufferline").style_preset.no_bold,
     },
-    -- Icons aus core.icons verwenden
+    -- Use icons from core.icons
     close_icon = icons.ui.close,
     modified_icon = icons.files.modified,
     buffer_close_icon = icons.ui.close,
-    -- Stil der Tabs
+    -- Tab style
     separator_style = "slant",
-    -- Zeige die Buffer-Nummer an
+    -- Show buffer number
     numbers = "ordinal",
-    -- Kürze lange Dateinamen
+    -- Truncate long filenames
     truncate_names = true,
-    -- PERFORMANCE: Alle Diagnostics mit Icons anzeigen (optimiert)
+    -- PERFORMANCE: Show all diagnostics with icons (optimized)
     diagnostics = "nvim_lsp",
     diagnostics_update_in_insert = false,
-    -- Zeige alle Diagnostic-Typen mit korrekten Icons aus core.icons
+    -- Show all diagnostic types with correct icons from core.icons
     diagnostics_indicator = function(_, _, diagnostics_dict, _)
       local result = {}
 
@@ -53,20 +53,20 @@ require("bufferline").setup({
       end
       return ""
     end,
-    -- Buffer schließen
+    -- Close buffer
     close_command = "bdelete! %d",
-    -- Zeige Icons
+    -- Show icons
     show_buffer_icons = true,
     show_buffer_close_icons = true,
     show_close_icon = true,
     show_tab_indicators = true,
-    -- Buffer wechseln mit Mausklick
+    -- Switch buffer with mouse click
     left_mouse_command = "buffer %d",
     right_mouse_command = "bdelete! %d",
-    -- Maximale Breite für Buffer-Tabs
+    -- Maximum width for buffer tabs
     max_name_length = 18,
     tab_size = 18,
-    -- Immer die Bufferline anzeigen
+    -- Always show bufferline
     always_show_bufferline = true,
     -- Neo-tree Integration
     offsets = {
@@ -77,34 +77,34 @@ require("bufferline").setup({
         separator = true,
       },
     },
-    -- Weitere Optionen
+    -- Additional options
     color_icons = true,
     sort_by = "id",
   },
 })
 
--- Tastenkombinationen für Bufferline
+-- Key mappings for Bufferline
 vim.keymap.set(
   "n",
   "<leader>j",
   "<cmd>BufferLineCycleNext<CR>",
-  { noremap = true, silent = true, desc = "Buffer: Nächster" }
+  { noremap = true, silent = true, desc = "Buffer: Next" }
 )
 vim.keymap.set(
   "n",
   "<leader>k",
   "<cmd>BufferLineCyclePrev<CR>",
-  { noremap = true, silent = true, desc = "Buffer: Vorheriger" }
+  { noremap = true, silent = true, desc = "Buffer: Previous" }
 )
 vim.keymap.set(
   "n",
   "<leader>bb",
   "<cmd>BufferLinePick<CR>",
-  { noremap = true, silent = true, desc = "Buffer: Auswählen" }
+  { noremap = true, silent = true, desc = "Buffer: Select" }
 )
 vim.keymap.set(
   "n",
   "<leader>bc",
   "<cmd>BufferLinePickClose<CR>",
-  { noremap = true, silent = true, desc = "Buffer: Zum Schließen auswählen" }
+  { noremap = true, silent = true, desc = "Buffer: Select to close" }
 )

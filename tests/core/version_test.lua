@@ -1,5 +1,5 @@
 -- tests/core/version_test.lua
--- Test Suite für Version Management System
+-- Test suite for version management system
 
 local M = {}
 

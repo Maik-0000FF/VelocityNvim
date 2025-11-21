@@ -1,5 +1,5 @@
 -- ~/.config/VelocityNvim/lua/utils/latex-performance.lua
--- Ultra-Performance LaTeX Setup mit Rust-Tools
+-- Ultra-performance LaTeX setup with Rust tools
 
 local M = {}
 
@@ -11,7 +11,7 @@ M.latex_tools = {
   fd = "fd", -- Schnelle File-Finding für LaTeX-Projekte
 }
 
--- Prüfe verfügbare LaTeX-Tools
+-- Check available LaTeX tools
 function M.check_latex_tools()
   local available = {}
   local missing = {}
@@ -30,12 +30,12 @@ function M.check_latex_tools()
   }
 end
 
--- Setup Live-Preview mit Rust-Performance
+-- Setup live preview with Rust performance
 function M.setup_live_preview()
   local icons = require("core.icons")
   local status = M.check_latex_tools()
 
-  -- Tectonic-basierte Live-Compilation
+  -- Tectonic-based live compilation
   if status.available.tectonic then
     vim.api.nvim_create_autocmd("BufWritePost", {
       pattern = "*.tex",
@@ -47,7 +47,7 @@ function M.setup_live_preview()
         if vim.v.shell_error == 0 then
           vim.notify("PDF updated", vim.log.levels.DEBUG)
 
-          -- Auto-refresh Zathura wenn verfügbar
+          -- Auto-refresh Zathura if available
           if status.available.zathura then
             vim.fn.system("pkill -HUP zathura 2>/dev/null")
           end
@@ -57,10 +57,10 @@ function M.setup_live_preview()
       end,
     })
 
-    print(icons.status.success .. " Tectonic Live-Preview aktiviert")
+    print(icons.status.success .. " Tectonic live preview activated")
   end
 
-  -- Typst-basierte Live-Preview (noch moderner)
+  -- Typst-based live preview (even more modern)
   if status.available.typst then
     vim.api.nvim_create_autocmd("BufWritePost", {
       pattern = "*.typ",
@@ -75,16 +75,16 @@ function M.setup_live_preview()
       end,
     })
 
-    print(icons.status.success .. " Typst Live-Preview aktiviert")
+    print(icons.status.success .. " Typst live preview activated")
   end
 end
 
--- Optimierte LaTeX-Projektsuche mit fd
+-- Optimized LaTeX project search with fd
 function M.find_latex_files(pattern)
   local status = M.check_latex_tools()
 
   if status.available.fd then
-    -- Rust-basierte fd ist 3-10x schneller als find
+    -- Rust-based fd is 3-10x faster than find
     local cmd = string.format("fd -e tex -e bib -e cls -e sty '%s'", pattern or "")
     local result = vim.fn.system(cmd)
 
@@ -113,21 +113,21 @@ function M.get_latex_status()
     "  • tectonic:    "
       .. (
         status.available.tectonic and icons.status.success .. " Ultra-fast Rust engine"
-        or icons.status.error .. " Nicht installiert (cargo install tectonic)"
+        or icons.status.error .. " Not installed (cargo install tectonic)"
       )
   )
   print(
     "  • typst:       "
       .. (
-        status.available.typst and icons.status.success .. " Moderne Alternative"
-        or icons.status.error .. " Nicht installiert (cargo install typst-cli)"
+        status.available.typst and icons.status.success .. " Modern alternative"
+        or icons.status.error .. " Not installed (cargo install typst-cli)"
       )
   )
   print(
     "  • texlab:      "
       .. (
-        vim.lsp.get_clients({ name = "texlab" })[1] and icons.status.success .. " LSP aktiv"
-        or icons.status.warning .. " LSP nicht aktiv"
+        vim.lsp.get_clients({ name = "texlab" })[1] and icons.status.success .. " LSP active"
+        or icons.status.warning .. " LSP not active"
       )
   )
   print("")
@@ -136,38 +136,38 @@ function M.get_latex_status()
   print(
     "  • fd:          "
       .. (
-        status.available.fd and icons.status.success .. " Schnelle Dateisuche"
+        status.available.fd and icons.status.success .. " Fast file search"
         or icons.status.error .. " Standard find"
       )
   )
   print(
     "  • zathura:     "
       .. (
-        status.available.zathura and icons.status.success .. " SyncTeX PDF-Viewer"
-        or icons.status.error .. " Kein SyncTeX-Viewer"
+        status.available.zathura and icons.status.success .. " SyncTeX PDF viewer"
+        or icons.status.error .. " No SyncTeX viewer"
       )
   )
   print("")
 
   if next(status.missing) then
-    print(icons.status.hint .. " Installation für maximale Performance:")
+    print(icons.status.hint .. " Installation for maximum performance:")
     print("  cargo install tectonic typst-cli")
     print("  sudo pacman -S zathura zathura-pdf-mupdf fd")
   else
-    print(icons.status.success .. " Alle LaTeX-Performance-Tools verfügbar!")
+    print(icons.status.success .. " All LaTeX performance tools available!")
   end
 end
 
--- LaTeX-Build mit Tectonic (Ultra-Performance)
+-- LaTeX build with Tectonic (ultra-performance)
 function M.build_with_tectonic(file)
   file = file or vim.fn.expand("%:p")
 
   if vim.fn.executable("tectonic") ~= 1 then
-    vim.notify("Tectonic nicht installiert", vim.log.levels.WARN)
+    vim.notify("Tectonic not installed", vim.log.levels.WARN)
 
-    -- Fallback zu pdflatex wenn verfügbar
+    -- Fallback to pdflatex if available
     if vim.fn.executable("pdflatex") == 1 then
-      vim.notify("Verwende pdflatex als Fallback", vim.log.levels.INFO)
+      vim.notify("Using pdflatex as fallback", vim.log.levels.INFO)
       local file_dir = vim.fn.fnamemodify(file, ":h")
       local filename = vim.fn.fnamemodify(file, ":t")
       local original_dir = vim.fn.getcwd()
@@ -179,16 +179,16 @@ function M.build_with_tectonic(file)
 
       if vim.v.shell_error == 0 then
         local icons = require("core.icons")
-        print(icons.status.success .. " PDF mit pdflatex erstellt!")
+        print(icons.status.success .. " PDF created with pdflatex!")
         return true
       else
-        print("pdflatex build fehlgeschlagen:")
+        print("pdflatex build failed:")
         print(output)
         return false
       end
     else
       vim.notify(
-        "Keine LaTeX-Engine verfügbar - installiere texlive-core oder tectonic",
+        "No LaTeX engine available - install texlive-core or tectonic",
         vim.log.levels.ERROR
       )
       return false
@@ -198,7 +198,7 @@ function M.build_with_tectonic(file)
   local icons = require("core.icons")
   print(icons.status.sync .. " Building with Tectonic...")
 
-  -- Wechsle ins Verzeichnis der .tex-Datei
+  -- Change to .tex file directory
   local file_dir = vim.fn.fnamemodify(file, ":h")
   local filename = vim.fn.fnamemodify(file, ":t")
   local original_dir = vim.fn.getcwd()
@@ -211,7 +211,7 @@ function M.build_with_tectonic(file)
   if vim.v.shell_error == 0 then
     print(icons.status.success .. " PDF built successfully!")
 
-    -- Auto-open mit Zathura
+    -- Auto-open with Zathura
     if vim.fn.executable("zathura") == 1 then
       local pdf_file = file_dir .. "/" .. filename:gsub("%.tex$", ".pdf")
       if vim.fn.filereadable(pdf_file) == 1 then
@@ -227,19 +227,19 @@ function M.build_with_tectonic(file)
   end
 end
 
--- Typst-Build (Alternative)
+-- Typst build (alternative)
 function M.build_with_typst(file)
   file = file or vim.fn.expand("%:p")
 
   if vim.fn.executable("typst") ~= 1 then
-    vim.notify("Typst nicht installiert - cargo install typst-cli", vim.log.levels.ERROR)
+    vim.notify("Typst not installed - cargo install typst-cli", vim.log.levels.ERROR)
     return false
   end
 
   local icons = require("core.icons")
   print(icons.status.sync .. " Building with Typst...")
 
-  -- Wechsle ins Verzeichnis der .typ-Datei
+  -- Change to .typ file directory
   local file_dir = vim.fn.fnamemodify(file, ":h")
   local filename = vim.fn.fnamemodify(file, ":t")
   local original_dir = vim.fn.getcwd()

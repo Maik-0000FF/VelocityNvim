@@ -1,11 +1,11 @@
 -- ~/.config/VelocityNvim/lua/plugins/lualine.lua
--- Lualine Plugin Konfiguration
+-- Lualine Plugin Configuration
 
--- Icons laden
+-- Load icons
 local icons = require("core.icons")
 
 
--- Statusline wieder einschalten für lualine
+-- Re-enable statusline for lualine
 vim.opt.laststatus = 3
 
 -- Lualine Setup
@@ -63,7 +63,7 @@ require("lualine").setup({
       },
     },
     lualine_c = {
-      "%=", -- Linke und rechte Sektionen ausbalancieren
+      "%=", -- Balance left and right sections
     },
     lualine_x = {
       {

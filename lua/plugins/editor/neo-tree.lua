@@ -1,10 +1,10 @@
 -- ~/.config/VelocityNvim/lua/plugins/neo-tree.lua
--- Neo-tree Plugin Konfiguration
+-- Neo-tree Plugin Configuration
 
--- Icons laden
+-- Load icons
 local icons = require("core.icons")
 
--- Vim global für LSP definieren
+-- Define Vim global for LSP
 ---@diagnostic disable-next-line: undefined-global
 local vim = vim
 
@@ -15,19 +15,19 @@ local options = {
   enable_git_status = true,
   enable_diagnostics = true,
   sort_case_insensitive = true,
-  log_level = "info", -- Fix: String statt Zahl (trace|debug|info|warn|error|fatal)
+  log_level = "info", -- Fix: String instead of number (trace|debug|info|warn|error|fatal)
   log_to_file = false,
-  -- Sources definieren
+  -- Define sources
   sources = {
     "filesystem",
     "buffers",
     "git_status",
   },
   source_selector = {
-    winbar = true, -- Aktiviert den Source-Selector in der Fensterleiste
-    statusline = false, -- Deaktiviert den Source-Selector in der Statusleiste
+    winbar = true, -- Enables the source selector in the window bar
+    statusline = false, -- Disables the source selector in the statusline
     content_layout = "center",
-    sources = { -- Definiert die angezeigten Tabs
+    sources = { -- Defines the displayed tabs
       { source = "filesystem", display_name = icons.files.folder.default .. " Files " },
       { source = "buffers", display_name = icons.misc.buffer .. " Buffers " },
       { source = "git_status", display_name = icons.git.gitsymbol .. " Git " },
@@ -79,7 +79,7 @@ local options = {
       trailing_slash = false,
       use_git_status_colors = true,
       highlight = "NeoTreeFileName",
-      highlight_opened_files = true, -- Geöffnete Dateien hervorheben
+      highlight_opened_files = true, -- Highlight opened files
       highlight_diagnostics = true,
     },
     git_status = {
@@ -158,7 +158,7 @@ local options = {
       enabled = true,
     },
     hijack_netrw_behavior = "open_default",
-    use_libuv_file_watcher = true, -- Aktiviert den File-Watcher für automatische Aktualisierung
+    use_libuv_file_watcher = true, -- Enables file watcher for automatic updates
   },
   buffers = {
     follow_current_file = {
@@ -174,16 +174,16 @@ local options = {
   },
 }
 
--- Benutzerdefinierte Farben für Neo-tree
+-- Custom colors for Neo-tree
 vim.api.nvim_create_autocmd("ColorScheme", {
   callback = function()
-    -- Neon-Orange Farbe für Einrückungslinien
-    vim.api.nvim_set_hl(0, "NeoTreeIndentMarker", { fg = "#ff9e64" }) -- Neon-Orange
-    vim.api.nvim_set_hl(0, "NeoTreeExpander", { fg = "#ff9e64" }) -- Neon-Orange
+    -- Neon-orange color for indent lines
+    vim.api.nvim_set_hl(0, "NeoTreeIndentMarker", { fg = "#ff9e64" }) -- Neon-orange
+    vim.api.nvim_set_hl(0, "NeoTreeExpander", { fg = "#ff9e64" }) -- Neon-orange
   end,
 })
 
--- Führen Sie die Funktion auch sofort aus (nicht nur beim ColorScheme-Event)
+-- Execute the function immediately (not only on ColorScheme event)
 vim.api.nvim_set_hl(0, "NeoTreeIndentMarker", { fg = "#ff9e64" })
 vim.api.nvim_set_hl(0, "NeoTreeExpander", { fg = "#ff9e64" })
 
