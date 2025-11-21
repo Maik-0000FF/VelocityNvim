@@ -1271,3 +1271,47 @@ cmd("TermInfo", function()
 end, {
   desc = "Show terminal information and keybindings",
 })
+
+-- Web Development Server Commands (Rust-based)
+cmd("WebServerStart", function(opts)
+  local port = tonumber(opts.args) or 8080
+  local webserver = require("utils.webserver")
+  webserver.start_server(port)
+end, {
+  desc = "Start web development server (miniserve)",
+  nargs = "?",
+})
+
+cmd("WebServerStop", function()
+  local webserver = require("utils.webserver")
+  webserver.stop_server()
+end, {
+  desc = "Stop web development server",
+})
+
+cmd("WebServerStatus", function()
+  local webserver = require("utils.webserver")
+  if webserver.is_running() then
+    vim.notify(icons.status.success .. " Web server is running", vim.log.levels.INFO)
+  else
+    vim.notify(icons.status.info .. " Web server is not running", vim.log.levels.INFO)
+  end
+end, {
+  desc = "Check web server status",
+})
+
+cmd("WebServerOpen", function(opts)
+  local port = tonumber(opts.args) or 8080
+  local webserver = require("utils.webserver")
+  webserver.open_browser(port)
+end, {
+  desc = "Open browser at localhost",
+  nargs = "?",
+})
+
+cmd("WebServerInfo", function()
+  local webserver = require("utils.webserver")
+  webserver.print_info()
+end, {
+  desc = "Show web server information",
+})

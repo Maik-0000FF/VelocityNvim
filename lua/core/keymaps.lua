@@ -311,3 +311,13 @@ map("n", "\\<CR>", function()
   latex_perf.build_with_tectonic(current_file)
   -- Opening PDF is already integrated in build_with_tectonic()
 end, { desc = "LaTeX: Quick build + display" })
+
+----------------------------------------
+-- Web Development Server (Leader: <leader>w)
+----------------------------------------
+
+-- Web server control
+map("n", "<leader>ws", "<cmd>WebServerStart<CR>", { desc = "Web: Start server" })
+map("n", "<leader>wS", "<cmd>WebServerStop<CR>", { desc = "Web: Stop server" })
+map("n", "<leader>wo", "<cmd>WebServerOpen<CR>", { desc = "Web: Open browser" })
+map("n", "<leader>wi", "<cmd>WebServerInfo<CR>", { desc = "Web: Server info" })

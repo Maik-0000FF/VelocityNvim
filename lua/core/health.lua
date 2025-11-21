@@ -240,6 +240,60 @@ function M.check()
     health.ok("Startup time measurement available (:StartupTime)")
   end
 
+  -- Web Development Server
+  health.start("Web Development Server")
+
+  check_module("utils.webserver", "Web server utilities", false)
+
+  -- Check web server dependencies
+  local has_node = check_executable("node", "Node.js", false)
+  local has_npm = check_executable("npm", "npm", false)
+  local has_live_server = check_executable("live-server", "live-server", false)
+  local has_curl = check_executable("curl", "curl (for health checks)", false)
+  local has_lsof = check_executable("lsof", "lsof (for port management)", false)
+
+  -- Browser check (OS-specific)
+  local is_macos = vim.fn.has("mac") == 1 or vim.fn.has("macunix") == 1
+  local has_browser
+  if is_macos then
+    -- macOS always has 'open' built-in
+    has_browser = true
+    health.ok("Browser opener: macOS 'open' command (built-in)")
+  else
+    -- Linux: check for Firefox or xdg-open
+    local has_firefox = check_executable("firefox", "Firefox browser", false)
+    local has_xdg_open = check_executable("xdg-open", "xdg-open (browser fallback)", false)
+    has_browser = has_firefox or has_xdg_open
+  end
+
+  -- Summary
+  if has_live_server and has_curl and has_lsof and has_browser then
+    health.ok("Web server fully functional")
+    health.info("Commands: :WebServerStart, :WebServerStop, <leader>ws")
+  elseif has_node and has_npm then
+    health.warn("Web server partially functional - install live-server: npm install -g live-server")
+  else
+    health.warn("Web server not available - install Node.js and npm first")
+  end
+
+  -- Node.js version check
+  if has_node then
+    local node_version = vim.fn.system("node --version"):gsub("\n", "")
+    health.info("Node.js version: " .. node_version)
+  end
+
+  -- npm version check
+  if has_npm then
+    local npm_version = vim.fn.system("npm --version"):gsub("\n", "")
+    health.info("npm version: " .. npm_version)
+  end
+
+  -- live-server version check
+  if has_live_server then
+    local ls_version = vim.fn.system("live-server --version"):gsub("\n", "")
+    health.info("live-server version: " .. ls_version)
+  end
+
   -- Recommendations
   health.start("Recommendations")
 
@@ -253,6 +307,10 @@ function M.check()
 
   if not check_executable("fd", "", false) then
     health.info("Install fd for faster file finding")
+  end
+
+  if not has_live_server and has_node and has_npm then
+    health.info("Install live-server for web development: npm install -g live-server")
   end
 end
 
