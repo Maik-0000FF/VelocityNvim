@@ -20,99 +20,11 @@ function M.get_valid_buffers(listed_only)
   return buffers
 end
 
---- Check if buffer is modified
----@param bufnr integer|nil Buffer number (current buffer if nil)
----@return boolean
-function M.is_modified(bufnr)
-  bufnr = bufnr or vim.api.nvim_get_current_buf()
-  return vim.bo[bufnr].modified
-end
-
---- Check if buffer is empty
----@param bufnr integer|nil Buffer number (current buffer if nil)
----@return boolean
-function M.is_empty(bufnr)
-  bufnr = bufnr or vim.api.nvim_get_current_buf()
-  return vim.api.nvim_buf_line_count(bufnr) == 1
-    and vim.api.nvim_buf_get_lines(bufnr, 0, 1, false)[1] == ""
-end
-
---- Check if buffer has a file name
----@param bufnr integer|nil Buffer number (current buffer if nil)
----@return boolean
-function M.has_file(bufnr)
-  bufnr = bufnr or vim.api.nvim_get_current_buf()
-  local name = vim.api.nvim_buf_get_name(bufnr)
-  return name and name ~= ""
-end
-
---- Get buffer file path
----@param bufnr integer|nil Buffer number (current buffer if nil)
----@return string|nil
-function M.get_file_path(bufnr)
-  bufnr = bufnr or vim.api.nvim_get_current_buf()
-  local name = vim.api.nvim_buf_get_name(bufnr)
-  return name ~= "" and name or nil
-end
-
---- Close buffer safely
----@param bufnr integer|nil Buffer number (current buffer if nil)
----@param force boolean|nil Force close without saving
----@return boolean success
-function M.close_buffer(bufnr, force)
-  bufnr = bufnr or vim.api.nvim_get_current_buf()
-  force = force or false
-
-  -- Check if buffer is modified and not forcing
-  if not force and M.is_modified(bufnr) then
-    local name = M.get_file_path(bufnr) or "[No Name]"
-    local choice = vim.fn.confirm(
-      string.format(
-        "Buffer '%s' wurde geändert. Was möchten Sie tun?",
-        vim.fn.fnamemodify(name, ":t")
-      ),
-      "&Speichern\n&Verwerfen\n&Abbrechen",
-      1
-    )
-
-    if choice == 1 then
-      -- Save and close
-      local ok = pcall(function()
-        vim.api.nvim_command("w")
-      end)
-      if not ok then
-        vim.notify("Fehler beim Speichern", vim.log.levels.ERROR)
-        return false
-      end
-    elseif choice == 2 then
-      -- Force close without saving
-      force = true
-    else
-      -- Cancel
-      return false
-    end
-  end
-
-  -- Count normal buffers
-  local valid_buffers = M.get_valid_buffers(true)
-  local normal_buffers = vim.tbl_filter(function(buf)
-    return vim.bo[buf].buftype == ""
-  end, valid_buffers)
-
-  if #normal_buffers <= 1 then
-    -- Last normal buffer - create new empty buffer first
-    vim.api.nvim_command("enew")
-    local ok = pcall(vim.api.nvim_buf_delete, bufnr, { force = force })
-    -- Silent success - Buffer-Ersetzung ist erwartetes Verhalten
-    return ok
-  else
-    -- Switch to previous buffer first
-    vim.api.nvim_command("bprevious")
-    local ok = pcall(vim.api.nvim_buf_delete, bufnr, { force = force })
-    -- Silent success - Buffer schließen ist erwartetes Verhalten
-    return ok
-  end
-end
+-- REMOVED: is_modified() - Only used by close_buffer() which is unused
+-- REMOVED: is_empty() - Unused
+-- REMOVED: has_file() - Unused
+-- REMOVED: get_file_path() - Only used by close_buffer() which is unused
+-- REMOVED: close_buffer() - Unused (keymaps use native bdelete commands)
 
 --- Close all buffers except current
 ---@param force boolean|nil Force close without saving
@@ -154,63 +66,10 @@ function M.close_all(force)
   return true
 end
 
---- Switch to next buffer
----@return boolean success
-function M.next_buffer()
-  -- PERFORMANCE: Direkte buffer count check ohne full buffer enumeration
-  if
-    #vim.tbl_filter(function(b)
-      return vim.bo[b].buflisted
-    end, vim.api.nvim_list_bufs()) <= 1
-  then
-    return false
-  end
-
-  vim.api.nvim_command("bnext")
-  return true
-end
-
---- Switch to previous buffer
----@return boolean success
-function M.prev_buffer()
-  -- PERFORMANCE: Direkte buffer count check ohne full buffer enumeration
-  if
-    #vim.tbl_filter(function(b)
-      return vim.bo[b].buflisted
-    end, vim.api.nvim_list_bufs()) <= 1
-  then
-    return false
-  end
-
-  vim.api.nvim_command("bprev")
-  return true
-end
-
---- Find buffer by file path
----@param path string File path to search for
----@return integer|nil Buffer number if found
-function M.find_by_path(path)
-  -- PERFORMANCE: Native vim.fn.bufexists ist 80% schneller als manual iteration
-  -- bufexists() automatisch expandiert und normalized paths
-  local bufnr = vim.fn.bufexists(vim.fn.expand(path))
-  return bufnr > 0 and bufnr or nil
-end
-
---- Switch to buffer by file path or create new one
----@param path string File path
----@return integer Buffer number
-function M.switch_to_or_create(path)
-  local bufnr = M.find_by_path(path)
-
-  if bufnr then
-    -- Switch to existing buffer
-    vim.api.nvim_set_current_buf(bufnr)
-    return bufnr
-  else
-    -- Create and switch to new buffer
-    return vim.fn.bufnr(path, true)
-  end
-end
+-- REMOVED: next_buffer() - Unused (keymaps use native bnext command)
+-- REMOVED: prev_buffer() - Unused (keymaps use native bprev command)
+-- REMOVED: find_by_path() - Only used by switch_to_or_create() which is unused
+-- REMOVED: switch_to_or_create() - Unused
 
 --- Get buffer statistics
 ---@return table Statistics about buffers
