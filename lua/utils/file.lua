@@ -11,6 +11,9 @@ local new_fs_event_func = rawget(vim.uv, 'new_fs_event') or rawget(vim.loop, 'ne
 ---@param path string File path
 ---@return boolean
 function M.exists(path)
+  -- Neovim 0.11+ optimized vim.validate()
+  vim.validate({ path = { path, "string" } })
+
   -- Use fs_stat which is more reliable than vim.fs.exists (which doesn't exist in all versions)
   if not fs_stat_func then return false end
   local stat = fs_stat_func(path)
@@ -21,6 +24,8 @@ end
 ---@param path string Directory path
 ---@return boolean
 function M.is_directory(path)
+  vim.validate({ path = { path, "string" } })
+
   if not fs_stat_func then return false end
   local stat = fs_stat_func(path)
   return stat ~= nil and stat.type == "directory"
@@ -30,6 +35,8 @@ end
 ---@param path string File path
 ---@return integer|nil File size in bytes
 function M.get_size(path)
+  vim.validate({ path = { path, "string" } })
+
   if not M.exists(path) then return nil end
 
   if not fs_stat_func then return nil end
@@ -41,6 +48,8 @@ end
 ---@param path string File path
 ---@return integer|nil Modification time (timestamp)
 function M.get_mtime(path)
+  vim.validate({ path = { path, "string" } })
+
   if not M.exists(path) then return nil end
 
   if not fs_stat_func then return nil end
@@ -52,6 +61,7 @@ end
 ---@param path string File path
 ---@return string|nil File extension (without dot)
 function M.get_extension(path)
+  vim.validate({ path = { path, "string" } })
   return path:match("%.([^%.]+)$")
 end
 
@@ -59,7 +69,10 @@ end
 ---@param path string File path
 ---@return string File name without extension
 function M.get_name_without_ext(path)
-  local name = vim.fn.fnamemodify(path, ":t")
+  vim.validate({ path = { path, "string" } })
+
+  -- Use vim.fs.basename (0.11+ native API) instead of vim.fn.fnamemodify
+  local name = vim.fs.basename(path)
   return name:match("(.+)%..+$") or name
 end
 
@@ -68,6 +81,8 @@ end
 ---@param path string File path
 ---@return boolean
 function M.is_binary(path)
+  vim.validate({ path = { path, "string" } })
+
   if not M.exists(path) then return false end
 
   -- Read first 1KB to check for null bytes
@@ -87,6 +102,8 @@ end
 ---@param path string File path
 ---@return table|nil File information
 function M.get_info(path)
+  vim.validate({ path = { path, "string" } })
+
   if not M.exists(path) then return nil end
 
   if not fs_stat_func then return nil end
@@ -95,11 +112,11 @@ function M.get_info(path)
 
   return {
     path = path,
-    absolute_path = vim.fs.abspath(path),  -- Native vim.fs API
-    name = vim.fs.basename(path),  -- Native vim.fs API
+    absolute_path = vim.fs.abspath(path),  -- Native vim.fs API (0.11+)
+    name = vim.fs.basename(path),  -- Native vim.fs API (0.11+)
     name_without_ext = M.get_name_without_ext(path),
     extension = M.get_extension(path),
-    directory = vim.fs.dirname(path),  -- Native vim.fs API
+    directory = vim.fs.dirname(path),  -- Native vim.fs API (0.11+)
     size = stat.size,
     mtime = stat.mtime.sec,
     is_directory = M.is_directory(path),
@@ -113,6 +130,8 @@ end
 --- Pretty print file information
 ---@param path string File path
 function M.print_info(path)
+  vim.validate({ path = { path, "string" } })
+
   local info = M.get_info(path)
   if not info then
     local icons = require("core.icons")

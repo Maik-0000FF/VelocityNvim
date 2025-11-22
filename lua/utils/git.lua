@@ -13,6 +13,9 @@ end
 ---@param path string|nil Path to check (default: current directory)
 ---@return boolean
 function M.is_repo(path)
+  -- Neovim 0.11+ optimized vim.validate() - true = optional parameter
+  vim.validate({ path = { path, "string", true } })
+
   if not M.is_available() then return false end
 
   path = path or vim.fn.getcwd()
@@ -25,6 +28,8 @@ end
 ---@param path string|nil Starting path (default: current directory)
 ---@return string|nil Git root path
 function M.get_root(path)
+  vim.validate({ path = { path, "string", true } })
+
   if not M.is_available() then return nil end
 
   -- PERFORMANCE: Native git command is faster than custom path walking
@@ -37,6 +42,11 @@ end
 ---@param opts table|nil Options (cwd, timeout, etc.)
 ---@return string|nil output, integer exit_code
 function M.exec(cmd, opts)
+  vim.validate({
+    cmd = { cmd, "table" },
+    opts = { opts, "table", true }
+  })
+
   if not M.is_available() then
     return nil, 1
   end
@@ -64,6 +74,8 @@ end
 ---@param path string|nil Repository path
 ---@return string|nil Branch name
 function M.get_branch(path)
+  vim.validate({ path = { path, "string", true } })
+
   -- PERFORMANCE: Eliminate directory changes - use cwd parameter directly
   local branch, exit_code = M.exec({ "branch", "--show-current" }, { cwd = path })
   return exit_code == 0 and branch or nil
@@ -73,6 +85,8 @@ end
 ---@param path string|nil Repository path
 ---@return table|nil Status information
 function M.get_status(path)
+  vim.validate({ path = { path, "string", true } })
+
   -- PERFORMANCE: Eliminate directory changes - use cwd parameter
   local output, exit_code = M.exec({ "status", "--porcelain" }, { cwd = path })
 
@@ -128,6 +142,11 @@ end
 ---@param path string|nil Repository path
 ---@return table|nil List of commits
 function M.get_commits(count, path)
+  vim.validate({
+    count = { count, "number", true },
+    path = { path, "string", true }
+  })
+
   count = count or 10
 
   -- PERFORMANCE: Eliminate directory changes - use cwd parameter
@@ -163,6 +182,11 @@ end
 ---@param path string|nil Repository path
 ---@return string|nil Configuration value
 function M.get_config(key, path)
+  vim.validate({
+    key = { key, "string" },
+    path = { path, "string", true }
+  })
+
   -- PERFORMANCE: Eliminate directory changes - use cwd parameter
   local output, exit_code = M.exec({ "config", "--get", key }, { cwd = path })
   return exit_code == 0 and output or nil
@@ -172,6 +196,8 @@ end
 ---@param path string|nil Repository path
 ---@return table|nil User information
 function M.get_user_info(path)
+  vim.validate({ path = { path, "string", true } })
+
   local name = M.get_config("user.name", path)
   local email = M.get_config("user.email", path)
 
@@ -189,6 +215,8 @@ end
 ---@param path string|nil Repository path
 ---@return table|nil Repository info
 function M.get_repo_info(path)
+  vim.validate({ path = { path, "string", true } })
+
   if not M.is_repo(path) then
     return nil
   end
@@ -212,6 +240,8 @@ end
 --- Pretty print git repository information
 ---@param path string|nil Repository path
 function M.print_info(path)
+  vim.validate({ path = { path, "string", true } })
+
   if not M.is_available() then
     local icons = require("core.icons")
     print(icons.status.error .. " Git is not available")
