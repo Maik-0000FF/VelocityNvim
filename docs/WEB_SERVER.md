@@ -13,6 +13,7 @@ VelocityNvim includes a built-in web development server with **auto-reload** fun
 
 - ✅ **Auto-Reload**: Browser reloads automatically on file changes
 - ✅ **Auto-Open**: Browser opens automatically on server start
+- ✅ **Auto-Cleanup**: Server stops automatically when exiting Neovim
 - ✅ **Multi-Format**: HTML, CSS, JavaScript, Markdown support
 - ✅ **Port Management**: Automatic port cleanup and conflict resolution
 - ✅ **File-Specific**: Opens the exact file you're editing
@@ -250,6 +251,12 @@ lua/
    - Stops Neovim job
    - Kills process on port (cleanup)
    - Clears server state
+
+4. **Auto-Cleanup on Exit**:
+   - VimLeavePre autocmd detects Neovim exit
+   - Automatically stops running server
+   - Cleans up port (prevents orphaned processes)
+   - Silent operation (no notifications on exit)
 
 ## Performance
 

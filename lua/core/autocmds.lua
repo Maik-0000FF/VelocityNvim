@@ -173,3 +173,23 @@ autocmd("TermOpen", {
     vim.opt_local.signcolumn = "no"
   end,
 })
+
+-- Web server cleanup on exit
+autocmd("VimLeavePre", {
+  group = velocity_general,
+  desc = "Stop web server on Neovim exit",
+  pattern = "*",
+  callback = function()
+    local ok, webserver = pcall(require, "utils.webserver")
+    if ok and webserver and webserver.is_running() then
+      -- Silent cleanup - stop server without notifications on exit
+      if webserver.server_job_id then
+        vim.fn.jobstop(webserver.server_job_id)
+        -- Cleanup port
+        if webserver.server_port then
+          vim.fn.system(string.format("lsof -ti:%d | xargs kill -9 2>/dev/null", webserver.server_port))
+        end
+      end
+    end
+  end,
+})
