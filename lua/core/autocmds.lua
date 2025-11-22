@@ -44,7 +44,8 @@ autocmd("BufWritePre", {
   pattern = "*.lua",
   callback = function()
     local cursor_pos = vim.api.nvim_win_get_cursor(0)
-    vim.cmd.substitute("\\s\\+$", "", "ge")
+    -- Use pcall to avoid errors if no trailing whitespace found
+    pcall(vim.cmd, [[%s/\s\+$//e]])
     vim.api.nvim_win_set_cursor(0, cursor_pos)
   end,
 })
