@@ -2,9 +2,9 @@
 -- Core Module Loader - Native Neovim Configuration
 
 -- PERFORMANCE: Inline first-run check (avoids loading 580 lines on every start)
--- Check directly if version file exists instead of loading first-run.lua
-local version_file = vim.fn.stdpath("data") .. "/velocitynvim_version"
-if vim.fn.filereadable(version_file) == 0 then
+-- Check if plugins directory exists to detect first installation
+local plugins_dir = vim.fn.stdpath("data") .. "/site/pack/user/start"
+if vim.fn.isdirectory(plugins_dir) == 0 then
   -- First installation - load complete first-run system
   local first_run = require("core.first-run")
 
@@ -22,16 +22,8 @@ if vim.fn.filereadable(version_file) == 0 then
 end
 -- Normal start - first-run.lua was NOT loaded (~2.2ms saved)
 
--- Initialize version system (after first-run check)
-local version = require("core.version")
-version.init()
-
 -- Load base modules (order is important!)
 require("core.options")    -- Basic settings
-
--- ULTIMATE Performance System (after options, before plugins)
-require("core.performance").setup()
-
 require("core.keymaps")    -- Keybindings
 require("core.autocmds")   -- Event handlers
 require("core.commands")   -- User commands

@@ -774,9 +774,20 @@ end, {
 
 -- System Commands
 cmd("VelocityInfo", function()
-  local version_mod = require("core.version")
-  version_mod.print_version_info()
+  print(icons.status.rocket .. " VelocityNvim Native Configuration")
 
+  -- Neovim version
+  local nvim_ver = vim.version()
+  print("\n" .. icons.status.info .. " Neovim Information:")
+  print("  Version: " .. nvim_ver.major .. "." .. nvim_ver.minor .. "." .. nvim_ver.patch)
+  if vim.api.nvim__api_info then
+    local ok, api_info = pcall(vim.api.nvim__api_info)
+    if ok and api_info then
+      print("  API Level: " .. api_info.api_level)
+    end
+  end
+
+  -- System paths
   print("\n" .. icons.status.folder .. " System Information:")
   local config_path = vim.fn.stdpath("config")
   local data_path = vim.fn.stdpath("data")
@@ -794,23 +805,7 @@ cmd("VelocityInfo", function()
   local lsp_clients = vim.lsp.get_clients()
   print("  " .. icons.status.gear .. " Active LSP Clients: " .. #lsp_clients)
 end, {
-  desc = "Show VelocityNvim configuration info",
-})
-
-cmd("VelocityChangelog", function()
-  local version_mod = require("core.version")
-  version_mod.print_changelog()
-end, {
-  desc = "Show VelocityNvim version history and changelog",
-})
-
-cmd("VelocityVersion", function()
-  local version_mod = require("core.version")
-  print("VelocityNvim Native Configuration")
-  print("Version: " .. version_mod.config_version)
-  print("Updated: " .. version_mod.last_updated)
-end, {
-  desc = "Show VelocityNvim version",
+  desc = "Show VelocityNvim system information",
 })
 
 cmd("VelocityMigrations", function()

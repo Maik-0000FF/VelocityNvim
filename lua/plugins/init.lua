@@ -40,50 +40,40 @@ end
 
 -- Load plugin configurations safely (Performance-optimized with defer-loading)
 
--- UI Plugins (Theme + Bufferline + Lualine + Alpha immediately for layout stability)
+-- UI Plugins (sofort - für Layout-Stabilität)
 safe_require("plugins.ui.tokyonight") -- Theme first for consistent UI
 safe_require("plugins.ui.bufferline") -- Bufferline immediately to avoid Alpha layout shift
 safe_require("plugins.ui.lualine") -- Lualine immediately to avoid Alpha layout shift
 safe_require("plugins.ui.alpha") -- Dashboard after bufferline+lualine for correct layout
 
-vim.defer_fn(function()
-  safe_require("plugins.ui.noice")
-  safe_require("plugins.ui.nvim-colorizer")
-end, 10) -- 10ms delay for other UI plugins
-
--- Editor Enhancement Plugins (Performance-staggered)
+-- Completion + Core Editor (sofort - für Development)
+safe_require("plugins.lsp.blink-cmp")
 safe_require("plugins.editor.nvim-treesitter") -- Treesitter first for syntax
 safe_require("plugins.editor.which-key") -- Which-key immediately for keybinding help
 
+-- Batch 1: Editor + LSP (100ms delay)
 vim.defer_fn(function()
-  -- Less critical editor plugins loaded later
+  safe_require("plugins.ui.noice")
+  safe_require("plugins.ui.nvim-colorizer")
+  safe_require("plugins.lsp.native-lsp")
   safe_require("plugins.editor.neo-tree")
-  safe_require("plugins.editor.lsp-file-operations") -- LSP File Ops after Neo-tree
+  safe_require("plugins.editor.lsp-file-operations")
   safe_require("plugins.editor.hlchunk")
   safe_require("plugins.editor.nvim-window-picker")
   safe_require("plugins.editor.hop")
   safe_require("plugins.editor.mini-pairs")
-  safe_require("plugins.editor.render-markdown") -- Markdown rendering for .md files
-end, 50) -- 50ms delay for non-critical editor features
+  safe_require("plugins.editor.render-markdown")
+end, 100)
 
--- LSP & Completion (Immediate availability for development)
-safe_require("plugins.lsp.blink-cmp")
--- LSP delayed for better startup performance
+-- Batch 2: Tools (200ms delay)
 vim.defer_fn(function()
-  safe_require("plugins.lsp.native-lsp")
-end, 200) -- Load LSP after 200ms for better startup time
-
-vim.defer_fn(function()
-  -- LSP-Debug and tools loaded later
   safe_require("plugins.lsp.lsp-debug")
-
-  -- Development Tools
   safe_require("plugins.tools.fzf-lua")
   safe_require("plugins.tools.conform")
   safe_require("plugins.tools.gitsigns")
   safe_require("plugins.tools.suda")
   safe_require("plugins.tools.vim-startuptime")
-end, 100) -- 100ms delay for development tools
+end, 200)
 
 -- PluginSync command is now handled in core/commands.lua
 

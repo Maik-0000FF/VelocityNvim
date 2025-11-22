@@ -152,10 +152,15 @@ local function phase_compatibility(callback)
         local next_step = step + 1
         if next_step == 2 then
           check_step(2, max_steps, function()
-            local version_mod = require("core.version")
-            local compat, msg = version_mod.check_nvim_compatibility()
+            -- Check Neovim version directly
+            local nvim_ver = vim.version()
+            local required = { major = 0, minor = 11, patch = 0 }
+            local compat = nvim_ver.major > required.major or
+                          (nvim_ver.major == required.major and nvim_ver.minor >= required.minor)
             if not compat then
-              table.insert(state.errors, "Neovim " .. msg .. " required")
+              table.insert(state.errors, string.format("Neovim >= %d.%d.%d required (got %d.%d.%d)",
+                required.major, required.minor, required.patch,
+                nvim_ver.major, nvim_ver.minor, nvim_ver.patch))
               return false
             end
             return true
@@ -422,11 +427,8 @@ local function phase_welcome(callback)
   state.phase_start_time = vim.fn.reltime()
   update_progress_ui("Finalizing installation...", 0.2)
 
-  -- Mark installation as complete
-  local version_mod = require("core.version")
-  version_mod.store_version()
-
-  update_progress_ui("Saving configuration state...", 0.5)
+  -- Installation complete - no version tracking needed
+  update_progress_ui("Installation complete...", 0.5)
 
   vim.defer_fn(function()
     -- Calculate installation time
@@ -442,7 +444,6 @@ local function phase_welcome(callback)
         "",
         string.format("  %s Installation Complete!", icons.status.success),
         "",
-        string.format("  %s Version: v%s", icons.status.info, version_mod.config_version),
         string.format("  %s Plugins: %d installed", icons.status.gear, plugin_count),
         string.format("  %s Rust Tools: %s", icons.status.rocket, rust_status),
         string.format("  %s Duration: %.1fs", icons.status.clock, duration),
@@ -546,8 +547,9 @@ end
 
 -- Check if first-run installation is needed
 function M.is_needed()
-  local version_mod = require("core.version")
-  return version_mod.is_fresh_install()
+  -- Check if plugins directory exists
+  local plugins_dir = vim.fn.stdpath("data") .. "/site/pack/user/start"
+  return vim.fn.isdirectory(plugins_dir) == 0
 end
 
 -- Silent background check (for non-interactive environments)

@@ -26,8 +26,12 @@ TIME=$(date +%H:%M)
 echo -e "${GREEN}✓${NC} Date: $DATE"
 echo -e "${GREEN}✓${NC} Time: $TIME"
 
-# 2. Version (from version.lua)
-VERSION=$(NVIM_APPNAME=VelocityNvim nvim --headless -c "lua local v = require('core.version'); print(v.config_version)" -c "qall" 2>&1 | tail -1)
+# 2. Version (from Git - version.lua removed for performance)
+if git rev-parse --git-dir > /dev/null 2>&1; then
+  VERSION=$(git describe --tags --always 2>/dev/null || git rev-parse --short HEAD 2>/dev/null || echo "unknown")
+else
+  VERSION="unknown"
+fi
 echo -e "${GREEN}✓${NC} Version: $VERSION"
 
 # 3. System (kernel info)

@@ -20,11 +20,11 @@ dashboard.section.buttons.val = {
   dashboard.button("q", icons.status.quit .. " Quit", "<cmd>qa<CR>"),
 }
 
--- Dynamic footer with version info
+-- Dynamic footer with system info
 local function get_footer()
-  local version = require("core.version")
-  local nvim_ver = version.get_nvim_version()
-  local change_type = version.check_version_change()
+  -- Neovim version
+  local nvim_ver = vim.version()
+  local nvim_version_string = string.format("%d.%d.%d", nvim_ver.major, nvim_ver.minor, nvim_ver.patch)
 
   -- Determine plugin count
   local plugin_count = 0
@@ -43,37 +43,13 @@ local function get_footer()
 
   local footer = {
     "                                   ",
-    "    " .. icons.status.rocket .. " " .. version.config_name .. " v" .. version.config_version,
-    "    " .. icons.status.update .. " Updated: " .. version.last_updated,
-    "    " .. icons.status.neovim .. " Neovim: " .. nvim_ver.string,
+    "    " .. icons.status.rocket .. " VelocityNvim Native Configuration",
+    "    " .. icons.status.neovim .. " Neovim: " .. nvim_version_string,
     "    " .. icons.misc.plugin .. " Plugins: " .. plugin_count .. " configured",
     "    " .. icons.performance.fast .. " Startup: " .. startup_time,
     "                                   ",
+    "    Powered by native vim.pack     ",
   }
-
-  -- Status line based on version change
-  local status_line = ""
-  if change_type == "fresh_install" then
-    status_line = "    " .. icons.status.fresh .. " Welcome to your fresh installation!"
-  elseif change_type == "upgrade" then
-    local stored = version.get_stored_version()
-    status_line = "    "
-      .. icons.status.trend_up
-      .. " Upgraded from v"
-      .. (stored and stored.version or "unknown")
-  elseif change_type == "downgrade" then
-    local stored = version.get_stored_version()
-    status_line = "    "
-      .. icons.status.trend_down
-      .. " Downgraded from v"
-      .. (stored and stored.version or "unknown")
-  else
-    status_line = "    " .. icons.status.current .. " Configuration up to date"
-  end
-
-  table.insert(footer, status_line)
-  table.insert(footer, "                                   ")
-  table.insert(footer, "    Powered by native vim.pack     ")
 
   return footer
 end

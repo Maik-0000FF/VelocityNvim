@@ -89,8 +89,7 @@ opt.regexpengine = 0 -- Auto-select regex engine (back to default for compatibil
 opt.maxmempattern = 2000 -- Increased pattern memory for better performance
 opt.synmaxcol = 300 -- Limit syntax highlighting for long lines
 opt.matchtime = 1 -- Very short bracket match time
-opt.complete:remove("i") -- No include-file completion (slow)
-opt.complete:remove("t") -- No tag-file completion (slow)
+opt.complete:remove({ "i", "t" }) -- No include/tag completion (slow)
 
 -- Appearance (WezTerm-optimized)
 opt.termguicolors = true -- True-color support

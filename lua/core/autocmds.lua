@@ -44,7 +44,7 @@ autocmd("BufWritePre", {
   pattern = "*.lua",
   callback = function()
     local cursor_pos = vim.api.nvim_win_get_cursor(0)
-    vim.api.nvim_command("%s/\\s\\+$//e")
+    vim.cmd.substitute("\\s\\+$", "", "ge")
     vim.api.nvim_win_set_cursor(0, cursor_pos)
   end,
 })
@@ -185,9 +185,12 @@ autocmd("VimLeavePre", {
       -- Silent cleanup - stop server without notifications on exit
       if webserver.server_job_id then
         vim.fn.jobstop(webserver.server_job_id)
-        -- Cleanup port
+        -- Non-blocking port cleanup
         if webserver.server_port then
-          vim.fn.system(string.format("lsof -ti:%d | xargs kill -9 2>/dev/null", webserver.server_port))
+          vim.system(
+            { "sh", "-c", string.format("lsof -ti:%d | xargs kill -9 2>/dev/null", webserver.server_port) },
+            { detach = true }
+          )
         end
       end
     end

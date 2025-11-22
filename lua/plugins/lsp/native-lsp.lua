@@ -154,14 +154,13 @@ local function setup_global_lsp_config()
     capabilities = capabilities,
     on_init = function(client, _)
       -- PERFORMANCE: Disable semantic tokens for better responsiveness
-      if vim.fn.has("nvim-0.11") ~= 1 then
-        if client.supports_method("textDocument/semanticTokens") then
-          client.server_capabilities.semanticTokensProvider = nil
-        end
-      else
-        if client:supports_method("textDocument/semanticTokens") then
-          client.server_capabilities.semanticTokensProvider = nil
-        end
+      -- Cross-version compatibility - simplified
+      local supports_method_fn = client.supports_method or function(_, method)
+        return client:supports_method(method)
+      end
+
+      if supports_method_fn(client, "textDocument/semanticTokens") then
+        client.server_capabilities.semanticTokensProvider = nil
       end
     end,
   })

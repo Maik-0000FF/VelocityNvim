@@ -18,6 +18,52 @@ local install = require("nvim-treesitter.install")
 install.prefer_git = true
 install.compilers = { "gcc", "clang" }
 
+-- PERFORMANCE OPTIMIZATION: Cache buffer metadata to avoid repeated expensive checks
+local buffer_metadata_cache = {}
+
+-- Clear cache when buffer is deleted
+vim.api.nvim_create_autocmd("BufDelete", {
+  callback = function(event)
+    buffer_metadata_cache[event.buf] = nil
+  end
+})
+
+-- Optimized disable function with caching
+local function should_disable_treesitter(lang, bufnr)
+  -- Problematic file types - quick check first
+  if lang == "csv" or lang == "log" or lang == "txt" then
+    return true
+  end
+
+  -- Check cache first
+  if buffer_metadata_cache[bufnr] ~= nil then
+    return buffer_metadata_cache[bufnr]
+  end
+
+  -- Expensive checks only once per buffer
+  local should_disable = false
+
+  -- File size check (>1MB)
+  local stat_ok, stats = pcall(vim.api.nvim_buf_call, bufnr, function()
+    return vim.fn.getfsize(vim.api.nvim_buf_get_name(bufnr))
+  end)
+  if stat_ok and stats > 1024 * 1024 then
+    should_disable = true
+  end
+
+  -- Line count check (>5k lines)
+  if not should_disable then
+    local line_count = vim.api.nvim_buf_line_count(bufnr)
+    if line_count > 5000 then
+      should_disable = true
+    end
+  end
+
+  -- Cache result
+  buffer_metadata_cache[bufnr] = should_disable
+  return should_disable
+end
+
 treesitter.setup({
   -- Manual parser installation - no automatic installation
   ensure_installed = {},
@@ -30,26 +76,8 @@ treesitter.setup({
   highlight = {
     enable = true,
     additional_vim_regex_highlighting = false,
-    -- Performance: More aggressive disabling for smoother cursor movement
-    disable = function(lang, bufnr)
-      -- Disable for problematic file types
-      if lang == "csv" or lang == "log" or lang == "txt" then
-        return true
-      end
-      -- Performance: Smaller limit for better responsiveness (>1MB instead of 10MB)
-      local stat_ok, stats = pcall(vim.api.nvim_buf_call, bufnr, function()
-        return vim.fn.getfsize(vim.api.nvim_buf_get_name(bufnr))
-      end)
-      if stat_ok and stats > 1024 * 1024 then -- 1MB instead of 10MB
-        return true
-      end
-      -- Performance: Line-based disabling for long files
-      local line_count = vim.api.nvim_buf_line_count(bufnr)
-      if line_count > 5000 then -- >5k lines = disable treesitter
-        return true
-      end
-      return false
-    end,
+    -- Performance: Cached disable function
+    disable = should_disable_treesitter,
     -- Performance: Syntax updates only when needed
     use_languagetree = true,
   },

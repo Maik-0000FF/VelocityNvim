@@ -34,39 +34,17 @@ end
 function M.check()
   health.start("VelocityNvim Native Configuration")
 
-  -- Version information
-  local version_mod = require("core.version")
-  health.info("Configuration version: " .. version_mod.config_version)
-  health.info("Last updated: " .. version_mod.last_updated)
+  -- Neovim version check
+  local nvim_ver = vim.version()
+  local required = { major = 0, minor = 11, patch = 0 }
+  local version_string = string.format("%d.%d.%d", nvim_ver.major, nvim_ver.minor, nvim_ver.patch)
 
-  -- Neovim compatibility check
-  local compat, compat_msg = version_mod.check_nvim_compatibility()
-  if compat then
-    health.ok("Neovim compatibility: " .. compat_msg)
+  if nvim_ver.major > required.major or
+     (nvim_ver.major == required.major and nvim_ver.minor >= required.minor) then
+    health.ok("Neovim version: " .. version_string .. " (compatible)")
   else
-    health.error("Neovim compatibility: " .. compat_msg)
-  end
-
-  -- Version change detection
-  local change_type = version_mod.check_version_change()
-  if change_type == "fresh_install" then
-    health.info("Installation status: Fresh installation")
-  elseif change_type == "upgrade" then
-    local stored = version_mod.get_stored_version()
-    if stored then
-      health.ok("Installation status: Upgraded from " .. stored.version)
-    else
-      health.ok("Installation status: Upgraded (no previous version found)")
-    end
-  elseif change_type == "downgrade" then
-    local stored = version_mod.get_stored_version()
-    if stored then
-      health.warn("Installation status: Downgraded from " .. stored.version)
-    else
-      health.warn("Installation status: Downgraded (no previous version found)")
-    end
-  else
-    health.ok("Installation status: Up to date")
+    health.error(string.format("Neovim version: %s (requires >= %d.%d.%d)",
+      version_string, required.major, required.minor, required.patch))
   end
 
   -- Configuration paths
@@ -75,14 +53,6 @@ function M.check()
 
   health.info("Config path: " .. config_path)
   health.info("Data path: " .. data_path)
-
-  -- Version file check
-  local version_file = data_path .. "/velocitynvim_version"
-  if vim.fn.filereadable(version_file) == 1 then
-    health.ok("Version tracking file exists")
-  else
-    health.warn("Version tracking file missing (will be created on next start)")
-  end
 
   -- Check core modules
   health.start("Core Modules")
