@@ -132,3 +132,7 @@ opt.viminfo = "" -- Legacy VimInfo disabled (ShaDa is modern alternative)
 -- opt.foldlevel = 99 -- All folds open by default
 -- opt.foldlevelstart = 99 -- Start with open folds
 opt.foldminlines = 2 -- Minimum 2 lines for fold
+
+-- Neovim 0.11 Performance: Redraw optimization for long lines
+opt.maxmempattern = 5000 -- Pattern memory limit (default: 1000)
+opt.synmaxcol = 300 -- Syntax highlighting only up to column 300 (better redraw performance)
