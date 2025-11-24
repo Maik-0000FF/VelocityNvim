@@ -50,6 +50,7 @@ safe_require("plugins.ui.alpha") -- Dashboard after bufferline+lualine for corre
 safe_require("plugins.lsp.blink-cmp")
 safe_require("plugins.editor.nvim-treesitter") -- Treesitter first for syntax
 safe_require("plugins.editor.which-key") -- Which-key immediately for keybinding help
+safe_require("plugins.editor.hop") -- Hop immediately for health check compatibility
 
 -- Batch 1: Editor + LSP (100ms delay)
 vim.defer_fn(function()
@@ -60,7 +61,6 @@ vim.defer_fn(function()
   safe_require("plugins.editor.lsp-file-operations")
   safe_require("plugins.editor.hlchunk")
   safe_require("plugins.editor.nvim-window-picker")
-  safe_require("plugins.editor.hop")
   safe_require("plugins.editor.mini-pairs")
   safe_require("plugins.editor.render-markdown")
 end, 100)
