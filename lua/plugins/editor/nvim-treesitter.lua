@@ -28,6 +28,13 @@ vim.api.nvim_create_autocmd("BufDelete", {
   end
 })
 
+-- Clear entire cache on VimLeavePre (memory cleanup for long sessions)
+vim.api.nvim_create_autocmd("VimLeavePre", {
+  callback = function()
+    buffer_metadata_cache = {}
+  end
+})
+
 -- Optimized disable function with caching
 local function should_disable_treesitter(lang, bufnr)
   -- Problematic file types - quick check first

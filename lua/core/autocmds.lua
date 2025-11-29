@@ -139,6 +139,19 @@ autocmd("DiagnosticChanged", {
   end,
 })
 
+-- Timer cleanup on VimLeavePre (proper resource cleanup)
+autocmd("VimLeavePre", {
+  group = velocity_lsp,
+  desc = "Clean up diagnostic timer on exit",
+  pattern = "*",
+  callback = function()
+    if diagnostic_timer then
+      diagnostic_timer:stop()
+      diagnostic_timer = nil
+    end
+  end,
+})
+
 -- Performance: Optimize large files (aggressive)
 autocmd("BufReadPre", {
   group = velocity_general,

@@ -52,7 +52,7 @@ safe_require("plugins.editor.nvim-treesitter") -- Treesitter first for syntax
 safe_require("plugins.editor.which-key") -- Which-key immediately for keybinding help
 safe_require("plugins.editor.hop") -- Hop immediately for health check compatibility
 
--- Batch 1: Editor + LSP (100ms delay)
+-- Batch 1: Editor + LSP (50ms delay - optimiert für schnelleren Startup)
 vim.defer_fn(function()
   safe_require("plugins.ui.noice")
   safe_require("plugins.ui.nvim-colorizer")
@@ -63,9 +63,9 @@ vim.defer_fn(function()
   safe_require("plugins.editor.nvim-window-picker")
   safe_require("plugins.editor.mini-pairs")
   safe_require("plugins.editor.render-markdown")
-end, 100)
+end, 50)
 
--- Batch 2: Tools (200ms delay)
+-- Batch 2: Tools (100ms delay - optimiert für schnelleren Startup)
 vim.defer_fn(function()
   safe_require("plugins.lsp.lsp-debug")
   safe_require("plugins.tools.fzf-lua")
@@ -73,7 +73,7 @@ vim.defer_fn(function()
   safe_require("plugins.tools.gitsigns")
   safe_require("plugins.tools.suda")
   safe_require("plugins.tools.vim-startuptime")
-end, 200)
+end, 100)
 
 -- PluginSync command is now handled in core/commands.lua
 

@@ -816,25 +816,11 @@ end, {
 })
 
 -- NEUE ULTIMATE RUST COMMANDS
-cmd("RustUltimateSetup", function()
-  local rust_perf = require("utils.rust-performance")
-  rust_perf.ultimate_setup()
-end, {
-  desc = "Ultimate Rust Performance Setup and Status",
-})
-
 cmd("RustMoldCheck", function()
   local rust_perf = require("utils.rust-performance")
   rust_perf.check_mold_linker()
 end, {
   desc = "Check mold linker status and installation",
-})
-
-cmd("RustCargoUltra", function()
-  local rust_perf = require("utils.rust-performance")
-  rust_perf.setup_cargo_ultra_profile()
-end, {
-  desc = "Setup Cargo Ultra-Performance Profile",
 })
 
 cmd("VelocityBackup", function()

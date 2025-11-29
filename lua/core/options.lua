@@ -86,8 +86,8 @@ opt.redrawtime = 10000 -- More time for complex syntax highlighting
 
 -- Ultra-performance optimizations
 opt.regexpengine = 0 -- Auto-select regex engine (back to default for compatibility)
-opt.maxmempattern = 2000 -- Increased pattern memory for better performance
-opt.synmaxcol = 300 -- Limit syntax highlighting for long lines
+opt.maxmempattern = 5000 -- Pattern memory limit (increased for complex syntax)
+opt.synmaxcol = 300 -- Limit syntax highlighting for long lines (better redraw performance)
 opt.matchtime = 1 -- Very short bracket match time
 opt.complete:remove({ "i", "t" }) -- No include/tag completion (slow)
 
@@ -133,6 +133,5 @@ opt.viminfo = "" -- Legacy VimInfo disabled (ShaDa is modern alternative)
 -- opt.foldlevelstart = 99 -- Start with open folds
 opt.foldminlines = 2 -- Minimum 2 lines for fold
 
--- Neovim 0.11 Performance: Redraw optimization for long lines
-opt.maxmempattern = 5000 -- Pattern memory limit (default: 1000)
-opt.synmaxcol = 300 -- Syntax highlighting only up to column 300 (better redraw performance)
+-- NOTE: maxmempattern and synmaxcol are already set above (lines 89-90)
+-- Removed duplicate definitions for clarity and consistency

@@ -705,15 +705,9 @@ local function scan_workspace_files(client)
   end
 
   -- Verwende globale Standard-Ausschlussverzeichnisse
-
   -- Projektspezifische Ausschlüsse (aus .gitignore oder custom config)
-  local exclude_dirs = vim.deepcopy(default_exclude_dirs)
-
-  -- Füge projektspezifische Ausschlüsse hinzu (falls definiert)
-  local custom_excludes_2 = rawget(_G, "velocitynvim_lsp_exclude_dirs")
-  if custom_excludes_2 and type(custom_excludes_2) == "table" then
-    vim.list_extend(exclude_dirs, custom_excludes_2)
-  end
+  -- NOTE: Wiederverwendung von size_exclude_dirs (bereits mit custom_excludes erweitert)
+  local exclude_dirs = size_exclude_dirs
 
   -- DEAKTIVIERT: .gitignore-Parsing für exclude_dirs (verhindert LSP-Meldungen)
   -- .gitignore wird vom LSP nicht mehr als Filter verwendet (useGitIgnore = false)

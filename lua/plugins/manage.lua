@@ -77,7 +77,15 @@ end
 
 function M.sync()
   local pack_dir = vim.fn.stdpath("data") .. "/site/pack/user/start/"
-  if not (fs_stat_func and fs_stat_func(pack_dir)) then
+  -- Robuste Verzeichnisprüfung mit Fallback
+  local dir_exists = false
+  if fs_stat_func then
+    local ok, stat = pcall(fs_stat_func, pack_dir)
+    dir_exists = ok and stat and stat.type == "directory"
+  else
+    dir_exists = vim.fn.isdirectory(pack_dir) == 1
+  end
+  if not dir_exists then
     vim.fn.mkdir(pack_dir, "p") -- Creates directory if it doesn't exist
   end
   local icons = require("core.icons")
@@ -86,7 +94,16 @@ function M.sync()
   local blink_updated = false
   for name, url in pairs(M.plugins) do
     local plugin_path = pack_dir .. name
-    if not (fs_stat_func and fs_stat_func(plugin_path)) then
+    -- Robuste Plugin-Prüfung mit Fallback
+    local plugin_exists = false
+    if fs_stat_func then
+      local ok, stat = pcall(fs_stat_func, plugin_path)
+      plugin_exists = ok and stat and stat.type == "directory"
+    else
+      plugin_exists = vim.fn.isdirectory(plugin_path) == 1
+    end
+
+    if not plugin_exists then
       print("Installing " .. name .. "...")
       vim.fn.system({ "git", "clone", "--depth", "1", url, plugin_path })
       if name == "blink.cmp" then
