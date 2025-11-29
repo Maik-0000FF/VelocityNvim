@@ -179,7 +179,7 @@ map("n", "<leader>W", "<cmd>SudaWrite<CR>", { desc = "Write with sudo" })
 
 -- LaTeX status and info
 map("n", "\\s", "<cmd>LaTeXStatus<CR>", { desc = "LaTeX: Performance Status" })
-map("n", "\\i", "<cmd>LaTeXLivePreview<CR>", { desc = "LaTeX: Enable live preview" })
+map("n", "\\i", "<cmd>LaTeXLivePreviewToggle<CR>", { desc = "LaTeX: Toggle live preview" })
 
 -- LaTeX building
 map("n", "\\b", "<cmd>LaTeXBuildTectonic<CR>", { desc = "LaTeX: Build with Tectonic (ultra-fast)" })
@@ -215,41 +215,23 @@ map("n", "\\c", function()
     vim.api.nvim_command("!pdflatex " .. filename)
     vim.fn.chdir(original_dir)
 
-    -- Open PDF after successful compilation
+    -- Open PDF after successful compilation (cross-platform)
     vim.defer_fn(function()
       local pdf_file = file_dir .. "/" .. basename .. ".pdf"
-      if vim.fn.filereadable(pdf_file) == 1 then
-        if vim.fn.executable("zathura") == 1 then
-          vim.fn.system("zathura " .. pdf_file .. " &")
-        else
-          vim.notify("Zathura not available", vim.log.levels.WARN)
-        end
-      else
+      local latex_perf = require("utils.latex-performance")
+      if not latex_perf.open_pdf(pdf_file) then
         vim.notify("PDF not found: " .. pdf_file, vim.log.levels.ERROR)
       end
     end, 1000) -- 1s delay for pdflatex completion
   elseif file:match("%.typ$") then
     vim.api.nvim_command("LaTeXBuildTypst")
-
-    -- Open PDF after Typst compilation
-    vim.defer_fn(function()
-      local pdf_file = file_dir .. "/" .. basename .. ".pdf"
-      if vim.fn.filereadable(pdf_file) == 1 then
-        if vim.fn.executable("zathura") == 1 then
-          vim.fn.system("zathura " .. pdf_file .. " &")
-        else
-          vim.notify("Zathura not available", vim.log.levels.WARN)
-        end
-      else
-        vim.notify("PDF not found: " .. pdf_file, vim.log.levels.ERROR)
-      end
-    end, 500) -- 500ms delay for Typst completion
+    -- PDF opening is now handled by build_with_typst()
   else
     vim.notify("Not a LaTeX/Typst file", vim.log.levels.WARN)
   end
 end, { desc = "LaTeX: Compile current file + display" })
 
--- LaTeX viewer
+-- LaTeX viewer (cross-platform)
 map("n", "\\v", function()
   local current_file = vim.fn.expand("%:p")
   local bufname = vim.fn.bufname()
@@ -264,17 +246,11 @@ map("n", "\\v", function()
   local file_dir, basename =
     vim.fn.fnamemodify(current_file, ":h"),
     vim.fn.fnamemodify(current_file, ":t:r")
-  local file = file_dir .. "/" .. basename .. ".pdf"
+  local pdf_file = file_dir .. "/" .. basename .. ".pdf"
 
-  if vim.fn.filereadable(file) == 1 then
-    if vim.fn.executable("zathura") == 1 then
-      vim.fn.system("zathura " .. file .. " &")
-      -- Silent success - opening PDF is expected behavior
-    else
-      vim.notify("Zathura not available", vim.log.levels.WARN)
-    end
-  else
-    vim.notify("PDF not found: " .. file, vim.log.levels.ERROR)
+  local latex_perf = require("utils.latex-performance")
+  if not latex_perf.open_pdf(pdf_file) then
+    vim.notify("PDF not found: " .. pdf_file, vim.log.levels.ERROR)
   end
 end, { desc = "LaTeX: Open PDF viewer" })
 

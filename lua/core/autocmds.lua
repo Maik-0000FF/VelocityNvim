@@ -210,3 +210,14 @@ autocmd("VimLeavePre", {
     end
   end,
 })
+
+-- LaTeX/Typst: Auto-compile on save (aktiviert beim ersten Öffnen einer .tex/.typ Datei)
+autocmd("FileType", {
+  group = velocity_general,
+  desc = "Enable LaTeX/Typst live preview",
+  pattern = { "tex", "typst" },
+  callback = function()
+    -- Lade das Modul (aktiviert automatisch die Live-Preview)
+    pcall(require, "utils.latex-performance")
+  end,
+})

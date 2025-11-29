@@ -968,7 +968,17 @@ end, { desc = "Build Typst document" })
 cmd("LaTeXLivePreview", function()
   local latex_perf = require("utils.latex-performance")
   latex_perf.setup_live_preview()
-end, { desc = "Activate LaTeX live preview" })
+end, { desc = "Activate LaTeX/Typst live preview" })
+
+cmd("LaTeXLivePreviewOff", function()
+  local latex_perf = require("utils.latex-performance")
+  latex_perf.disable_live_preview()
+end, { desc = "Deactivate LaTeX/Typst live preview" })
+
+cmd("LaTeXLivePreviewToggle", function()
+  local latex_perf = require("utils.latex-performance")
+  latex_perf.toggle_live_preview()
+end, { desc = "Toggle LaTeX/Typst live preview" })
 
 -- Test Suite Commands
 cmd("VelocityTest", function(opts)
