@@ -1,37 +1,85 @@
 -- ~/.config/VelocityNvim/lua/utils/latex-performance.lua
--- Ultra-performance LaTeX setup with Rust tools
+-- LaTeX/Typst live preview with robust PDF viewer reload
 
 local M = {}
 
--- Rust-basierte LaTeX-Tools
+-- Document tools
 M.latex_tools = {
-  tectonic = "tectonic", -- Rust LaTeX-Engine
-  typst = "typst", -- Moderne LaTeX-Alternative
+  pdflatex = "pdflatex", -- Standard LaTeX engine
+  typst = "typst", -- Modern document alternative
   zathura = "zathura", -- PDF-Viewer mit SyncTeX (Linux)
   skim = "/Applications/Skim.app", -- PDF-Viewer mit SyncTeX (macOS)
   fd = "fd", -- Schnelle File-Finding für LaTeX-Projekte
 }
 
 -- Check if PDF viewer is already open with this file
--- Returns: true if viewer is running with this PDF
-function M.is_viewer_open(pdf_file)
+-- Returns: PID if viewer is running with this PDF, nil otherwise (Linux)
+-- Returns: true if document is open (macOS, no PID needed for AppleScript)
+function M.get_viewer_pid(pdf_file)
   local is_macos = vim.fn.has("mac") == 1 or vim.fn.has("macunix") == 1
   local pdf_path = vim.fn.fnamemodify(pdf_file, ":p")
 
   if is_macos then
-    -- macOS: Check if Skim has this file open via lsof
-    local result = vim.fn.system(string.format(
-      "lsof 2>/dev/null | grep -F %s | grep -q Skim && echo 'open'",
-      vim.fn.shellescape(pdf_path)
-    ))
-    return result:match("open") ~= nil
+    -- macOS: Use AppleScript to check if Skim has this document open
+    local applescript = string.format([[
+      tell application "System Events"
+        if not (exists process "Skim") then return "not_running"
+      end tell
+      tell application "Skim"
+        set docList to documents
+        repeat with doc in docList
+          if (path of doc) is "%s" then
+            return "open"
+          end if
+        end repeat
+      end tell
+      return "not_open"
+    ]], pdf_path)
+    local result = vim.fn.system(string.format("osascript -e %s 2>/dev/null", vim.fn.shellescape(applescript)))
+    -- Return truthy value (1) if open, nil otherwise
+    return result:match("open") and 1 or nil
   else
-    -- Linux: Check via /proc if zathura has this file open
+    -- Linux: Check via /proc if zathura has this file open, return PID
     local result = vim.fn.system(string.format(
-      "for pid in $(pgrep -x zathura 2>/dev/null); do grep -qF %s /proc/$pid/cmdline 2>/dev/null && echo 'open' && break; done",
+      "for pid in $(pgrep -x zathura 2>/dev/null); do grep -qF %s /proc/$pid/cmdline 2>/dev/null && echo $pid && break; done",
       vim.fn.shellescape(pdf_path)
     ))
-    return result:match("open") ~= nil
+    local pid = result:match("(%d+)")
+    return pid and tonumber(pid) or nil
+  end
+end
+
+-- Check if viewer has the PDF open
+function M.is_viewer_open(pdf_file)
+  return M.get_viewer_pid(pdf_file) ~= nil
+end
+
+-- Force PDF viewer to reload the file
+-- Linux: Zathura auto-reloads via inotify (no signal needed)
+-- macOS: Uses AppleScript to reload in Skim
+function M.reload_viewer(pdf_file)
+  local is_macos = vim.fn.has("mac") == 1 or vim.fn.has("macunix") == 1
+  local pdf_path = vim.fn.fnamemodify(pdf_file, ":p")
+
+  if is_macos then
+    -- macOS: Use AppleScript to reload specific document in Skim
+    local applescript = string.format([[
+      tell application "Skim"
+        set docList to documents
+        repeat with doc in docList
+          if (path of doc) is "%s" then
+            revert doc
+            return "reloaded"
+          end if
+        end repeat
+      end tell
+    ]], pdf_path)
+    local result = vim.fn.system(string.format("osascript -e %s 2>/dev/null", vim.fn.shellescape(applescript)))
+    return result:match("reloaded") ~= nil
+  else
+    -- Linux: Zathura auto-reloads via inotify when file changes
+    -- No signal needed - just return true if viewer is open
+    return M.get_viewer_pid(pdf_file) ~= nil
   end
 end
 
@@ -45,14 +93,14 @@ function M.open_pdf(pdf_file, force)
 
   local is_macos = vim.fn.has("mac") == 1 or vim.fn.has("macunix") == 1
 
-  -- Wenn Viewer schon offen ist, nichts tun (Auto-Reload übernimmt)
+  -- Wenn Viewer schon offen ist, explizit Reload erzwingen
   if not force and M.is_viewer_open(pdf_file) then
-    return true -- Viewer läuft bereits, Auto-Reload aktiv
+    M.reload_viewer(pdf_file)
+    return true -- Viewer läuft bereits, Reload wurde ausgelöst
   end
 
   if is_macos then
     -- macOS: Skim bevorzugt, sonst Preview
-    -- "open -a" öffnet kein neues Fenster wenn Datei schon offen
     if vim.fn.isdirectory("/Applications/Skim.app") == 1 then
       vim.fn.system(string.format("open -a Skim %s &", vim.fn.shellescape(pdf_file)))
     else
@@ -60,7 +108,7 @@ function M.open_pdf(pdf_file, force)
     end
     return true
   else
-    -- Linux: zathura (hat eingebautes Auto-Reload)
+    -- Linux: zathura
     if vim.fn.executable("zathura") == 1 then
       vim.fn.system(string.format("zathura %s &", vim.fn.shellescape(pdf_file)))
       return true
@@ -70,7 +118,7 @@ function M.open_pdf(pdf_file, force)
   return false
 end
 
--- Check available LaTeX tools
+-- Check available tools
 function M.check_latex_tools()
   local available = {}
   local missing = {}
@@ -101,15 +149,11 @@ local function compile_and_preview(file, filetype)
 
   local cmd
   if filetype == "tex" then
-    if vim.fn.executable("tectonic") == 1 then
-      cmd = string.format("cd %s && tectonic --synctex %s 2>&1",
-        vim.fn.shellescape(file_dir), vim.fn.shellescape(filename))
-    elseif vim.fn.executable("pdflatex") == 1 then
-      cmd = string.format("cd %s && pdflatex -interaction=nonstopmode %s 2>&1",
-        vim.fn.shellescape(file_dir), vim.fn.shellescape(filename))
-    else
-      return -- Keine Engine verfügbar
+    if vim.fn.executable("pdflatex") ~= 1 then
+      return
     end
+    cmd = string.format("cd %s && pdflatex -interaction=nonstopmode %s 2>&1",
+      vim.fn.shellescape(file_dir), vim.fn.shellescape(filename))
   elseif filetype == "typ" then
     if vim.fn.executable("typst") ~= 1 then
       return
@@ -126,6 +170,9 @@ local function compile_and_preview(file, filetype)
       if exit_code == 0 then
         vim.schedule(function()
           M.open_pdf(pdf_file)
+          local icons = require("core.icons")
+          local engine = filetype == "tex" and "pdflatex" or "typst"
+          vim.notify(icons.status.success .. " " .. engine .. " compiled", vim.log.levels.INFO)
         end)
       else
         vim.schedule(function()
@@ -230,26 +277,26 @@ function M.get_latex_status()
   local icons = require("core.icons")
   local status = M.check_latex_tools()
 
-  print(icons.misc.gear .. " VelocityNvim LaTeX Performance Status:")
+  print(icons.misc.gear .. " VelocityNvim LaTeX/Typst Status:")
   print("")
 
-  print(icons.lsp.text .. " LaTeX-Engines:")
+  print(icons.lsp.text .. " Engines:")
   print(
-    "  • tectonic:    "
+    "  - pdflatex:    "
       .. (
-        status.available.tectonic and icons.status.success .. " Ultra-fast Rust engine"
-        or icons.status.error .. " Not installed (cargo install tectonic)"
+        status.available.pdflatex and icons.status.success .. " Available"
+        or icons.status.error .. " Not installed (texlive-core)"
       )
   )
   print(
-    "  • typst:       "
+    "  - typst:       "
       .. (
-        status.available.typst and icons.status.success .. " Modern alternative"
+        status.available.typst and icons.status.success .. " Available"
         or icons.status.error .. " Not installed (cargo install typst-cli)"
       )
   )
   print(
-    "  • texlab:      "
+    "  - texlab:      "
       .. (
         vim.lsp.get_clients({ name = "texlab" })[1] and icons.status.success .. " LSP active"
         or icons.status.warning .. " LSP not active"
@@ -257,9 +304,9 @@ function M.get_latex_status()
   )
   print("")
 
-  print(icons.status.search .. " Performance-Tools:")
+  print(icons.status.search .. " Tools:")
   print(
-    "  • fd:          "
+    "  - fd:          "
       .. (
         status.available.fd and icons.status.success .. " Fast file search"
         or icons.status.error .. " Standard find"
@@ -271,7 +318,7 @@ function M.get_latex_status()
   if is_macos then
     local has_skim = vim.fn.isdirectory("/Applications/Skim.app") == 1
     print(
-      "  • PDF viewer:  "
+      "  - PDF viewer:  "
         .. (
           has_skim and icons.status.success .. " Skim (SyncTeX)"
           or icons.status.success .. " Preview (macOS default)"
@@ -279,7 +326,7 @@ function M.get_latex_status()
     )
   else
     print(
-      "  • zathura:     "
+      "  - zathura:     "
         .. (
           status.available.zathura and icons.status.success .. " SyncTeX PDF viewer"
           or icons.status.error .. " No SyncTeX viewer"
@@ -288,82 +335,46 @@ function M.get_latex_status()
   end
   print("")
 
-  if next(status.missing) then
-    print(icons.status.hint .. " Installation for maximum performance:")
-    print("  cargo install tectonic typst-cli")
-    print("  sudo pacman -S zathura zathura-pdf-mupdf fd")
-  else
-    print(icons.status.success .. " All LaTeX performance tools available!")
-  end
+  print(icons.status.info .. " Live preview: " .. (M.live_preview_active and "Active" or "Inactive"))
 end
 
--- LaTeX build with Tectonic (ultra-performance)
-function M.build_with_tectonic(file)
+-- LaTeX build with pdflatex
+function M.build_latex(file)
   file = file or vim.fn.expand("%:p")
 
-  if vim.fn.executable("tectonic") ~= 1 then
-    vim.notify("Tectonic not installed", vim.log.levels.WARN)
-
-    -- Fallback to pdflatex if available
-    if vim.fn.executable("pdflatex") == 1 then
-      vim.notify("Using pdflatex as fallback", vim.log.levels.INFO)
-      local file_dir = vim.fn.fnamemodify(file, ":h")
-      local filename = vim.fn.fnamemodify(file, ":t")
-      local original_dir = vim.fn.getcwd()
-
-      vim.fn.chdir(file_dir)
-      local cmd = string.format("pdflatex %s", filename)
-      local output = vim.fn.system(cmd)
-      vim.fn.chdir(original_dir)
-
-      if vim.v.shell_error == 0 then
-        local icons = require("core.icons")
-        print(icons.status.success .. " PDF created with pdflatex!")
-        return true
-      else
-        print("pdflatex build failed:")
-        print(output)
-        return false
-      end
-    else
-      vim.notify(
-        "No LaTeX engine available - install texlive-core or tectonic",
-        vim.log.levels.ERROR
-      )
-      return false
-    end
+  if vim.fn.executable("pdflatex") ~= 1 then
+    vim.notify("pdflatex not installed - install texlive-core", vim.log.levels.ERROR)
+    return false
   end
 
   local icons = require("core.icons")
-  print(icons.status.sync .. " Building with Tectonic...")
+  print(icons.status.sync .. " Building with pdflatex...")
 
-  -- Change to .tex file directory
   local file_dir = vim.fn.fnamemodify(file, ":h")
   local filename = vim.fn.fnamemodify(file, ":t")
   local original_dir = vim.fn.getcwd()
 
   vim.fn.chdir(file_dir)
-  local cmd = string.format("tectonic --synctex %s", filename)
+  local cmd = string.format("pdflatex -interaction=nonstopmode %s", filename)
   local output = vim.fn.system(cmd)
   vim.fn.chdir(original_dir)
 
   if vim.v.shell_error == 0 then
     print(icons.status.success .. " PDF built successfully!")
 
-    -- Auto-open PDF (cross-platform)
     local pdf_file = file_dir .. "/" .. filename:gsub("%.tex$", ".pdf")
     M.open_pdf(pdf_file)
 
     return true
   else
-    print(icons.status.error .. " Tectonic build failed:")
+    print(icons.status.error .. " pdflatex build failed:")
     print(output)
     return false
   end
 end
 
--- Typst build (alternative)
-function M.build_with_typst(file)
+-- Typst build
+function M.build_typst(file)
   file = file or vim.fn.expand("%:p")
 
   if vim.fn.executable("typst") ~= 1 then
@@ -374,7 +385,6 @@ function M.build_with_typst(file)
   local icons = require("core.icons")
   print(icons.status.sync .. " Building with Typst...")
 
-  -- Change to .typ file directory
   local file_dir = vim.fn.fnamemodify(file, ":h")
   local filename = vim.fn.fnamemodify(file, ":t")
   local original_dir = vim.fn.getcwd()
@@ -387,7 +397,6 @@ function M.build_with_typst(file)
   if vim.v.shell_error == 0 then
     print(icons.status.success .. " Typst PDF built successfully!")
 
-    -- Auto-open PDF (cross-platform)
     local pdf_file = file_dir .. "/" .. filename:gsub("%.typ$", ".pdf")
     M.open_pdf(pdf_file)
 

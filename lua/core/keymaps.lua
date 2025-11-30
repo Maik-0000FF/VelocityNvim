@@ -224,8 +224,8 @@ map("n", "\\c", function()
       end
     end, 1000) -- 1s delay for pdflatex completion
   elseif file:match("%.typ$") then
-    vim.api.nvim_command("LaTeXBuildTypst")
-    -- PDF opening is now handled by build_with_typst()
+    vim.api.nvim_command("TypstBuild")
+    -- PDF opening is handled by build_typst()
   else
     vim.notify("Not a LaTeX/Typst file", vim.log.levels.WARN)
   end
@@ -284,8 +284,8 @@ end, { desc = "LaTeX: Clean auxiliary files" })
 map("n", "\\<CR>", function()
   local latex_perf = require("utils.latex-performance")
   local current_file = vim.fn.expand("%:p")
-  latex_perf.build_with_tectonic(current_file)
-  -- Opening PDF is already integrated in build_with_tectonic()
+  latex_perf.build_latex(current_file)
+  -- PDF opening is handled by build_latex()
 end, { desc = "LaTeX: Quick build + display" })
 
 ----------------------------------------
