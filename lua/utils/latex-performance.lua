@@ -93,7 +93,7 @@ function M.open_pdf(pdf_file, force)
 
   local is_macos = vim.fn.has("mac") == 1 or vim.fn.has("macunix") == 1
 
-  -- Wenn Viewer schon offen ist, explizit Reload erzwingen
+  -- Wenn Viewer schon offen ist mit dieser PDF, nur Reload
   if not force and M.is_viewer_open(pdf_file) then
     M.reload_viewer(pdf_file)
     return true -- Viewer läuft bereits, Reload wurde ausgelöst
@@ -102,7 +102,16 @@ function M.open_pdf(pdf_file, force)
   if is_macos then
     -- macOS: Skim bevorzugt, sonst Preview
     if vim.fn.isdirectory("/Applications/Skim.app") == 1 then
-      vim.fn.system(string.format("open -a Skim %s &", vim.fn.shellescape(pdf_file)))
+      -- AppleScript für zuverlässiges Öffnen neuer PDFs
+      -- Löst Problem: Skim öffnet neue Dateien nicht wenn bereits aktiv
+      local pdf_path = vim.fn.fnamemodify(pdf_file, ":p")
+      local applescript = string.format([[
+        tell application "Skim"
+          activate
+          open POSIX file "%s"
+        end tell
+      ]], pdf_path)
+      vim.fn.system(string.format("osascript -e %s 2>/dev/null &", vim.fn.shellescape(applescript)))
     else
       vim.fn.system(string.format("open %s &", vim.fn.shellescape(pdf_file)))
     end
