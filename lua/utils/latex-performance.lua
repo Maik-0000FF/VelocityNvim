@@ -62,7 +62,7 @@ function M.get_viewer_pid(pdf_file)
       return "not_open"
     ]], pdf_path)
     local result = vim.fn.system(string.format("osascript -e %s 2>/dev/null", vim.fn.shellescape(applescript)))
-    return result:match("open") and 1 or nil
+    return result:match("^open") and 1 or nil
   else
     -- Linux: Check via /proc if zathura has this file open, return PID
     local result = vim.fn.system(string.format(
