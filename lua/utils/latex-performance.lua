@@ -1,11 +1,18 @@
 -- ~/.config/VelocityNvim/lua/utils/latex-performance.lua
 -- LaTeX/Typst live preview with robust PDF viewer reload
 -- Optimized: Cached platform detection, single icon load, async builds
+-- Shell-independent: Works with fish, zsh, bash, and all POSIX shells
 
 local M = {}
 
 -- Cache platform detection (called once at load time)
 local IS_MACOS = vim.fn.has("mac") == 1 or vim.fn.has("macunix") == 1
+
+-- Shell-independent command execution (works with fish, zsh, bash, etc.)
+-- Wraps commands in /bin/sh -c to ensure POSIX compatibility
+local function sh(cmd)
+  return "/bin/sh -c " .. vim.fn.shellescape(cmd)
+end
 
 -- Cache icons module (lazy-loaded once)
 local _icons
@@ -65,10 +72,11 @@ function M.get_viewer_pid(pdf_file)
     return result:match("^open") and 1 or nil
   else
     -- Linux: Check via /proc if zathura has this file open, return PID
-    local result = vim.fn.system(string.format(
+    local cmd = string.format(
       "for pid in $(pgrep -x zathura 2>/dev/null); do grep -qF %s /proc/$pid/cmdline 2>/dev/null && echo $pid && break; done",
       vim.fn.shellescape(pdf_path)
-    ))
+    )
+    local result = vim.fn.system(sh(cmd))
     local pid = result:match("(%d+)")
     return pid and tonumber(pid) or nil
   end
@@ -136,13 +144,13 @@ function M.open_pdf(pdf_file, force)
       ]], pdf_path)
       vim.fn.system(string.format("osascript -e %s 2>/dev/null &", vim.fn.shellescape(applescript)))
     else
-      vim.fn.system(string.format("open %s &", vim.fn.shellescape(pdf_file)))
+      vim.fn.system(sh(string.format("open %s &", vim.fn.shellescape(pdf_file))))
     end
     return true
   else
     -- Linux: zathura
     if is_tool_available("zathura") then
-      vim.fn.system(string.format("zathura %s &", vim.fn.shellescape(pdf_file)))
+      vim.fn.system(sh(string.format("zathura %s &", vim.fn.shellescape(pdf_file))))
       return true
     end
   end
@@ -192,8 +200,8 @@ local function compile_and_preview(file, filetype)
     return
   end
 
-  -- Asynchrone Kompilierung
-  vim.fn.jobstart(cmd, {
+  -- Asynchrone Kompilierung (shell-independent)
+  vim.fn.jobstart({ "/bin/sh", "-c", cmd }, {
     on_exit = function(_, exit_code)
       if exit_code == 0 then
         vim.schedule(function()
@@ -280,7 +288,7 @@ M.setup_live_preview(true)
 function M.find_latex_files(pattern)
   if is_tool_available("fd") then
     local cmd = string.format("fd -e tex -e bib -e cls -e sty '%s'", pattern or "")
-    local result = vim.fn.system(cmd)
+    local result = vim.fn.system(sh(cmd))
     if vim.v.shell_error == 0 then
       return vim.split(result, "\n", { trimempty = true })
     end
@@ -288,7 +296,7 @@ function M.find_latex_files(pattern)
 
   -- Fallback zu standard find
   local cmd = "find . -name '*.tex' -o -name '*.bib' -o -name '*.cls' -o -name '*.sty'"
-  local result = vim.fn.system(cmd)
+  local result = vim.fn.system(sh(cmd))
   return vim.split(result, "\n", { trimempty = true })
 end
 
@@ -335,11 +343,11 @@ function M.build_latex(file)
   local filename = vim.fn.fnamemodify(file, ":t")
   local pdf_file = file_dir .. "/" .. filename:gsub("%.tex$", ".pdf")
 
-  -- Async build to avoid blocking UI
+  -- Async build to avoid blocking UI (shell-independent)
   local cmd = string.format("cd %s && pdflatex -interaction=nonstopmode %s 2>&1",
     vim.fn.shellescape(file_dir), vim.fn.shellescape(filename))
 
-  vim.fn.jobstart(cmd, {
+  vim.fn.jobstart({ "/bin/sh", "-c", cmd }, {
     on_exit = function(_, exit_code)
       vim.schedule(function()
         if exit_code == 0 then
@@ -371,11 +379,11 @@ function M.build_typst(file)
   local filename = vim.fn.fnamemodify(file, ":t")
   local pdf_file = file_dir .. "/" .. filename:gsub("%.typ$", ".pdf")
 
-  -- Async build to avoid blocking UI
+  -- Async build to avoid blocking UI (shell-independent)
   local cmd = string.format("cd %s && typst compile %s 2>&1",
     vim.fn.shellescape(file_dir), vim.fn.shellescape(filename))
 
-  vim.fn.jobstart(cmd, {
+  vim.fn.jobstart({ "/bin/sh", "-c", cmd }, {
     on_exit = function(_, exit_code)
       vim.schedule(function()
         if exit_code == 0 then
