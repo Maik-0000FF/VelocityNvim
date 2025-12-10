@@ -573,6 +573,17 @@ vim.lsp.config("jsonls", {
   },
 })
 
+vim.lsp.config("tinymist", {
+  cmd = { "tinymist" },
+  filetypes = { "typst" },
+  root_markers = { "typst.toml", ".git", "main.typ" }, -- VelocityNvim: Typst project detection
+  settings = {
+    formatterMode = "typstyle", -- Formatter: typstyle (empfohlen) oder typstfmt
+    exportPdf = "onSave", -- PDF-Export: onType, onSave, never
+    semanticTokens = "disable", -- Performance: Semantic tokens deaktiviert (global config)
+  },
+})
+
 -- Cache for already scanned workspaces
 local scanned_workspaces = {}
 
@@ -682,6 +693,8 @@ local function scan_workspace_files(client)
     elseif ft == "tex" then
       table.insert(patterns, "*.tex")
       table.insert(patterns, "*.bib")
+    elseif ft == "typst" then
+      table.insert(patterns, "*.typ")
     elseif ft == "html" then
       table.insert(patterns, "*.html")
       table.insert(patterns, "*.htm")
@@ -891,6 +904,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
 vim.lsp.enable("lua_ls")      -- Lua with intelligent library detection
 vim.lsp.enable("pyright")     -- Python with superior project detection
 vim.lsp.enable("texlab")      -- LaTeX with specialized root markers
+vim.lsp.enable("tinymist")    -- Typst with PDF export on save
 vim.lsp.enable("htmlls")      -- HTML with web project detection
 vim.lsp.enable("cssls")       -- CSS with naming convention support
 vim.lsp.enable("ts_ls")       -- TypeScript with comprehensive configuration

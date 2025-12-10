@@ -40,6 +40,7 @@ require("conform").setup({
     rust = { "rustfmt" },
     c = { "clang_format" },
     cpp = { "clang_format" },
+    typst = { "typstyle" },
     -- Fallback for unknown file types
     ["_"] = { "trim_whitespace" },
   },
