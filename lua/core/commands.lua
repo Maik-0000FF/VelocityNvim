@@ -980,6 +980,11 @@ cmd("LaTeXLivePreviewToggle", function()
   latex_perf.toggle_live_preview()
 end, { desc = "Toggle LaTeX/Typst live preview" })
 
+cmd("CompilerErrorClose", function()
+  local latex_perf = require("utils.latex-performance")
+  latex_perf.close_error_window()
+end, { desc = "Close compiler error window" })
+
 -- Test Suite Commands
 cmd("VelocityTest", function(opts)
   local test_runner = require("tests.run_tests")

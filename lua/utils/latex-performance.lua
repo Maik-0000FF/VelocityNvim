@@ -8,6 +8,104 @@ local M = {}
 -- Cache platform detection (called once at load time)
 local IS_MACOS = vim.fn.has("mac") == 1 or vim.fn.has("macunix") == 1
 
+-- Floating window for compiler errors
+local error_buf = nil
+local error_win = nil
+
+-- Close error window
+function M.close_error_window()
+  if error_win and vim.api.nvim_win_is_valid(error_win) then
+    vim.api.nvim_win_close(error_win, true)
+  end
+  if error_buf and vim.api.nvim_buf_is_valid(error_buf) then
+    vim.api.nvim_buf_delete(error_buf, { force = true })
+  end
+  error_win = nil
+  error_buf = nil
+end
+
+-- Show compiler output in floating window
+function M.show_error_window(title, lines, is_error)
+  -- Close existing window
+  M.close_error_window()
+
+  -- Filter empty lines at end, keep content
+  while #lines > 0 and lines[#lines] == "" do
+    table.remove(lines)
+  end
+
+  if #lines == 0 then
+    return
+  end
+
+  -- Add title
+  local content = { title, string.rep("─", #title), "" }
+  for _, line in ipairs(lines) do
+    table.insert(content, line)
+  end
+
+  -- Calculate window size
+  local max_width = 80
+  local width = 0
+  for _, line in ipairs(content) do
+    width = math.max(width, #line)
+  end
+  width = math.min(width + 2, max_width)
+  local height = math.min(#content, 20)
+
+  -- Create buffer
+  error_buf = vim.api.nvim_create_buf(false, true)
+  vim.api.nvim_buf_set_lines(error_buf, 0, -1, false, content)
+  vim.bo[error_buf].modifiable = false
+  vim.bo[error_buf].buftype = "nofile"
+  vim.bo[error_buf].filetype = "typst-errors"
+
+  -- Window position (centered)
+  local ui = vim.api.nvim_list_uis()[1]
+  local win_opts = {
+    relative = "editor",
+    width = width,
+    height = height,
+    col = math.floor((ui.width - width) / 2),
+    row = math.floor((ui.height - height) / 2),
+    style = "minimal",
+    border = "rounded",
+    title = is_error and " Compilation Error " or " Compilation Output ",
+    title_pos = "center",
+  }
+
+  -- Open window WITH focus so user can yank errors
+  error_win = vim.api.nvim_open_win(error_buf, true, win_opts)
+
+  -- Make buffer readable but not modifiable (allows yanking)
+  vim.bo[error_buf].modifiable = false
+  vim.bo[error_buf].readonly = true
+
+  -- Highlight title
+  vim.api.nvim_buf_add_highlight(error_buf, -1, is_error and "ErrorMsg" or "WarningMsg", 0, 0, -1)
+  vim.api.nvim_buf_add_highlight(error_buf, -1, "Comment", 1, 0, -1)
+
+  -- Highlight error lines
+  for i, line in ipairs(content) do
+    if line:match("^error:") then
+      vim.api.nvim_buf_add_highlight(error_buf, -1, "ErrorMsg", i - 1, 0, -1)
+    elseif line:match("^warning:") then
+      vim.api.nvim_buf_add_highlight(error_buf, -1, "WarningMsg", i - 1, 0, -1)
+    elseif line:match("^%s*┌") or line:match("^%s*│") or line:match("^%s*└") then
+      vim.api.nvim_buf_add_highlight(error_buf, -1, "Comment", i - 1, 0, -1)
+    end
+  end
+
+  -- Keymap to close with q
+  vim.keymap.set("n", "q", M.close_error_window, { buffer = error_buf, silent = true, desc = "Close error window" })
+
+  -- Yank to system clipboard by default in this buffer
+  vim.keymap.set("n", "y", '"+y', { buffer = error_buf, silent = true, desc = "Yank to clipboard" })
+  vim.keymap.set("n", "yy", '"+yy', { buffer = error_buf, silent = true, desc = "Yank line to clipboard" })
+  vim.keymap.set("v", "y", '"+y', { buffer = error_buf, silent = true, desc = "Yank selection to clipboard" })
+  vim.keymap.set("n", "Y", '"+y$', { buffer = error_buf, silent = true, desc = "Yank to end to clipboard" })
+end
+
 -- Shell-independent command execution (works with fish, zsh, bash, etc.)
 -- Wraps commands in /bin/sh -c to ensure POSIX compatibility
 local function sh(cmd)
@@ -194,28 +292,64 @@ local function compile_and_preview(file, filetype)
       vim.fn.shellescape(file_dir), vim.fn.shellescape(filename))
   elseif filetype == "typ" then
     if not is_tool_available("typst") then return end
-    cmd = string.format("cd %s && typst compile %s 2>&1",
-      vim.fn.shellescape(file_dir), vim.fn.shellescape(filename))
+    -- Find project root (git root or home directory as fallback)
+    local git_root = vim.fn.systemlist("git -C " .. vim.fn.shellescape(file_dir) .. " rev-parse --show-toplevel 2>/dev/null")[1]
+    local root = (git_root and git_root ~= "" and vim.fn.isdirectory(git_root) == 1) and git_root or vim.fn.expand("~")
+    cmd = string.format("cd %s && typst compile --root %s %s 2>&1",
+      vim.fn.shellescape(file_dir), vim.fn.shellescape(root), vim.fn.shellescape(filename))
   else
     return
   end
 
+  -- Collect compiler output
+  local output_lines = {}
+
   -- Asynchrone Kompilierung (shell-independent)
   vim.fn.jobstart({ "/bin/sh", "-c", cmd }, {
-    on_exit = function(_, exit_code)
-      if exit_code == 0 then
-        vim.schedule(function()
-          M.open_pdf(pdf_file)
-          local icons = get_icons()
-          local engine = filetype == "tex" and "pdflatex" or "typst"
-          vim.notify(icons.status.success .. " " .. engine .. " compiled", vim.log.levels.INFO)
-        end)
-      else
-        vim.schedule(function()
-          vim.notify(filetype == "tex" and "LaTeX compilation failed" or "Typst compilation failed",
-            vim.log.levels.ERROR)
-        end)
+    stdout_buffered = true,
+    stderr_buffered = true,
+    on_stdout = function(_, data)
+      if data then
+        for _, line in ipairs(data) do
+          if line ~= "" then
+            table.insert(output_lines, line)
+          end
+        end
       end
+    end,
+    on_stderr = function(_, data)
+      if data then
+        for _, line in ipairs(data) do
+          if line ~= "" then
+            table.insert(output_lines, line)
+          end
+        end
+      end
+    end,
+    on_exit = function(_, exit_code)
+      vim.schedule(function()
+        local icons = get_icons()
+        local engine = filetype == "tex" and "pdflatex" or "typst"
+
+        -- Check if PDF was created (success even with warnings)
+        local pdf_exists = vim.fn.filereadable(pdf_file) == 1
+
+        if exit_code == 0 then
+          -- Clean success
+          M.close_error_window()
+          M.open_pdf(pdf_file)
+          vim.notify(icons.status.success .. " " .. engine .. " compiled", vim.log.levels.INFO)
+        elseif pdf_exists then
+          -- PDF created despite errors (warnings or recoverable errors)
+          M.open_pdf(pdf_file)
+          M.show_error_window(engine .. " compiled with warnings", output_lines, false)
+          vim.notify(icons.status.warning .. " " .. engine .. " compiled with warnings", vim.log.levels.WARN)
+        else
+          -- Actual failure - show errors in floating window
+          M.show_error_window(engine .. " compilation failed", output_lines, true)
+          vim.notify(icons.status.error .. " " .. engine .. " compilation failed", vim.log.levels.ERROR)
+        end
+      end)
     end,
   })
 end
@@ -379,9 +513,13 @@ function M.build_typst(file)
   local filename = vim.fn.fnamemodify(file, ":t")
   local pdf_file = file_dir .. "/" .. filename:gsub("%.typ$", ".pdf")
 
+  -- Find project root (git root or home directory as fallback)
+  local git_root = vim.fn.systemlist("git -C " .. vim.fn.shellescape(file_dir) .. " rev-parse --show-toplevel 2>/dev/null")[1]
+  local root = (git_root and git_root ~= "" and vim.fn.isdirectory(git_root) == 1) and git_root or vim.fn.expand("~")
+
   -- Async build to avoid blocking UI (shell-independent)
-  local cmd = string.format("cd %s && typst compile %s 2>&1",
-    vim.fn.shellescape(file_dir), vim.fn.shellescape(filename))
+  local cmd = string.format("cd %s && typst compile --root %s %s 2>&1",
+    vim.fn.shellescape(file_dir), vim.fn.shellescape(root), vim.fn.shellescape(filename))
 
   vim.fn.jobstart({ "/bin/sh", "-c", cmd }, {
     on_exit = function(_, exit_code)
