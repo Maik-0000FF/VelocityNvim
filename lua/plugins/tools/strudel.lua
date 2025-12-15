@@ -39,9 +39,27 @@ strudel.setup({
 local keymap = vim.keymap.set
 local opts = { noremap = true, silent = true }
 
+-- Custom launch function that also starts the sample server
+local function strudel_launch_all()
+  -- Start sample server in background
+  vim.fn.jobstart("cd ~/strudel/samples && npx @strudel/sampler", { detach = true })
+  -- Small delay then launch Strudel
+  vim.defer_fn(function()
+    vim.cmd("StrudelLaunch")
+    vim.notify("Strudel + Sample-Server gestartet (Port 5432)", vim.log.levels.INFO)
+  end, 500)
+end
+
+-- Custom quit function that also kills the sample server
+local function strudel_quit_all()
+  vim.cmd("StrudelQuit")
+  vim.fn.jobstart("pkill -f 'npx.*sampler' 2>/dev/null", { detach = true })
+  vim.notify("Strudel + Sample-Server beendet", vim.log.levels.INFO)
+end
+
 -- Leader + m (music) prefix for Strudel commands
-keymap("n", "<Leader>ms", "<cmd>StrudelLaunch<CR>", vim.tbl_extend("force", opts, { desc = "Strudel: Launch" }))
-keymap("n", "<Leader>mq", "<cmd>StrudelQuit<CR>", vim.tbl_extend("force", opts, { desc = "Strudel: Quit" }))
+keymap("n", "<Leader>ms", strudel_launch_all, vim.tbl_extend("force", opts, { desc = "Strudel: Launch All" }))
+keymap("n", "<Leader>mq", strudel_quit_all, vim.tbl_extend("force", opts, { desc = "Strudel: Quit All" }))
 keymap("n", "<Leader>mp", "<cmd>StrudelToggle<CR>", vim.tbl_extend("force", opts, { desc = "Strudel: Play/Stop" }))
 keymap("n", "<Leader>mu", "<cmd>StrudelUpdate<CR>", vim.tbl_extend("force", opts, { desc = "Strudel: Update" }))
 keymap("n", "<Leader>mh", "<cmd>StrudelStop<CR>", vim.tbl_extend("force", opts, { desc = "Strudel: Stop" }))
