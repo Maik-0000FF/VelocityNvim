@@ -73,6 +73,7 @@ vim.defer_fn(function()
   safe_require("plugins.tools.gitsigns")
   safe_require("plugins.tools.suda")
   safe_require("plugins.tools.vim-startuptime")
+  safe_require("plugins.tools.strudel")
 end, 100)
 
 -- PluginSync command is now handled in core/commands.lua

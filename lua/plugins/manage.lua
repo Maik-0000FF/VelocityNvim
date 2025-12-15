@@ -45,7 +45,20 @@ M.plugins = {
   ["render-markdown.nvim"] = "https://github.com/MeanderingProgrammer/render-markdown.nvim",
   -- Startup Time Profiling and Benchmark Analysis
   ["vim-startuptime"] = "https://github.com/dstein64/vim-startuptime",
+  -- Strudel Live Coding (Music)
+  ["strudel.nvim"] = "https://github.com/gruvw/strudel.nvim",
 }
+
+-- Automatic strudel.nvim npm build after updates
+local function auto_build_strudel(pack_dir)
+  local strudel_path = pack_dir .. "strudel.nvim"
+  if fs_stat_func and fs_stat_func(strudel_path .. "/package.json") then
+    local icons = require("core.icons")
+    print(icons.status.sync .. " Building strudel.nvim dependencies...")
+    vim.fn.system({ "npm", "ci", "--prefix", strudel_path })
+    print(icons.status.success .. " strudel.nvim ready!")
+  end
+end
 
 -- Automatic blink.cmp Rust compilation after updates
 local function auto_build_blink_rust(pack_dir)
@@ -92,6 +105,7 @@ function M.sync()
   print(icons.status.sync .. " Plugin synchronization starting...")
 
   local blink_updated = false
+  local strudel_updated = false
   for name, url in pairs(M.plugins) do
     local plugin_path = pack_dir .. name
     -- Robuste Plugin-Prüfung mit Fallback
@@ -108,12 +122,16 @@ function M.sync()
       vim.fn.system({ "git", "clone", "--depth", "1", url, plugin_path })
       if name == "blink.cmp" then
         blink_updated = true
+      elseif name == "strudel.nvim" then
+        strudel_updated = true
       end
     else
       print("Updating " .. name .. "...")
       vim.fn.system({ "git", "-C", plugin_path, "pull" })
       if name == "blink.cmp" then
         blink_updated = true
+      elseif name == "strudel.nvim" then
+        strudel_updated = true
       end
     end
   end
@@ -123,6 +141,11 @@ function M.sync()
   -- Automatic Rust compilation after blink.cmp updates
   if blink_updated then
     auto_build_blink_rust(pack_dir)
+  end
+
+  -- Automatic npm build after strudel.nvim updates
+  if strudel_updated then
+    auto_build_strudel(pack_dir)
   end
 
   print(
