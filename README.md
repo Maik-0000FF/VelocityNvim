@@ -142,14 +142,18 @@ safe_require("plugins.category.plugin-name")
 
 ```bash
 rm -rf ~/.config/nvim
-rm -rf ~/.local/share/nvim ~/.local/state/nvim ~/.cache/nvim
+rm -rf ~/.local/share/nvim
+rm -rf ~/.local/state/nvim
+rm -rf ~/.cache/nvim
 ```
 
 ### Parallel Installation
 
 ```bash
 rm -rf ~/.config/VelocityNvim
-rm -rf ~/.local/share/VelocityNvim ~/.local/state/VelocityNvim ~/.cache/VelocityNvim
+rm -rf ~/.local/share/VelocityNvim
+rm -rf ~/.local/state/VelocityNvim
+rm -rf ~/.cache/VelocityNvim
 ```
 
 ## Contributing
