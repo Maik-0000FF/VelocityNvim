@@ -10,8 +10,6 @@ A modern Neovim distribution built on native vim.pack architecture with modern v
 
 **Website**: https://velocitynvim.com
 
-![VelocityNvim Dashboard](./assets/screenshots/VelocityNvim_Dashboard_Screenshot.png)
-
 ![VelocityNvim Demo](./assets/feature-demo.gif)
 
 ## Features
