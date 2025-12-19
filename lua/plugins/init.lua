@@ -73,7 +73,12 @@ vim.defer_fn(function()
   safe_require("plugins.tools.gitsigns")
   safe_require("plugins.tools.suda")
   safe_require("plugins.tools.vim-startuptime")
-  safe_require("plugins.tools.strudel")
+
+  -- Optional: Strudel (only load if enabled in optional features)
+  local manage_ok, manage = pcall(require, "plugins.manage")
+  if manage_ok and manage.is_feature_enabled("strudel") then
+    safe_require("plugins.tools.strudel")
+  end
 end, 100)
 
 -- PluginSync command is now handled in core/commands.lua

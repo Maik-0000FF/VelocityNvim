@@ -6,7 +6,10 @@ local M = {}
 -- Safe fs_stat function for cross-version compatibility
 local fs_stat_func = rawget(vim.uv, 'fs_stat') or rawget(vim.loop, 'fs_stat')
 
--- A simple list for all your plugins
+-- Path for optional features configuration
+M.optional_config_path = vim.fn.stdpath("data") .. "/optional-features.json"
+
+-- Core plugins (always installed)
 M.plugins = {
   ["plenary.nvim"] = "https://github.com/nvim-lua/plenary.nvim",
   ["nvim-web-devicons"] = "https://github.com/nvim-tree/nvim-web-devicons",
@@ -45,9 +48,132 @@ M.plugins = {
   ["render-markdown.nvim"] = "https://github.com/MeanderingProgrammer/render-markdown.nvim",
   -- Startup Time Profiling and Benchmark Analysis
   ["vim-startuptime"] = "https://github.com/dstein64/vim-startuptime",
-  -- Strudel Live Coding (Music)
-  ["strudel.nvim"] = "https://github.com/gruvw/strudel.nvim",
 }
+
+-- Optional feature packages (selected during first-run installation)
+M.optional_packages = {
+  strudel = {
+    name = "Strudel",
+    description = "Live Coding Music - Pattern-based music programming in browser",
+    dependencies = { "npm", "chromium/brave" },
+    plugins = {
+      ["strudel.nvim"] = "https://github.com/gruvw/strudel.nvim",
+    },
+    -- No LSP needed, just the plugin
+    lsp_servers = {},
+  },
+  latex = {
+    name = "LaTeX",
+    description = "Scientific Writing - PDF compilation and SyncTeX support",
+    dependencies = { "texlab", "latexmk", "zathura (optional)" },
+    plugins = {},  -- No extra plugins needed
+    lsp_servers = { "texlab" },
+  },
+  typst = {
+    name = "Typst",
+    description = "Modern Typesetting - Fast compilation and live preview",
+    dependencies = { "tinymist", "typstyle (optional)" },
+    plugins = {},  -- No extra plugins needed
+    lsp_servers = { "tinymist" },
+  },
+}
+
+-- Load saved optional features configuration
+function M.load_optional_config()
+  if fs_stat_func and fs_stat_func(M.optional_config_path) then
+    local file = io.open(M.optional_config_path, "r")
+    if file then
+      local content = file:read("*a")
+      file:close()
+      local ok, config = pcall(vim.json.decode, content)
+      if ok and config then
+        return config
+      end
+    end
+  end
+  -- Default: nothing selected yet
+  return { selected = {}, configured = false }
+end
+
+-- Save optional features configuration
+function M.save_optional_config(config)
+  -- Ensure data directory exists
+  local data_dir = vim.fn.stdpath("data")
+  if vim.fn.isdirectory(data_dir) == 0 then
+    vim.fn.mkdir(data_dir, "p")
+  end
+
+  local file = io.open(M.optional_config_path, "w")
+  if file then
+    local ok, json = pcall(vim.json.encode, config)
+    if ok then
+      file:write(json)
+    end
+    file:close()
+    return true
+  end
+  return false
+end
+
+-- Check if an optional feature is enabled
+function M.is_feature_enabled(feature_name)
+  local config = M.load_optional_config()
+  if config.selected then
+    for _, selected in ipairs(config.selected) do
+      if selected == feature_name then
+        return true
+      end
+    end
+  end
+  return false
+end
+
+-- Get all plugins to install (core + enabled optional)
+function M.get_all_plugins()
+  local all_plugins = vim.deepcopy(M.plugins)
+  local config = M.load_optional_config()
+
+  if config.selected then
+    for _, feature_name in ipairs(config.selected) do
+      local package = M.optional_packages[feature_name]
+      if package and package.plugins then
+        for name, url in pairs(package.plugins) do
+          all_plugins[name] = url
+        end
+      end
+    end
+  end
+
+  return all_plugins
+end
+
+-- Get enabled LSP servers
+function M.get_enabled_lsp_servers()
+  -- Core LSP servers (always enabled)
+  local servers = {
+    "lua_ls",
+    "pyright",
+    "htmlls",
+    "cssls",
+    "ts_ls",
+    "jsonls",
+    "rust_analyzer",
+  }
+
+  local config = M.load_optional_config()
+  if config.selected then
+    for _, feature_name in ipairs(config.selected) do
+      local package = M.optional_packages[feature_name]
+      if package and package.lsp_servers then
+        for _, server in ipairs(package.lsp_servers) do
+          table.insert(servers, server)
+        end
+      end
+    end
+  end
+
+  return servers
+end
 
 -- Automatic strudel.nvim npm build after updates
 local function auto_build_strudel(pack_dir)
@@ -104,9 +230,12 @@ function M.sync()
   local icons = require("core.icons")
   print(icons.status.sync .. " Plugin synchronization starting...")
 
+  -- Use get_all_plugins() to include optional plugins based on configuration
+  local all_plugins = M.get_all_plugins()
+
   local blink_updated = false
   local strudel_updated = false
-  for name, url in pairs(M.plugins) do
+  for name, url in pairs(all_plugins) do
     local plugin_path = pack_dir .. name
     -- Robuste Plugin-Prüfung mit Fallback
     local plugin_exists = false

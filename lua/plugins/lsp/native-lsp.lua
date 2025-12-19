@@ -899,16 +899,28 @@ vim.api.nvim_create_autocmd("LspAttach", {
   end,
 })
 
--- MODERN LSP ACTIVATION: MyNvim-style individual enable (better compatibility)
--- Individual activation allows better error handling and control per server
-vim.lsp.enable("lua_ls")      -- Lua with intelligent library detection
-vim.lsp.enable("pyright")     -- Python with superior project detection
-vim.lsp.enable("texlab")      -- LaTeX with specialized root markers
-vim.lsp.enable("tinymist")    -- Typst with PDF export on save
-vim.lsp.enable("htmlls")      -- HTML with web project detection
-vim.lsp.enable("cssls")       -- CSS with naming convention support
-vim.lsp.enable("ts_ls")       -- TypeScript with comprehensive configuration
-vim.lsp.enable("jsonls")      -- JSON for package.json and config files
+-- MODERN LSP ACTIVATION: Dynamic activation based on optional features
+-- Core LSP servers (always enabled)
+vim.lsp.enable("lua_ls")        -- Lua with intelligent library detection
+vim.lsp.enable("pyright")       -- Python with superior project detection
+vim.lsp.enable("htmlls")        -- HTML with web project detection
+vim.lsp.enable("cssls")         -- CSS with naming convention support
+vim.lsp.enable("ts_ls")         -- TypeScript with comprehensive configuration
+vim.lsp.enable("jsonls")        -- JSON for package.json and config files
 vim.lsp.enable("rust_analyzer") -- Rust with adaptive memory configuration (if available)
+
+-- Optional LSP servers (enabled based on optional-features.json)
+local manage_ok, manage = pcall(require, "plugins.manage")
+if manage_ok then
+  -- LaTeX support (optional)
+  if manage.is_feature_enabled("latex") then
+    vim.lsp.enable("texlab")    -- LaTeX with specialized root markers
+  end
+
+  -- Typst support (optional)
+  if manage.is_feature_enabled("typst") then
+    vim.lsp.enable("tinymist")  -- Typst with PDF export on save
+  end
+end
 
 -- LspStatus Command wird jetzt in core/commands.lua behandelt

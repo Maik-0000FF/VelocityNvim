@@ -46,7 +46,7 @@ local function strudel_launch_all()
   -- Small delay then launch Strudel
   vim.defer_fn(function()
     vim.cmd("StrudelLaunch")
-    vim.notify("Strudel + Sample-Server gestartet (Port 5432)", vim.log.levels.INFO)
+    vim.notify("Strudel + Sample Server started (Port 5432)", vim.log.levels.INFO)
   end, 500)
 end
 
@@ -54,7 +54,7 @@ end
 local function strudel_quit_all()
   vim.cmd("StrudelQuit")
   vim.fn.jobstart("pkill -f 'npx.*sampler' 2>/dev/null", { detach = true })
-  vim.notify("Strudel + Sample-Server beendet", vim.log.levels.INFO)
+  vim.notify("Strudel + Sample Server stopped", vim.log.levels.INFO)
 end
 
 -- Leader + m (music) prefix for Strudel commands

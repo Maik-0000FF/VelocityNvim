@@ -313,12 +313,12 @@ vim.api.nvim_create_autocmd("VimEnter", {
 })
 
 -- ============================================================================
--- NOICE COMMANDS
+-- NOICE COMMANDS - View notification history
 -- ============================================================================
--- NOTE: Noice commands disabled because messages = false for clean statusline
--- vim.keymap.set("n", "<leader>nh", "<cmd>Noice history<cr>", { desc = "Noice History" })
--- vim.keymap.set("n", "<leader>nl", "<cmd>Noice last<cr>", { desc = "Noice Last Message" })
--- vim.keymap.set("n", "<leader>ne", "<cmd>Noice errors<cr>", { desc = "Noice Errors" })
+vim.keymap.set("n", "<leader>nh", "<cmd>Noice history<cr>", { desc = "Notification History" })
+vim.keymap.set("n", "<leader>nl", "<cmd>Noice last<cr>", { desc = "Last Notification" })
+vim.keymap.set("n", "<leader>ne", "<cmd>Noice errors<cr>", { desc = "Error Messages" })
+vim.keymap.set("n", "<leader>nd", "<cmd>Noice dismiss<cr>", { desc = "Dismiss Notifications" })
 
 -- ============================================================================
 -- NOTIFY INTEGRATION

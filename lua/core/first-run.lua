@@ -1,6 +1,7 @@
 -- ~/.config/VelocityNvim/lua/core/first-run.lua
 -- Automated First-Run Installation System for VelocityNvim
 -- FIXED: Race conditions, UI flickering, blocking operations
+-- NEW: Optional package selection (Strudel, LaTeX, Typst)
 
 local M = {}
 local icons = require("core.icons")
@@ -8,11 +9,90 @@ local icons = require("core.icons")
 -- Installation phases with improved timing
 local PHASES = {
   { name = "Compatibility Check", key = "compat", duration = 1.5 },
+  { name = "Package Selection", key = "selection", duration = 0 }, -- User interaction
   { name = "Plugin Installation", key = "plugins", duration = 0 }, -- Variable based on plugin count
   { name = "Rust Performance Build", key = "rust", duration = 3.0 },
+  { name = "Optional Dependencies", key = "optional_deps", duration = 2.0 }, -- npm install for Strudel etc.
   { name = "Health Verification", key = "health", duration = 1.0 },
   { name = "Welcome Setup", key = "welcome", duration = 1.0 },
 }
+
+-- Path for installation warnings log
+local WARNINGS_LOG_PATH = vim.fn.stdpath("data") .. "/installation-warnings.log"
+
+-- Save warnings to file for later viewing
+local function save_warnings_to_file()
+  if #state.warnings == 0 and #state.errors == 0 then
+    -- Remove old log file if no warnings
+    if vim.fn.filereadable(WARNINGS_LOG_PATH) == 1 then
+      vim.fn.delete(WARNINGS_LOG_PATH)
+    end
+    return
+  end
+
+  local lines = {
+    "===============================================================================",
+    "VelocityNvim Installation Log - " .. os.date("%Y-%m-%d %H:%M:%S"),
+    "===============================================================================",
+    "",
+  }
+
+  if #state.errors > 0 then
+    table.insert(lines, "ERRORS:")
+    table.insert(lines, string.rep("-", 40))
+    for _, err in ipairs(state.errors) do
+      table.insert(lines, "  " .. err)
+    end
+    table.insert(lines, "")
+  end
+
+  if #state.warnings > 0 then
+    table.insert(lines, "WARNINGS (Missing Dependencies):")
+    table.insert(lines, string.rep("-", 40))
+    for _, warn in ipairs(state.warnings) do
+      table.insert(lines, "  " .. warn)
+    end
+    table.insert(lines, "")
+    table.insert(lines, "INSTALLATION COMMANDS:")
+    table.insert(lines, string.rep("-", 40))
+    table.insert(lines, "")
+    table.insert(lines, "# Arch Linux (pacman):")
+    for _, warn in ipairs(state.warnings) do
+      local pacman_cmd = warn:match("pacman %-S [%w%-]+")
+      if pacman_cmd then
+        table.insert(lines, "sudo " .. pacman_cmd)
+      end
+    end
+    table.insert(lines, "")
+    table.insert(lines, "# macOS (Homebrew):")
+    for _, warn in ipairs(state.warnings) do
+      local brew_cmd = warn:match("brew install [%w%-]+")
+      if brew_cmd then
+        table.insert(lines, brew_cmd)
+      end
+    end
+    table.insert(lines, "")
+    table.insert(lines, "# Cargo (Rust):")
+    for _, warn in ipairs(state.warnings) do
+      local cargo_cmd = warn:match("cargo install [%w%-]+")
+      if cargo_cmd then
+        table.insert(lines, cargo_cmd)
+      end
+    end
+  end
+
+  table.insert(lines, "")
+  table.insert(lines, "===============================================================================")
+  table.insert(lines, "View this file anytime with:  :InstallationLog")
+  table.insert(lines, "===============================================================================")
+
+  vim.fn.writefile(lines, WARNINGS_LOG_PATH)
+end
+
+-- Get warnings log path (for external access)
+M.get_warnings_log_path = function()
+  return WARNINGS_LOG_PATH
+end
 
 -- STABLE state tracking - no race conditions
 local state = {
@@ -201,7 +281,190 @@ local function phase_compatibility(callback)
   check_step(1, 3, function() return true end, "Starting compatibility check...")
 end
 
--- ASYNC Phase 2: Plugin Installation
+-- ASYNC Phase 2: Optional Package Selection
+local function phase_selection(callback)
+  state.phase_start_time = vim.fn.reltime()
+
+  local manage_ok, manage = pcall(require, "plugins.manage")
+  if not manage_ok then
+    -- Skip selection if manage.lua not available
+    callback(true)
+    return
+  end
+
+  -- Get optional packages info
+  local packages = manage.optional_packages
+  if not packages or vim.tbl_count(packages) == 0 then
+    callback(true)
+    return
+  end
+
+  -- Create selection UI
+  local width = 80
+  local height = 20
+  local row = math.floor((vim.o.lines - height) / 2)
+  local col = math.floor((vim.o.columns - width) / 2)
+
+  -- Create buffer for selection
+  local sel_buf = vim.api.nvim_create_buf(false, true)
+  vim.bo[sel_buf].bufhidden = 'wipe'
+  vim.bo[sel_buf].buftype = 'nofile'
+  vim.bo[sel_buf].swapfile = false
+
+  -- Create window
+  local sel_win = vim.api.nvim_open_win(sel_buf, true, {
+    relative = 'editor',
+    width = width,
+    height = height,
+    row = row,
+    col = col,
+    style = 'minimal',
+    border = 'rounded',
+    title = ' VelocityNvim - Optional Packages ',
+    title_pos = 'center'
+  })
+
+  -- Track selection state
+  local selected = {}
+  local package_keys = vim.tbl_keys(packages)
+  table.sort(package_keys)  -- Consistent order
+
+  -- Initialize all as unselected
+  for _, key in ipairs(package_keys) do
+    selected[key] = false
+  end
+
+  -- Render function
+  local function render_selection()
+    local lines = {
+      "",
+      "  Select optional packages for your installation:",
+      "  (Navigate with j/k, toggle with Space/Enter, finish with q/Esc)",
+      "",
+      "  " .. string.rep("-", width - 6),
+      "",
+    }
+
+    for i, key in ipairs(package_keys) do
+      local pkg = packages[key]
+      local checkbox = selected[key] and "[x]" or "[ ]"
+      local cursor_indicator = (i == state.selection_cursor) and " > " or "   "
+
+      -- Package name and checkbox
+      table.insert(lines, string.format("%s%s %s", cursor_indicator, checkbox, pkg.name))
+
+      -- Description (indented)
+      table.insert(lines, string.format("       %s", pkg.description))
+
+      -- Dependencies
+      local deps = table.concat(pkg.dependencies, ", ")
+      table.insert(lines, string.format("       Requires: %s", deps))
+      table.insert(lines, "")
+    end
+
+    table.insert(lines, "  " .. string.rep("-", width - 6))
+    table.insert(lines, "")
+    table.insert(lines, "  [Space/Enter] Toggle  |  [a] All  |  [n] None  |  [q/Esc] Done")
+    table.insert(lines, "")
+
+    vim.bo[sel_buf].modifiable = true
+    vim.api.nvim_buf_set_lines(sel_buf, 0, -1, false, lines)
+    vim.bo[sel_buf].modifiable = false
+  end
+
+  -- Initialize cursor
+  state.selection_cursor = 1
+
+  -- Initial render
+  render_selection()
+
+  -- Key mappings for selection
+  local function toggle_current()
+    local key = package_keys[state.selection_cursor]
+    if key then
+      selected[key] = not selected[key]
+      render_selection()
+    end
+  end
+
+  local function move_cursor(delta)
+    state.selection_cursor = state.selection_cursor + delta
+    if state.selection_cursor < 1 then
+      state.selection_cursor = #package_keys
+    elseif state.selection_cursor > #package_keys then
+      state.selection_cursor = 1
+    end
+    render_selection()
+  end
+
+  local function select_all()
+    for _, key in ipairs(package_keys) do
+      selected[key] = true
+    end
+    render_selection()
+  end
+
+  local function select_none()
+    for _, key in ipairs(package_keys) do
+      selected[key] = false
+    end
+    render_selection()
+  end
+
+  local function finish_selection()
+    -- Collect selected packages
+    local selected_list = {}
+    for key, is_selected in pairs(selected) do
+      if is_selected then
+        table.insert(selected_list, key)
+      end
+    end
+
+    -- Save configuration
+    local config = {
+      selected = selected_list,
+      configured = true,
+    }
+    manage.save_optional_config(config)
+
+    -- Close selection window
+    if vim.api.nvim_win_is_valid(sel_win) then
+      vim.api.nvim_win_close(sel_win, true)
+    end
+    if vim.api.nvim_buf_is_valid(sel_buf) then
+      vim.api.nvim_buf_delete(sel_buf, { force = true })
+    end
+
+    -- Update progress UI
+    local selected_count = #selected_list
+    local msg = selected_count > 0
+      and string.format("%d optional packages selected", selected_count)
+      or "No optional packages selected"
+    update_progress_ui(msg, 1.0)
+
+    vim.defer_fn(function()
+      callback(true)
+    end, 500)
+  end
+
+  -- Set up keymaps
+  local opts = { buffer = sel_buf, noremap = true, silent = true }
+  vim.keymap.set('n', 'j', function() move_cursor(1) end, opts)
+  vim.keymap.set('n', 'k', function() move_cursor(-1) end, opts)
+  vim.keymap.set('n', '<Down>', function() move_cursor(1) end, opts)
+  vim.keymap.set('n', '<Up>', function() move_cursor(-1) end, opts)
+  vim.keymap.set('n', '<Space>', toggle_current, opts)
+  vim.keymap.set('n', '<CR>', toggle_current, opts)
+  vim.keymap.set('n', 'a', select_all, opts)
+  vim.keymap.set('n', 'n', select_none, opts)
+  vim.keymap.set('n', 'q', finish_selection, opts)
+  vim.keymap.set('n', '<Esc>', finish_selection, opts)
+
+  -- Focus the selection window
+  vim.api.nvim_set_current_win(sel_win)
+end
+
+-- ASYNC Phase 3: Plugin Installation
 local function phase_plugins(callback)
   state.phase_start_time = vim.fn.reltime()
 
@@ -212,7 +475,9 @@ local function phase_plugins(callback)
     return
   end
 
-  local plugins = vim.tbl_keys(manage.plugins)
+  -- Use get_all_plugins() to include optional packages based on user selection
+  local all_plugins = manage.get_all_plugins()
+  local plugins = vim.tbl_keys(all_plugins)
   local plugin_count = #plugins
   local success_count = 0
   local current_index = 0
@@ -248,7 +513,7 @@ local function phase_plugins(callback)
     end
 
     local name = plugins[current_index]
-    local url = manage.plugins[name]
+    local url = all_plugins[name]
     local plugin_path = pack_dir .. name
     local progress = current_index / plugin_count
 
@@ -381,7 +646,123 @@ local function phase_rust(callback)
   })
 end
 
--- ASYNC Phase 4: Health Verification
+-- ASYNC Phase 4a: Optional Package Dependencies (Strudel npm, LaTeX/Typst system tools)
+local function phase_optional_deps(callback)
+  state.phase_start_time = vim.fn.reltime()
+
+  local manage_ok, manage = pcall(require, "plugins.manage")
+  if not manage_ok then
+    callback(true)
+    return
+  end
+
+  local has_strudel = manage.is_feature_enabled("strudel")
+  local has_latex = manage.is_feature_enabled("latex")
+  local has_typst = manage.is_feature_enabled("typst")
+
+  -- No optional packages selected
+  if not has_strudel and not has_latex and not has_typst then
+    callback(true)
+    return
+  end
+
+  local missing_deps = {}
+
+  -- Check LaTeX dependencies
+  if has_latex then
+    update_progress_ui("Checking LaTeX dependencies...", 0.1)
+    if vim.fn.executable("texlab") == 0 then
+      table.insert(missing_deps, "texlab (LaTeX LSP) - install: pacman -S texlab / brew install texlab")
+    end
+    if vim.fn.executable("latexmk") == 0 then
+      table.insert(missing_deps, "latexmk (LaTeX build) - install: pacman -S texlive-binextra / brew install mactex")
+    end
+    if vim.fn.executable("pdflatex") == 0 then
+      table.insert(missing_deps, "pdflatex (LaTeX compiler) - install: pacman -S texlive-basic / brew install mactex")
+    end
+  end
+
+  -- Check Typst dependencies
+  if has_typst then
+    update_progress_ui("Checking Typst dependencies...", 0.2)
+    if vim.fn.executable("tinymist") == 0 then
+      table.insert(missing_deps, "tinymist (Typst LSP) - install: cargo install tinymist / pacman -S tinymist")
+    end
+    if vim.fn.executable("typst") == 0 then
+      table.insert(missing_deps, "typst (Typst compiler) - install: cargo install typst-cli / pacman -S typst")
+    end
+  end
+
+  -- Check Strudel dependencies
+  if has_strudel then
+    update_progress_ui("Checking Strudel dependencies...", 0.3)
+    if vim.fn.executable("npm") == 0 then
+      table.insert(missing_deps, "npm (Node.js) - install: pacman -S nodejs-lts-iron npm / brew install node")
+    end
+    -- Check for browser
+    local has_browser = vim.fn.executable("chromium") == 1
+      or vim.fn.executable("google-chrome-stable") == 1
+      or vim.fn.executable("brave") == 1
+      or vim.fn.executable("firefox") == 1
+    if not has_browser then
+      table.insert(missing_deps, "chromium/brave/chrome (Browser) - install: pacman -S chromium / brew install chromium")
+    end
+  end
+
+  -- Report missing dependencies
+  if #missing_deps > 0 then
+    for _, dep in ipairs(missing_deps) do
+      table.insert(state.warnings, "Missing: " .. dep)
+    end
+    update_progress_ui(string.format("%d missing system dependencies (see warnings)", #missing_deps), 0.4)
+  end
+
+  -- Install Strudel npm dependencies if npm is available
+  if has_strudel and vim.fn.executable("npm") == 1 then
+    local strudel_path = vim.fn.stdpath("data") .. "/site/pack/user/start/strudel.nvim"
+
+    if vim.fn.isdirectory(strudel_path) == 1 and vim.fn.filereadable(strudel_path .. "/package.json") == 1 then
+      update_progress_ui("Installing Strudel npm dependencies...", 0.5)
+
+      -- ASYNC npm ci using jobstart
+      vim.fn.jobstart({ "npm", "ci" }, {
+        cwd = strudel_path,
+        on_stdout = function(_, data)
+          if data and #data > 0 and data[1] ~= "" then
+            update_progress_ui("Installing npm packages...", 0.7)
+          end
+        end,
+        on_stderr = function(_, data)
+          if data and #data > 0 and data[1] ~= "" then
+            update_progress_ui("npm install in progress...", 0.8)
+          end
+        end,
+        on_exit = function(_, exit_code)
+          if exit_code == 0 then
+            update_progress_ui("Strudel dependencies installed successfully", 1.0)
+          else
+            update_progress_ui("Strudel npm install failed - check npm logs", 1.0)
+            table.insert(state.warnings, "Strudel npm dependencies failed to install")
+          end
+          vim.defer_fn(function() callback(true) end, 500)
+        end,
+        stdout_buffered = false,
+        stderr_buffered = false,
+      })
+      return -- Wait for npm to finish
+    end
+  end
+
+  -- No npm install needed, finish phase
+  if #missing_deps > 0 then
+    update_progress_ui("Dependency check complete - some tools missing", 1.0)
+  else
+    update_progress_ui("All optional dependencies available", 1.0)
+  end
+  vim.defer_fn(function() callback(true) end, 500)
+end
+
+-- ASYNC Phase 5: Health Verification
 local function phase_health(callback)
   state.phase_start_time = vim.fn.reltime()
   update_progress_ui("Running system health checks...", 0)
@@ -433,7 +814,8 @@ local function phase_welcome(callback)
   vim.defer_fn(function()
     -- Calculate installation time
     local duration = state.start_time and vim.fn.reltimefloat(vim.fn.reltime(state.start_time)) or 0
-    local plugin_count = vim.tbl_count(require("plugins.manage").plugins)
+    local manage = require("plugins.manage")
+    local plugin_count = vim.tbl_count(manage.get_all_plugins())
     local rust_status = vim.fn.executable("cargo") == 1 and "Available" or "Not Available"
 
     update_progress_ui("Generating installation summary...", 0.8)
@@ -499,8 +881,10 @@ function M.run_installation()
   -- ASYNC phase execution chain with callbacks
   local phases = {
     { name = "Compatibility Check", func = phase_compatibility, critical = true },
+    { name = "Package Selection", func = phase_selection, critical = false },
     { name = "Plugin Installation", func = phase_plugins, critical = true },
     { name = "Rust Performance Build", func = phase_rust, critical = false },
+    { name = "Optional Dependencies", func = phase_optional_deps, critical = false },
     { name = "Health Verification", func = phase_health, critical = false },
     { name = "Welcome Setup", func = phase_welcome, critical = false },
   }
