@@ -30,10 +30,10 @@ A modern Neovim distribution built on native vim.pack architecture with modern v
 
 ```bash
 # Arch Linux
-sudo pacman -S fzf ripgrep fd git-delta ruff
+sudo pacman -S fzf ripgrep fd bat git-delta ruff
 
 # macOS
-brew install fzf ripgrep fd git-delta ruff
+brew install fzf ripgrep fd bat git-delta ruff
 ```
 
 ## Installation
