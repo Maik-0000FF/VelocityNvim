@@ -12,6 +12,8 @@ A modern Neovim distribution built on native vim.pack architecture with modern v
 
 ![VelocityNvim Dashboard](./assets/screenshots/VelocityNvim_Dashboard_Screenshot.png)
 
+![VelocityNvim Demo](./assets/feature-demo.gif)
+
 ## Features
 
 - **Native vim.pack** - No external plugin manager, pure Git operations
