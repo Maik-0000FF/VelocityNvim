@@ -152,14 +152,6 @@ rm -rf ~/.config/VelocityNvim
 rm -rf ~/.local/share/VelocityNvim ~/.local/state/VelocityNvim ~/.cache/VelocityNvim
 ```
 
-## Documentation
-
-- [Architecture Details](docs/ARCHITECTURE-DETAILS.md)
-- [Plugin Management](docs/PLUGINS.md)
-- [Development Guide](docs/DEVELOPMENT.md)
-- [Debugging](docs/DEBUGGING.md)
-- [Benchmarks](docs/BENCHMARKS.md)
-
 ## Contributing
 
 1. Fork the repository
