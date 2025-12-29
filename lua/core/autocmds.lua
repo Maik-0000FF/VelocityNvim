@@ -62,15 +62,20 @@ autocmd("VimEnter", {
   end,
 })
 
--- Colorscheme updates for plugins
+-- PERFORMANCE: Debounced colorscheme updates for plugins
+local colorscheme_timer = nil
 autocmd("ColorScheme", {
   group = velocity_ui,
-  desc = "Update plugin colors on colorscheme change",
+  desc = "Update plugin colors on colorscheme change (debounced)",
   pattern = "*",
   callback = function()
-    -- Trigger color updates for various plugins
-    vim.defer_fn(function()
+    -- Debounce rapid colorscheme changes
+    if colorscheme_timer then
+      colorscheme_timer:stop()
+    end
+    colorscheme_timer = vim.defer_fn(function()
       vim.cmd.doautocmd("User", "ColorSchemeChanged")
+      colorscheme_timer = nil
     end, 100)
   end,
 })
@@ -135,19 +140,23 @@ autocmd("DiagnosticChanged", {
         end
       end
       diagnostic_timer = nil
-    end, 500) -- Longer delay for less frequent updates
+    end, 300) -- PERFORMANCE: Reduced from 500ms for better UI responsiveness
   end,
 })
 
 -- Timer cleanup on VimLeavePre (proper resource cleanup)
 autocmd("VimLeavePre", {
   group = velocity_lsp,
-  desc = "Clean up diagnostic timer on exit",
+  desc = "Clean up timers on exit",
   pattern = "*",
   callback = function()
     if diagnostic_timer then
       diagnostic_timer:stop()
       diagnostic_timer = nil
+    end
+    if colorscheme_timer then
+      colorscheme_timer:stop()
+      colorscheme_timer = nil
     end
   end,
 })

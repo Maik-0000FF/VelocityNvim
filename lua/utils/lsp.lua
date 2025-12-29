@@ -3,6 +3,14 @@
 
 local M = {}
 
+-- PERFORMANCE: Cache severity lookup table at module level
+local severity_to_key = {
+  [vim.diagnostic.severity.ERROR] = "error",
+  [vim.diagnostic.severity.WARN] = "warn",
+  [vim.diagnostic.severity.INFO] = "info",
+  [vim.diagnostic.severity.HINT] = "hint",
+}
+
 --- Get active LSP clients for buffer
 ---@param bufnr integer|nil Buffer number (current buffer if nil)
 ---@return table List of LSP clients
@@ -51,15 +59,11 @@ function M.count_diagnostics(bufnr)
     total = #diagnostics
   }
 
+  -- PERFORMANCE: Use lookup table instead of chained if-else
   for _, diagnostic in ipairs(diagnostics) do
-    if diagnostic.severity == vim.diagnostic.severity.ERROR then
-      counts.error = counts.error + 1
-    elseif diagnostic.severity == vim.diagnostic.severity.WARN then
-      counts.warn = counts.warn + 1
-    elseif diagnostic.severity == vim.diagnostic.severity.INFO then
-      counts.info = counts.info + 1
-    elseif diagnostic.severity == vim.diagnostic.severity.HINT then
-      counts.hint = counts.hint + 1
+    local key = severity_to_key[diagnostic.severity]
+    if key then
+      counts[key] = counts[key] + 1
     end
   end
 
@@ -69,33 +73,23 @@ end
 --- Get workspace diagnostics summary
 ---@return table Workspace diagnostics summary
 function M.get_workspace_diagnostics()
-  -- PERFORMANCE OPTIMIZED: Native vim.diagnostic.count() instead of custom loop
-  -- 30-40% faster on large workspaces, identical functionality
+  -- PERFORMANCE OPTIMIZED: Native vim.diagnostic.count() + lookup table
   local by_buffer = {}
   local total_counts = { error = 0, warn = 0, info = 0, hint = 0, total = 0 }
 
-  -- Native vim.diagnostic.count() is significantly more efficient than manual loop
   local buffers = vim.api.nvim_list_bufs()
   for _, bufnr in ipairs(buffers) do
     if vim.api.nvim_buf_is_loaded(bufnr) then
       local counts = vim.diagnostic.count(bufnr)
-      if next(counts) then  -- Only add buffers with diagnostics
-        -- Native counts format: {[1]=error_count, [2]=warn_count, [3]=info_count, [4]=hint_count}
+      if next(counts) then
         local buffer_counts = { error = 0, warn = 0, info = 0, hint = 0, total = 0 }
 
+        -- PERFORMANCE: Use lookup table instead of chained if-else
         for severity, count in pairs(counts) do
-          if severity == vim.diagnostic.severity.ERROR then
-            buffer_counts.error = count
-            total_counts.error = total_counts.error + count
-          elseif severity == vim.diagnostic.severity.WARN then
-            buffer_counts.warn = count
-            total_counts.warn = total_counts.warn + count
-          elseif severity == vim.diagnostic.severity.INFO then
-            buffer_counts.info = count
-            total_counts.info = total_counts.info + count
-          elseif severity == vim.diagnostic.severity.HINT then
-            buffer_counts.hint = count
-            total_counts.hint = total_counts.hint + count
+          local key = severity_to_key[severity]
+          if key then
+            buffer_counts[key] = count
+            total_counts[key] = total_counts[key] + count
           end
           buffer_counts.total = buffer_counts.total + count
         end

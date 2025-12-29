@@ -9,6 +9,9 @@ local fs_stat_func = rawget(vim.uv, 'fs_stat') or rawget(vim.loop, 'fs_stat')
 -- Path for optional features configuration
 M.optional_config_path = vim.fn.stdpath("data") .. "/optional-features.json"
 
+-- PERFORMANCE: Cache optional config to avoid repeated file I/O
+local _cached_optional_config = nil
+
 -- Core plugins (always installed)
 M.plugins = {
   ["plenary.nvim"] = "https://github.com/nvim-lua/plenary.nvim",
@@ -78,8 +81,13 @@ M.optional_packages = {
   },
 }
 
--- Load saved optional features configuration
+-- Load saved optional features configuration (with caching)
 function M.load_optional_config()
+  -- PERFORMANCE: Return cached config if available
+  if _cached_optional_config then
+    return _cached_optional_config
+  end
+
   if fs_stat_func and fs_stat_func(M.optional_config_path) then
     local file = io.open(M.optional_config_path, "r")
     if file then
@@ -87,12 +95,20 @@ function M.load_optional_config()
       file:close()
       local ok, config = pcall(vim.json.decode, content)
       if ok and config then
+        _cached_optional_config = config
         return config
       end
     end
   end
   -- Default: nothing selected yet
-  return { selected = {}, configured = false }
+  local default_config = { selected = {}, configured = false }
+  _cached_optional_config = default_config
+  return default_config
+end
+
+-- Invalidate cache (call after save_optional_config)
+function M.invalidate_config_cache()
+  _cached_optional_config = nil
 end
 
 -- Save optional features configuration
@@ -110,6 +126,8 @@ function M.save_optional_config(config)
       file:write(json)
     end
     file:close()
+    -- PERFORMANCE: Invalidate cache after save
+    M.invalidate_config_cache()
     return true
   end
   return false

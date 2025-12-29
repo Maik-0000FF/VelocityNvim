@@ -47,8 +47,8 @@ require("conform").setup({
 
   -- Global formatter settings
   format_on_save = {
-    -- Automatic formatting on save
-    timeout_ms = 2000,
+    -- PERFORMANCE: Reduced from 2000ms - most formatters complete in <500ms
+    timeout_ms = 1000,
     lsp_fallback = true,
   },
 
@@ -139,7 +139,7 @@ vim.keymap.set({ "n", "v" }, "<leader>mp", function()
   require("conform").format({
     lsp_fallback = true,
     async = false,
-    timeout_ms = 2000,
+    timeout_ms = 1000,
   })
 end, { desc = "Format file or range (in visual mode)" })
 
@@ -164,7 +164,7 @@ end, { desc = "Toggle auto-format on save" })
 vim.keymap.set("n", "<leader>ml", function()
   require("conform").format({
     formatters = { "stylua" },
-    timeout_ms = 2000,
+    timeout_ms = 1000,
   })
 end, { desc = "Format with StyLua" })
 
@@ -173,7 +173,7 @@ vim.keymap.set("v", "<leader>mp", function()
   require("conform").format({
     lsp_fallback = true,
     async = false,
-    timeout_ms = 2000,
+    timeout_ms = 1000,
     range = {
       start = vim.fn.line("'<"),
       ["end"] = vim.fn.line("'>"),

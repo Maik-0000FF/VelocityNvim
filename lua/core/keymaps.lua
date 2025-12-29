@@ -117,10 +117,13 @@ map("n", "<leader>cc", function()
     end
   end
 
-  -- Count normal buffers (not special, valid and listed)
-  local buf_count = #vim.tbl_filter(function(buf)
-    return vim.bo[buf].buflisted and vim.api.nvim_buf_is_valid(buf) and vim.bo[buf].buftype == ""
-  end, vim.api.nvim_list_bufs())
+  -- PERFORMANCE: Count normal buffers without table allocation
+  local buf_count = 0
+  for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+    if vim.bo[buf].buflisted and vim.api.nvim_buf_is_valid(buf) and vim.bo[buf].buftype == "" then
+      buf_count = buf_count + 1
+    end
+  end
 
   if buf_count <= 1 then
     -- It's the last normal buffer
