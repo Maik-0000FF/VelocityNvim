@@ -185,14 +185,24 @@ function M.check()
   if ts_ok then
     health.ok("nvim-treesitter is available")
 
-    -- Check installed parsers
-    local parsers = require("nvim-treesitter.parsers")
-    local installed_parsers = parsers.get_parser_configs()
+    -- Check installed parsers (compatible with nvim-treesitter and builtin)
     local parser_count = 0
-    for _ in pairs(installed_parsers) do
-      parser_count = parser_count + 1
+    local parser_dir = vim.fn.stdpath("data") .. "/site/parser"
+    local runtime_parser = vim.env.VIMRUNTIME .. "/parser"
+
+    -- Count parsers in data directory
+    if vim.fn.isdirectory(parser_dir) == 1 then
+      local files = vim.fn.globpath(parser_dir, "*.so", false, true)
+      parser_count = parser_count + #files
     end
-    health.info(parser_count .. " treesitter parsers installed")
+
+    -- Count builtin parsers
+    if vim.fn.isdirectory(runtime_parser) == 1 then
+      local files = vim.fn.globpath(runtime_parser, "*.so", false, true)
+      parser_count = parser_count + #files
+    end
+
+    health.info(parser_count .. " treesitter parsers available")
   end
 
   -- System resources

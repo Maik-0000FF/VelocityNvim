@@ -12,6 +12,9 @@ require("blink.cmp").setup({
     },
 
     completion = {
+        menu = {
+            scrollbar = false, -- Fix: noice.nvim cmdline position conflict
+        },
         documentation = {
             auto_show = false,
         },
