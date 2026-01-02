@@ -898,7 +898,8 @@ cmd("VelocityInfo", function()
   print("  " .. icons.status.folder .. " Config Path: " .. config_path)
   print("  " .. icons.status.folder .. " Data Path: " .. data_path)
   print("  " .. icons.status.colorscheme .. " Colorscheme: " .. (vim.g.colors_name or "default"))
-  print("  " .. icons.status.gear .. " Leader Key: " .. vim.g.mapleader)
+  local leader_display = vim.g.mapleader == " " and "<Space>" or vim.g.mapleader
+  print("  " .. icons.status.gear .. " Leader Key: " .. leader_display)
 
   -- Plugin count
   local manage = require("plugins.manage")
