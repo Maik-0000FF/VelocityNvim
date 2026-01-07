@@ -178,22 +178,22 @@ M.packages = {
   },
 
   -- ═══════════════════════════════════════════════════════════════════════════
-  -- RUST TOOLCHAIN (for blink.cmp performance)
+  -- RUST TOOLCHAIN (for blink.cmp performance - needs nightly)
   -- ═══════════════════════════════════════════════════════════════════════════
   rust = {
     title = "Rust Toolchain",
-    description = "Required for blink.cmp ultra-fast completion",
+    description = "Required for blink.cmp ultra-fast completion (needs nightly)",
     required = false,
     packages = {
       {
-        name = "rust",
-        check_cmd = "cargo",
-        description = "Rust compiler and Cargo package manager",
-        arch = "rust",
-        debian = nil, -- Use rustup
-        fedora = "rust cargo",
-        macos = "rust",
-        rustup = true, -- Fallback to rustup
+        name = "rustup",
+        check_cmd = "rustup",
+        description = "Rust toolchain manager (for nightly support)",
+        arch = "rustup",
+        debian = nil, -- Use curl installer
+        fedora = "rustup",
+        macos = "rustup",
+        rustup = true, -- Fallback to curl installer
       },
     },
   },

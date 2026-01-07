@@ -1205,19 +1205,52 @@ local function phase_rust(callback)
   -- Close progress UI temporarily
   cleanup_progress_ui()
 
-  -- Create build script
+  -- Create build script with Rust nightly support
   local build_script = string.format([[#!/bin/bash
-cd "%s"
+set -e
+
+BLINK_PATH="%s"
+CARGO_CMD="%s"
+
 echo "══════════════════════════════════════════════════════════════"
-echo "  Building blink.cmp Rust fuzzy matching library..."
+echo "  VelocityNvim - Rust Performance Build"
 echo "══════════════════════════════════════════════════════════════"
 echo ""
-%s build --release 2>&1
+
+# Check for rustup (needed for nightly)
+RUSTUP_CMD=$(command -v rustup || echo "$HOME/.cargo/bin/rustup")
+if [ ! -x "$RUSTUP_CMD" ]; then
+  echo "Installing rustup..."
+  curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+  source "$HOME/.cargo/env"
+  RUSTUP_CMD="$HOME/.cargo/bin/rustup"
+  CARGO_CMD="$HOME/.cargo/bin/cargo"
+fi
+
+# Install nightly toolchain if not present
+echo "Checking Rust nightly toolchain..."
+if ! "$RUSTUP_CMD" run nightly rustc --version &>/dev/null; then
+  echo "Installing Rust nightly toolchain..."
+  "$RUSTUP_CMD" install nightly
+fi
+
+echo ""
+echo "Using Rust nightly for blink.cmp build..."
+"$RUSTUP_CMD" run nightly rustc --version
+echo ""
+
+# Build blink.cmp with nightly
+cd "$BLINK_PATH"
+echo "Building blink.cmp Rust fuzzy matching library..."
+echo ""
+
+"$CARGO_CMD" +nightly build --release 2>&1
 BUILD_STATUS=$?
+
 echo ""
 if [ $BUILD_STATUS -eq 0 ]; then
   echo "══════════════════════════════════════════════════════════════"
-  echo "  ✓ Rust build successful!"
+  echo "  ✓ Rust build successful! (Full performance enabled)"
   echo "══════════════════════════════════════════════════════════════"
 else
   echo "══════════════════════════════════════════════════════════════"
