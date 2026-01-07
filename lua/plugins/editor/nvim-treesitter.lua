@@ -76,8 +76,8 @@ local function should_disable_treesitter(lang, bufnr)
 end
 
 treesitter.setup({
-  -- Ensure required parsers are installed (regex/bash needed for noice.nvim)
-  ensure_installed = { "regex", "bash" },
+  -- Manual parser installation - use :TSInstall regex bash for noice.nvim
+  ensure_installed = {},
   auto_install = false,
   sync_install = false,
   ignore_install = {},
