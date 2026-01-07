@@ -639,44 +639,34 @@ local function phase_sysdeps(callback)
       local script, _ = sysdeps.generate_install_script(categories)
       if script then
         local script_path = vim.fn.stdpath("data") .. "/velocity-install-deps.sh"
-        vim.fn.writefile(vim.split(script, "\n"), script_path)
+        -- Add continuation message to script
+        local script_with_msg = script .. '\necho ""\necho "══════════════════════════════════════════════════════════════"\necho "  Installation complete! Press ENTER to continue VelocityNvim setup..."\necho "══════════════════════════════════════════════════════════════"\nread'
+        vim.fn.writefile(vim.split(script_with_msg, "\n"), script_path)
         vim.fn.setfperm(script_path, "rwxr-xr-x")
 
-        update_progress_ui("Running system package installation...", 0.1)
+        -- Close progress UI temporarily
+        cleanup_progress_ui()
 
-        -- Inform user about what's happening
-        vim.defer_fn(function()
-          update_progress_ui("Please enter your password if prompted...", 0.2)
+        -- Run in terminal split - user can enter sudo password
+        vim.cmd("botright split | terminal bash " .. script_path)
 
-          -- Run installation script in terminal
-          vim.fn.jobstart({ "bash", script_path }, {
-            on_stdout = function(_, data)
-              if data and #data > 0 and data[1] ~= "" then
-                update_progress_ui("Installing packages...", 0.5)
-              end
-            end,
-            on_stderr = function(_, data)
-              if data and #data > 0 and data[1] ~= "" then
-                -- Some output goes to stderr but isn't an error
-                update_progress_ui("Installing packages...", 0.6)
-              end
-            end,
-            on_exit = function(_, exit_code)
-              if exit_code == 0 then
-                update_progress_ui("System dependencies installed successfully!", 1.0)
-                -- Refresh detected packages
-                status = sysdeps.get_status()
-              else
-                update_progress_ui("Some packages may have failed to install", 1.0)
-                table.insert(state.warnings, "System package installation had errors (exit code: " .. exit_code .. ")")
-              end
+        -- Auto-close terminal and continue when done
+        vim.api.nvim_create_autocmd("TermClose", {
+          buffer = vim.api.nvim_get_current_buf(),
+          once = true,
+          callback = function()
+            -- Close the terminal buffer
+            vim.cmd("bdelete!")
+            -- Refresh status and continue
+            status = sysdeps.get_status()
+            vim.defer_fn(function()
+              callback(true)
+            end, 500)
+          end,
+        })
 
-              vim.defer_fn(function()
-                callback(true)
-              end, 1000)
-            end,
-          })
-        end, 500)
+        -- Enter terminal mode for immediate input
+        vim.cmd("startinsert")
         return
       else
         finish_selection(false)

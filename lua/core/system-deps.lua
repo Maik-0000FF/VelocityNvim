@@ -910,8 +910,9 @@ vim.api.nvim_create_user_command("SystemDepsInstall", function(opts)
 
     vim.notify("Installing " .. #missing .. " packages for " .. profile .. " profile...", vim.log.levels.INFO)
 
-    -- Open terminal with the script
-    vim.cmd("split | terminal bash " .. script_path)
+    -- Open terminal with the script (botright for better layout)
+    vim.cmd("botright split | terminal bash " .. script_path)
+    vim.cmd("startinsert")
   end
 end, {
   nargs = "?",
