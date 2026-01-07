@@ -1200,64 +1200,77 @@ local function phase_rust(callback)
     return
   end
 
-  update_progress_ui("Building blink.cmp Rust fuzzy matching (this may take a while)...", 0.2)
+  update_progress_ui("Building blink.cmp Rust fuzzy matching...", 0.2)
 
-  -- ASYNC Rust build using jobstart (use detected cargo path)
-  local build_cmd = { cargo_cmd, "build", "--release" }
+  -- Close progress UI temporarily
+  cleanup_progress_ui()
 
-  vim.fn.jobstart(build_cmd, {
-    cwd = blink_path,
-    on_stdout = function(_, data)
-      if data and #data > 0 and data[1] ~= "" then
-        -- Show build progress feedback
-        update_progress_ui("Building Rust components... (compiling)", 0.6)
-      end
-    end,
-    on_stderr = function(_, data)
-      if data and #data > 0 and data[1] ~= "" then
-        -- Build output - not necessarily an error
-        update_progress_ui("Building Rust components... (linking)", 0.8)
-      end
-    end,
-    on_exit = function(_, exit_code)
-      if exit_code == 0 then
-        update_progress_ui("Rust build successful - verifying binary...", 0.9)
+  -- Create build script
+  local build_script = string.format([[#!/bin/bash
+cd "%s"
+echo "══════════════════════════════════════════════════════════════"
+echo "  Building blink.cmp Rust fuzzy matching library..."
+echo "══════════════════════════════════════════════════════════════"
+echo ""
+%s build --release 2>&1
+BUILD_STATUS=$?
+echo ""
+if [ $BUILD_STATUS -eq 0 ]; then
+  echo "══════════════════════════════════════════════════════════════"
+  echo "  ✓ Rust build successful!"
+  echo "══════════════════════════════════════════════════════════════"
+else
+  echo "══════════════════════════════════════════════════════════════"
+  echo "  ✗ Rust build failed (will use Lua fallback)"
+  echo "══════════════════════════════════════════════════════════════"
+fi
+echo ""
+echo "Press ENTER to continue..."
+read
+exit $BUILD_STATUS
+]], blink_path, cargo_cmd)
 
-        -- Verify binary exists
-        local binary_path = blink_path .. "/target/release/"
-        local possible_libs = {
-          "libblink_cmp_fuzzy.so",    -- Linux
-          "libblink_cmp_fuzzy.dylib", -- macOS
-          "blink_cmp_fuzzy.dll",      -- Windows
-        }
+  local script_path = vim.fn.stdpath("data") .. "/velocity-rust-build.sh"
+  vim.fn.writefile(vim.split(build_script, "\n"), script_path)
+  vim.fn.setfperm(script_path, "rwxr-xr-x")
 
-        local lib_found = false
-        local lib_name = ""
-        for _, lib in ipairs(possible_libs) do
-          if vim.fn.filereadable(binary_path .. lib) == 1 then
-            lib_found = true
-            lib_name = lib
-            break
-          end
+  -- Run in terminal split
+  vim.cmd("botright split | terminal bash " .. script_path)
+
+  -- Auto-close terminal and continue when done
+  vim.api.nvim_create_autocmd("TermClose", {
+    buffer = vim.api.nvim_get_current_buf(),
+    once = true,
+    callback = function()
+      vim.cmd("bdelete!")
+
+      -- Verify binary exists
+      local binary_path = blink_path .. "/target/release/"
+      local possible_libs = {
+        "libblink_cmp_fuzzy.so",    -- Linux
+        "libblink_cmp_fuzzy.dylib", -- macOS
+        "blink_cmp_fuzzy.dll",      -- Windows
+      }
+
+      local lib_found = false
+      for _, lib in ipairs(possible_libs) do
+        if vim.fn.filereadable(binary_path .. lib) == 1 then
+          lib_found = true
+          break
         end
+      end
 
-        if lib_found then
-          update_progress_ui(string.format("Rust performance binary ready (%s)", lib_name), 1.0)
-          vim.defer_fn(function() callback(true) end, 800)
-        else
-          update_progress_ui("Rust build completed but binary verification failed", 1.0)
-          table.insert(state.errors, "Rust binary built but library not found")
-          vim.defer_fn(function() callback(true) end, 800) -- Still continue
-        end
-      else
-        update_progress_ui("Rust build failed - will use Lua fallback", 1.0)
+      if not lib_found then
         table.insert(state.warnings, "blink.cmp Rust build failed - using Lua fallback")
-        vim.defer_fn(function() callback(true) end, 800) -- Not critical
       end
+
+      vim.defer_fn(function()
+        callback(true)
+      end, 500)
     end,
-    stdout_buffered = false,
-    stderr_buffered = false,
   })
+
+  vim.cmd("startinsert")
 end
 
 -- ASYNC Phase 4a: Optional Package Dependencies (Strudel npm, LaTeX/Typst system tools)
