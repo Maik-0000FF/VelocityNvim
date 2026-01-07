@@ -62,21 +62,40 @@ autocmd("VimEnter", {
   end,
 })
 
--- PERFORMANCE: Debounced colorscheme updates for plugins
-local colorscheme_timer = nil
+-- PERFORMANCE: Centralized timer management with race-condition protection
+local timers = {
+  colorscheme = nil,
+  diagnostic = nil,
+}
+
+local function safe_stop_timer(key)
+  if timers[key] then
+    pcall(function()
+      if timers[key].stop then
+        timers[key]:stop()
+      end
+    end)
+    timers[key] = nil
+  end
+end
+
+local function safe_start_timer(key, delay, callback)
+  safe_stop_timer(key)
+  timers[key] = vim.defer_fn(function()
+    timers[key] = nil
+    pcall(callback)
+  end, delay)
+end
+
+-- Debounced colorscheme updates for plugins
 autocmd("ColorScheme", {
   group = velocity_ui,
   desc = "Update plugin colors on colorscheme change (debounced)",
   pattern = "*",
   callback = function()
-    -- Debounce rapid colorscheme changes
-    if colorscheme_timer then
-      colorscheme_timer:stop()
-    end
-    colorscheme_timer = vim.defer_fn(function()
+    safe_start_timer("colorscheme", 100, function()
       vim.cmd.doautocmd("User", "ColorSchemeChanged")
-      colorscheme_timer = nil
-    end, 100)
+    end)
   end,
 })
 
@@ -123,24 +142,18 @@ autocmd("LspAttach", {
 })
 
 -- Diagnostics update for Neo-tree (performance-optimized)
-local diagnostic_timer = nil
 autocmd("DiagnosticChanged", {
   group = velocity_lsp,
   desc = "Update neo-tree diagnostics display (debounced)",
   callback = function()
-    -- Debounced updates: Prevents excessive updates during rapid changes
-    if diagnostic_timer then
-      diagnostic_timer:stop()
-    end
-    diagnostic_timer = vim.defer_fn(function()
+    safe_start_timer("diagnostic", 300, function()
       if package.loaded["neo-tree"] then
         local ok, events = pcall(require, "neo-tree.events")
         if ok and events then
           events.fire_event("diagnostics_changed")
         end
       end
-      diagnostic_timer = nil
-    end, 300) -- PERFORMANCE: Reduced from 500ms for better UI responsiveness
+    end)
   end,
 })
 
@@ -150,13 +163,8 @@ autocmd("VimLeavePre", {
   desc = "Clean up timers on exit",
   pattern = "*",
   callback = function()
-    if diagnostic_timer then
-      diagnostic_timer:stop()
-      diagnostic_timer = nil
-    end
-    if colorscheme_timer then
-      colorscheme_timer:stop()
-      colorscheme_timer = nil
+    for key, _ in pairs(timers) do
+      safe_stop_timer(key)
     end
   end,
 })

@@ -4,6 +4,40 @@
 -- Load icons
 local icons = require("core.icons")
 
+-- PERFORMANCE: Cached LSP status with debouncing (avoids 100+ updates/sec during typing)
+local lsp_status_cache = {
+  text = "",
+  last_bufnr = -1,
+  last_update = 0,
+}
+local LSP_CACHE_TTL_MS = 500  -- Update at most every 500ms
+
+local function get_lsp_status()
+  local bufnr = vim.api.nvim_get_current_buf()
+  local now = vim.loop.now()
+
+  -- Return cached value if still valid
+  if bufnr == lsp_status_cache.last_bufnr and (now - lsp_status_cache.last_update) < LSP_CACHE_TTL_MS then
+    return lsp_status_cache.text
+  end
+
+  -- Update cache
+  local clients = vim.lsp.get_clients({ bufnr = bufnr })
+  local status = ""
+  if #clients > 0 then
+    -- Show first client name (most relevant)
+    status = clients[1].name
+    if #clients > 1 then
+      status = status .. " +" .. (#clients - 1)
+    end
+  end
+
+  lsp_status_cache.text = status
+  lsp_status_cache.last_bufnr = bufnr
+  lsp_status_cache.last_update = now
+
+  return status
+end
 
 -- Re-enable statusline for lualine
 vim.opt.laststatus = 3
@@ -67,8 +101,9 @@ require("lualine").setup({
     },
     lualine_x = {
       {
-        "lsp_status",
+        get_lsp_status,
         icon = icons.lsp.code_action .. " ",
+        cond = function() return get_lsp_status() ~= "" end,
       },
       { "filetype", colored = true, icon_only = false },
     },

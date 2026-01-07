@@ -4,6 +4,15 @@
 -- Load icons
 local icons = require("core.icons")
 
+-- PERFORMANCE: Pre-cached diagnostic icons and order (avoid table creation per call)
+local DIAG_ORDER = { "error", "warning", "info", "hint" }
+local DIAG_ICONS = {
+  error = icons.diagnostics.error,
+  warning = icons.diagnostics.warn,
+  info = icons.diagnostics.info,
+  hint = icons.diagnostics.hint,
+}
+
 -- Bufferline Setup
 require("bufferline").setup({
   options = {
@@ -24,34 +33,18 @@ require("bufferline").setup({
     -- PERFORMANCE: Show all diagnostics with icons (optimized)
     diagnostics = "nvim_lsp",
     diagnostics_update_in_insert = false,
-    -- Show all diagnostic types with correct icons from core.icons
+    -- OPTIMIZED: Single-pass diagnostic indicator with cached icons
     diagnostics_indicator = function(_, _, diagnostics_dict, _)
-      local result = {}
-
-      -- Errors
-      if diagnostics_dict.error and diagnostics_dict.error > 0 then
-        table.insert(result, icons.diagnostics.error .. " " .. diagnostics_dict.error)
+      local parts = {}
+      local n = 0
+      for _, key in ipairs(DIAG_ORDER) do
+        local count = diagnostics_dict[key]
+        if count and count > 0 then
+          n = n + 1
+          parts[n] = DIAG_ICONS[key] .. " " .. count
+        end
       end
-
-      -- Warnings
-      if diagnostics_dict.warning and diagnostics_dict.warning > 0 then
-        table.insert(result, icons.diagnostics.warn .. " " .. diagnostics_dict.warning)
-      end
-
-      -- Info
-      if diagnostics_dict.info and diagnostics_dict.info > 0 then
-        table.insert(result, icons.diagnostics.info .. " " .. diagnostics_dict.info)
-      end
-
-      -- Hints
-      if diagnostics_dict.hint and diagnostics_dict.hint > 0 then
-        table.insert(result, icons.diagnostics.hint .. " " .. diagnostics_dict.hint)
-      end
-
-      if #result > 0 then
-        return " " .. table.concat(result, " ") .. " "
-      end
-      return ""
+      return n > 0 and (" " .. table.concat(parts, " ", 1, n) .. " ") or ""
     end,
     -- Close buffer
     close_command = "bdelete! %d",

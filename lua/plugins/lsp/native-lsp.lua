@@ -4,6 +4,21 @@
 
 local icons = require("core.icons")
 
+-- PERFORMANCE: Pre-cached severity icon tables (avoid recreation on every diagnostic)
+local SEVERITY_ICONS = {
+  [vim.diagnostic.severity.ERROR] = icons.diagnostics.error,
+  [vim.diagnostic.severity.WARN] = icons.diagnostics.warn,
+  [vim.diagnostic.severity.HINT] = icons.diagnostics.hint,
+  [vim.diagnostic.severity.INFO] = icons.diagnostics.info,
+}
+
+local SEVERITY_ICONS_FLOAT = {
+  [vim.diagnostic.severity.ERROR] = icons.diagnostics.error .. " ERROR",
+  [vim.diagnostic.severity.WARN] = icons.diagnostics.warn .. " WARN",
+  [vim.diagnostic.severity.INFO] = icons.diagnostics.info .. " INFO",
+  [vim.diagnostic.severity.HINT] = icons.diagnostics.hint .. " HINT",
+}
+
 -- Standard exclude directories for LSP scanning (shared between functions)
 local default_exclude_dirs = {
   -- Python
@@ -75,32 +90,18 @@ vim.diagnostic.config({
   virtual_text = {
     -- DAUERHAFT SICHTBAR: Icons bleiben auch bei Cursor-Bewegung
     prefix = function(diagnostic)
-      local severity_icons = {
-        [vim.diagnostic.severity.ERROR] = icons.diagnostics.error,
-        [vim.diagnostic.severity.WARN] = icons.diagnostics.warn,
-        [vim.diagnostic.severity.HINT] = icons.diagnostics.hint,
-        [vim.diagnostic.severity.INFO] = icons.diagnostics.info,
-      }
-      return severity_icons[diagnostic.severity] or "●"
+      return SEVERITY_ICONS[diagnostic.severity] or "●"
     end,
     spacing = 2,
     source = "if_many",
     -- KRITISCH: suffix verhindert dass Text bei cursor movement verschwindet
     suffix = "",
     format = function(diagnostic)
-      -- Zeige immer die volle Nachricht
       return diagnostic.message
     end,
   },
   signs = {
-    -- KORREKTE Sign-Konfiguration - verwende die oben definierten Signs
-    text = {
-      [vim.diagnostic.severity.ERROR] = icons.diagnostics.error,
-      [vim.diagnostic.severity.WARN] = icons.diagnostics.warn,
-      [vim.diagnostic.severity.INFO] = icons.diagnostics.info,
-      [vim.diagnostic.severity.HINT] = icons.diagnostics.hint,
-    },
-    -- FEHLERBEHEBUNG: Keine priority-Tabelle - Prioritäten sind in sign_define gesetzt
+    text = SEVERITY_ICONS,
   },
   update_in_insert = false, -- Performance: keine Updates während Typing
   underline = true,
@@ -111,13 +112,7 @@ vim.diagnostic.config({
     border = "rounded",
     source = "if_many",
     prefix = function(diagnostic)
-      local severity_icons = {
-        [vim.diagnostic.severity.ERROR] = icons.diagnostics.error .. " ERROR",
-        [vim.diagnostic.severity.WARN] = icons.diagnostics.warn .. " WARN",
-        [vim.diagnostic.severity.INFO] = icons.diagnostics.info .. " INFO",
-        [vim.diagnostic.severity.HINT] = icons.diagnostics.hint .. " HINT",
-      }
-      return severity_icons[diagnostic.severity] or "●", ""
+      return SEVERITY_ICONS_FLOAT[diagnostic.severity] or "●", ""
     end,
     format = function(diagnostic)
       return diagnostic.message
@@ -362,6 +357,53 @@ vim.lsp.config("cssls", {
   },
 })
 
+-- PERFORMANCE: Cached TypeScript path lookup (avoids expensive npm shell calls)
+local cached_tsserver_path = nil
+local ts_warning_shown = false
+local function find_tsserver_path()
+  if cached_tsserver_path then
+    return cached_tsserver_path
+  end
+
+  -- 1. System paths first (fast file checks, no subprocess)
+  local system_paths = {
+    "/usr/lib/node_modules/typescript/lib/tsserver.js",
+    "/usr/share/typescript/lib/tsserver.js",
+  }
+  for _, path in ipairs(system_paths) do
+    if vim.fn.filereadable(path) == 1 then
+      cached_tsserver_path = path
+      return path
+    end
+  end
+
+  -- 2. Local workspace (fast file check)
+  local local_ts = vim.fn.getcwd() .. "/node_modules/typescript/lib/tsserver.js"
+  if vim.fn.filereadable(local_ts) == 1 then
+    cached_tsserver_path = local_ts
+    return local_ts
+  end
+
+  -- 3. Global npm (expensive - only as last resort)
+  local global_npm = vim.fn.system("npm root -g 2>/dev/null"):gsub("%s+", "")
+  if vim.v.shell_error == 0 and global_npm ~= "" then
+    local global_ts = global_npm .. "/typescript/lib/tsserver.js"
+    if vim.fn.filereadable(global_ts) == 1 then
+      cached_tsserver_path = global_ts
+      return global_ts
+    end
+  end
+
+  -- 4. Not found - show hint once
+  if not ts_warning_shown then
+    ts_warning_shown = true
+    vim.defer_fn(function()
+      vim.notify("TypeScript not found. Install with: npm install -g typescript", vim.log.levels.WARN)
+    end, 1000)
+  end
+  return nil
+end
+
 vim.lsp.config("ts_ls", {
   cmd = { "typescript-language-server", "--stdio" },
   filetypes = { "javascript", "javascriptreact", "typescript", "typescriptreact" },
@@ -369,46 +411,11 @@ vim.lsp.config("ts_ls", {
   init_options = {
     hostInfo = "neovim",
     preferences = {
-      -- Performance-Optimierungen
       disableSuggestions = false,
       includeCompletionsForImportStatements = true,
     },
     tsserver = {
-      -- Robuste TypeScript-Installation mit Fallback-Chain
-      path = (function()
-        -- 1. Lokale workspace installation (beste Performance)
-        local local_ts = vim.fn.getcwd() .. "/node_modules/typescript/lib/tsserver.js"
-        if vim.fn.filereadable(local_ts) == 1 then
-          return local_ts
-        end
-
-        -- 2. Global npm installation
-        local global_npm = vim.fn.system("npm root -g 2>/dev/null"):gsub("%s+", "")
-        if vim.v.shell_error == 0 and global_npm ~= "" then
-          local global_ts = global_npm .. "/typescript/lib/tsserver.js"
-          if vim.fn.filereadable(global_ts) == 1 then
-            return global_ts
-          end
-        end
-
-        -- 3. System TypeScript (Arch Linux)
-        local system_paths = {
-          "/usr/lib/node_modules/typescript/lib/tsserver.js",
-          "/usr/share/typescript/lib/tsserver.js",
-        }
-        for _, path in ipairs(system_paths) do
-          if vim.fn.filereadable(path) == 1 then
-            return path
-          end
-        end
-
-        -- 4. Fallback: Auto-installation hint
-        vim.notify(
-          "TypeScript not found. Install with: npm install -g typescript",
-          vim.log.levels.WARN
-        )
-        return nil
-      end)(),
+      path = find_tsserver_path(),
     },
   },
   settings = {
@@ -584,8 +591,34 @@ vim.lsp.config("tinymist", {
   },
 })
 
--- Cache for already scanned workspaces
+-- Cache for already scanned workspaces (LRU with size limit to prevent memory leak)
 local scanned_workspaces = {}
+local scanned_workspaces_order = {}  -- Track insertion order for LRU
+local MAX_CACHED_WORKSPACES = 20
+
+local function mark_workspace_scanned(root_dir)
+  -- Already in cache? Move to end (most recent)
+  if scanned_workspaces[root_dir] then
+    for i, dir in ipairs(scanned_workspaces_order) do
+      if dir == root_dir then
+        table.remove(scanned_workspaces_order, i)
+        break
+      end
+    end
+    table.insert(scanned_workspaces_order, root_dir)
+    return
+  end
+
+  -- Cache full? Remove oldest entry (LRU eviction)
+  if #scanned_workspaces_order >= MAX_CACHED_WORKSPACES then
+    local oldest = table.remove(scanned_workspaces_order, 1)
+    scanned_workspaces[oldest] = nil
+  end
+
+  -- Add new entry
+  scanned_workspaces[root_dir] = true
+  table.insert(scanned_workspaces_order, root_dir)
+end
 
 -- Function for scanning all files in workspace with extended edge cases
 local function scan_workspace_files(client)
@@ -679,7 +712,7 @@ local function scan_workspace_files(client)
     end
   end
 
-  scanned_workspaces[client.config.root_dir] = true
+  mark_workspace_scanned(client.config.root_dir)
 
   -- Finde alle relevanten Dateien im Workspace
   local filetypes = client.config.filetypes or {}
@@ -749,7 +782,7 @@ local function scan_workspace_files(client)
     vim.list_extend(files, found)
   end
 
-  -- ULTIMATE ASYNC PARALLELIZATION: No delays, no batches - pure parallel processing
+  -- OPTIMIZED ASYNC PROCESSING: Limited concurrency to prevent CPU spikes
   vim.schedule(function()
     local total_files = #files
 
@@ -757,17 +790,18 @@ local function scan_workspace_files(client)
       return
     end
 
-    -- Silent operation - no excessive notifications
-
-    -- Parallel Worker Pool System
-    local max_workers = math.min(12, math.max(2, total_files)) -- 2-12 workers based on file count
+    -- PERFORMANCE: Limit workers to prevent LSP-attach spikes
+    local MAX_CONCURRENT = 3
+    local max_workers = math.min(4, math.max(1, total_files))
     local processed = 0
     local errors = 0
+    local concurrent_ops = 0
     local file_queue = vim.deepcopy(files)
 
     local function process_next_file()
-      if #file_queue == 0 then
-        return -- No more files to process
+      -- Concurrency limit check
+      if #file_queue == 0 or concurrent_ops >= MAX_CONCURRENT then
+        return
       end
 
       local file = table.remove(file_queue, 1)
@@ -775,17 +809,17 @@ local function scan_workspace_files(client)
         return
       end
 
+      concurrent_ops = concurrent_ops + 1
+
       -- Process file asynchronously
       vim.schedule(function()
         local success = pcall(function()
           local bufnr = vim.fn.bufnr(file, true)
           if bufnr ~= -1 and not vim.api.nvim_buf_is_loaded(bufnr) then
-            -- Load buffer invisibly with memory optimization
             vim.fn.bufload(bufnr)
             vim.bo[bufnr].buflisted = false
             vim.bo[bufnr].bufhidden = "unload"
 
-            -- LSP attach with error handling
             if client and vim.api.nvim_buf_is_valid(bufnr) then
               local attach_ok = pcall(vim.lsp.buf_attach_client, bufnr, client.id)
               if not attach_ok then
@@ -797,15 +831,13 @@ local function scan_workspace_files(client)
           return true
         end)
 
+        concurrent_ops = concurrent_ops - 1
         processed = processed + 1
         if not success then
           errors = errors + 1
         end
 
-        -- Silent processing - no progress spam
-        -- Only log errors or critical issues
-
-        -- Continue processing immediately (no delays!)
+        -- Continue with next file
         vim.schedule(process_next_file)
       end)
     end
