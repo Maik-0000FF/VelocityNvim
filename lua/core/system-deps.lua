@@ -748,11 +748,16 @@ M.generate_install_script = function(categories)
         table.insert(pkgs, pkg)
       end
     end
-    table.insert(script_lines, "# npm packages")
+    table.insert(script_lines, "# npm packages (global install requires sudo on Linux)")
     table.insert(script_lines, "# Find npm (might be freshly installed)")
     table.insert(script_lines, 'NPM_CMD=$(command -v npm || echo "/usr/bin/npm")')
     table.insert(script_lines, 'if [ -x "$NPM_CMD" ]; then')
-    table.insert(script_lines, '  "$NPM_CMD" install -g ' .. table.concat(pkgs, " "))
+    -- Use sudo on Linux, no sudo on macOS (uses ~/.npm-global)
+    if sys.is_macos then
+      table.insert(script_lines, '  "$NPM_CMD" install -g ' .. table.concat(pkgs, " "))
+    else
+      table.insert(script_lines, '  sudo "$NPM_CMD" install -g ' .. table.concat(pkgs, " "))
+    end
     table.insert(script_lines, "else")
     table.insert(script_lines, '  echo "Warning: npm not found, skipping npm packages"')
     table.insert(script_lines, "fi")
