@@ -648,7 +648,7 @@ local function phase_sysdeps(callback)
         cleanup_progress_ui()
 
         -- Run in terminal split - user can enter sudo password
-        vim.cmd("botright split | terminal bash " .. script_path)
+        vim.cmd("enew | terminal bash " .. script_path)
 
         -- Auto-close terminal and continue when done
         vim.api.nvim_create_autocmd("TermClose", {
@@ -1235,7 +1235,7 @@ exit $BUILD_STATUS
   vim.fn.setfperm(script_path, "rwxr-xr-x")
 
   -- Run in terminal split
-  vim.cmd("botright split | terminal bash " .. script_path)
+  vim.cmd("enew | terminal bash " .. script_path)
 
   -- Auto-close terminal and continue when done
   vim.api.nvim_create_autocmd("TermClose", {
