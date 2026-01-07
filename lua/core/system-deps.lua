@@ -681,6 +681,9 @@ M.generate_install_script = function(categories)
     "",
   }
 
+  -- Track if we need to refresh PATH
+  local needs_path_refresh = false
+
   -- System packages first
   if by_method.pacman then
     local pkgs = {}
@@ -692,6 +695,7 @@ M.generate_install_script = function(categories)
     table.insert(script_lines, "# Arch Linux packages")
     table.insert(script_lines, "sudo pacman -S --needed --noconfirm " .. table.concat(pkgs, " "))
     table.insert(script_lines, "")
+    needs_path_refresh = true
   end
 
   if by_method.apt then
@@ -705,6 +709,7 @@ M.generate_install_script = function(categories)
     end
     table.insert(script_lines, "sudo apt install -y " .. table.concat(pkgs, " "))
     table.insert(script_lines, "")
+    needs_path_refresh = true
   end
 
   if by_method.brew then
@@ -717,6 +722,14 @@ M.generate_install_script = function(categories)
     table.insert(script_lines, "# Homebrew packages")
     table.insert(script_lines, "brew install " .. table.concat(pkgs, " "))
     table.insert(script_lines, "")
+    needs_path_refresh = true
+  end
+
+  -- Refresh PATH after system package installation (so npm, cargo etc. are found)
+  if needs_path_refresh and (by_method.npm or by_method.cargo or by_method.pip) then
+    table.insert(script_lines, "# Refresh PATH to find newly installed commands")
+    table.insert(script_lines, "hash -r 2>/dev/null || true")
+    table.insert(script_lines, "")
   end
 
   -- Rustup if needed
@@ -727,7 +740,7 @@ M.generate_install_script = function(categories)
     table.insert(script_lines, "")
   end
 
-  -- npm packages
+  -- npm packages (use full path as fallback if npm was just installed)
   if by_method.npm then
     local pkgs = {}
     for _, p in ipairs(by_method.npm) do
@@ -736,16 +749,31 @@ M.generate_install_script = function(categories)
       end
     end
     table.insert(script_lines, "# npm packages")
-    table.insert(script_lines, "npm install -g " .. table.concat(pkgs, " "))
+    table.insert(script_lines, "# Find npm (might be freshly installed)")
+    table.insert(script_lines, 'NPM_CMD=$(command -v npm || echo "/usr/bin/npm")')
+    table.insert(script_lines, 'if [ -x "$NPM_CMD" ]; then')
+    table.insert(script_lines, '  "$NPM_CMD" install -g ' .. table.concat(pkgs, " "))
+    table.insert(script_lines, "else")
+    table.insert(script_lines, '  echo "Warning: npm not found, skipping npm packages"')
+    table.insert(script_lines, "fi")
     table.insert(script_lines, "")
   end
 
-  -- Cargo packages
+  -- Cargo packages (use full path as fallback)
   if by_method.cargo then
     table.insert(script_lines, "# Cargo packages")
+    table.insert(script_lines, '# Find cargo (might be freshly installed)')
+    table.insert(script_lines, 'CARGO_CMD=$(command -v cargo || echo "$HOME/.cargo/bin/cargo")')
+    table.insert(script_lines, 'if [ -x "$CARGO_CMD" ]; then')
     for _, p in ipairs(by_method.cargo) do
-      table.insert(script_lines, p.cmd)
+      local pkg_name = p.cmd:match("cargo install%s+(.+)$")
+      if pkg_name then
+        table.insert(script_lines, '  "$CARGO_CMD" install ' .. pkg_name)
+      end
     end
+    table.insert(script_lines, "else")
+    table.insert(script_lines, '  echo "Warning: cargo not found, skipping cargo packages"')
+    table.insert(script_lines, "fi")
     table.insert(script_lines, "")
   end
 
@@ -758,7 +786,12 @@ M.generate_install_script = function(categories)
       end
     end
     table.insert(script_lines, "# Python packages")
-    table.insert(script_lines, "pip3 install --user " .. table.concat(pkgs, " "))
+    table.insert(script_lines, 'PIP_CMD=$(command -v pip3 || command -v pip || echo "")')
+    table.insert(script_lines, 'if [ -n "$PIP_CMD" ]; then')
+    table.insert(script_lines, '  "$PIP_CMD" install --user ' .. table.concat(pkgs, " "))
+    table.insert(script_lines, "else")
+    table.insert(script_lines, '  echo "Warning: pip not found, skipping Python packages"')
+    table.insert(script_lines, "fi")
     table.insert(script_lines, "")
   end
 
