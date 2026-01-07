@@ -1,11 +1,15 @@
 -- ~/.config/VelocityNvim/lua/plugins/nvim-treesitter.lua
 -- Native Treesitter for Syntax Highlighting
 
--- Check if Treesitter is available
-local ok, treesitter = pcall(require, "nvim-treesitter.configs")
+-- Check if Treesitter is available (nvim-treesitter renamed 'configs' to 'config' in recent versions)
+local ok, treesitter = pcall(require, "nvim-treesitter.config")
 if not ok then
-  print("Treesitter not available. Run :PluginSync and restart Neovim.")
-  return
+  -- Fallback for older versions
+  ok, treesitter = pcall(require, "nvim-treesitter.configs")
+  if not ok then
+    print("Treesitter not available. Run :PluginSync and restart Neovim.")
+    return
+  end
 end
 
 -- SOLUTION: Set install directory BEFORE nvim-treesitter.install is loaded

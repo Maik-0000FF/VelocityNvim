@@ -11,6 +11,7 @@ local PHASES = {
   { name = "Compatibility Check", key = "compat", duration = 1.5 },
   { name = "Package Selection", key = "selection", duration = 0 }, -- User interaction
   { name = "Plugin Installation", key = "plugins", duration = 0 }, -- Variable based on plugin count
+  { name = "Treesitter Parsers", key = "treesitter", duration = 30.0 }, -- Parser compilation
   { name = "Rust Performance Build", key = "rust", duration = 3.0 },
   { name = "Optional Dependencies", key = "optional_deps", duration = 2.0 }, -- npm install for Strudel etc.
   { name = "Health Verification", key = "health", duration = 1.0 },
@@ -557,7 +558,92 @@ local function phase_plugins(callback)
   vim.defer_fn(install_next_plugin, 300)
 end
 
--- ASYNC Phase 3: Rust Performance Build
+-- ASYNC Phase 3a: Treesitter Parser Installation
+local function phase_treesitter(callback)
+  state.phase_start_time = vim.fn.reltime()
+
+  -- Check if GCC/Clang is available for compilation
+  local has_compiler = vim.fn.executable("gcc") == 1 or vim.fn.executable("clang") == 1 or vim.fn.executable("cc") == 1
+  if not has_compiler then
+    update_progress_ui("No C compiler found - skipping Treesitter parsers", 0.5)
+    table.insert(state.warnings, "No C compiler (gcc/clang) - Treesitter parsers not compiled. Install: pacman -S gcc")
+    vim.defer_fn(function()
+      update_progress_ui("Treesitter phase completed (skipped)", 1.0)
+      vim.defer_fn(function() callback(true) end, 500)
+    end, 1000)
+    return
+  end
+
+  -- Essential parsers to install
+  local parsers = { "lua", "vim", "vimdoc", "markdown", "markdown_inline", "python", "javascript", "typescript", "html", "css", "json", "bash", "rust", "toml", "yaml" }
+  local parser_count = #parsers
+  local current_index = 0
+  local success_count = 0
+
+  update_progress_ui("Installing Treesitter parsers (this may take a few minutes)...", 0)
+
+  -- Install parsers one by one with jobstart
+  local function install_next_parser()
+    current_index = current_index + 1
+
+    if current_index > parser_count then
+      -- All parsers processed
+      local final_message = string.format("Treesitter: %d/%d parsers installed", success_count, parser_count)
+      update_progress_ui(final_message, 1.0)
+
+      if success_count < parser_count then
+        table.insert(state.warnings, string.format("Only %d/%d Treesitter parsers compiled", success_count, parser_count))
+      end
+
+      vim.defer_fn(function()
+        callback(true)
+      end, 500)
+      return
+    end
+
+    local parser_name = parsers[current_index]
+    local progress = current_index / parser_count
+
+    update_progress_ui(string.format("Compiling parser %d/%d: %s", current_index, parser_count, parser_name), progress)
+
+    -- Use TSInstall command via jobstart to compile parser
+    local ts_ok, ts_install = pcall(require, "nvim-treesitter.install")
+    if ts_ok and ts_install and ts_install.install then
+      -- Call install function
+      local install_ok = pcall(function()
+        ts_install.install(parser_name)
+      end)
+
+      if install_ok then
+        -- Wait for compilation (parser compilation takes time)
+        vim.defer_fn(function()
+          -- Check if parser was installed
+          local parser_dir = vim.fn.stdpath("data") .. "/site/pack/user/start/nvim-treesitter/parser/"
+          local parser_file = parser_dir .. parser_name .. ".so"
+          if vim.fn.filereadable(parser_file) == 1 then
+            success_count = success_count + 1
+          end
+          install_next_parser()
+        end, 3000) -- Wait 3 seconds per parser for compilation
+      else
+        -- Installation failed, continue to next
+        vim.defer_fn(install_next_parser, 100)
+      end
+    else
+      -- Treesitter not available, skip
+      table.insert(state.warnings, "nvim-treesitter not available for parser installation")
+      vim.defer_fn(function()
+        update_progress_ui("Treesitter not available - skipping parser installation", 1.0)
+        vim.defer_fn(function() callback(true) end, 500)
+      end, 500)
+    end
+  end
+
+  -- Start parser installation chain
+  vim.defer_fn(install_next_parser, 500)
+end
+
+-- ASYNC Phase 4: Rust Performance Build
 local function phase_rust(callback)
   state.phase_start_time = vim.fn.reltime()
 
@@ -883,6 +969,7 @@ function M.run_installation()
     { name = "Compatibility Check", func = phase_compatibility, critical = true },
     { name = "Package Selection", func = phase_selection, critical = false },
     { name = "Plugin Installation", func = phase_plugins, critical = true },
+    { name = "Treesitter Parsers", func = phase_treesitter, critical = false },
     { name = "Rust Performance Build", func = phase_rust, critical = false },
     { name = "Optional Dependencies", func = phase_optional_deps, critical = false },
     { name = "Health Verification", func = phase_health, critical = false },

@@ -22,18 +22,75 @@ A modern Neovim distribution built on native vim.pack architecture with modern v
 
 ## Requirements
 
+### Essential
+
 - **Neovim >= 0.11.0**
 - **Git**
+- **GCC/Clang** (for Treesitter parser compilation)
 - **NerdFont** (recommended: [MesloLGS NF](https://github.com/ryanoasis/nerd-fonts/releases/latest))
 
-### Optional Performance Tools
+### Full Installation (Recommended)
+
+One-liner to install all dependencies for the complete VelocityNvim experience:
+
+```bash
+# Arch Linux - Full Installation
+sudo pacman -S --needed neovim git gcc base-devel fzf ripgrep fd bat git-delta rust nodejs npm lua-language-server pyright rust-analyzer stylua shfmt && npm install -g prettier typescript typescript-language-server vscode-langservers-extracted
+
+# macOS - Full Installation
+brew install neovim git fzf ripgrep fd bat git-delta rust node lua-language-server pyright rust-analyzer stylua shfmt && npm install -g prettier typescript typescript-language-server vscode-langservers-extracted
+```
+
+### Minimal Installation
+
+For a lightweight setup with core functionality:
+
+```bash
+# Arch Linux - Minimal
+sudo pacman -S --needed neovim git gcc fzf ripgrep fd
+
+# macOS - Minimal
+brew install neovim git fzf ripgrep fd
+```
+
+### What Each Package Provides
+
+| Category | Packages | Purpose |
+|----------|----------|---------|
+| **Core** | `neovim`, `git`, `gcc` | Editor, version control, Treesitter compilation |
+| **Search** | `fzf`, `ripgrep`, `fd` | Fuzzy finding, fast grep, file discovery |
+| **Git** | `bat`, `git-delta` | Syntax-highlighted previews, better diffs |
+| **Rust** | `rust` | blink.cmp performance binary |
+| **LSP** | `lua-language-server`, `pyright`, `rust-analyzer` | Language servers |
+| **Web LSP** | `vscode-langservers-extracted`, `typescript-language-server` | HTML/CSS/JSON/TS support |
+| **Formatters** | `stylua`, `shfmt`, `prettier` | Code formatting |
+
+### Optional: LaTeX Support
 
 ```bash
 # Arch Linux
-sudo pacman -S fzf ripgrep fd bat git-delta ruff
+sudo pacman -S --needed texlab texlive-basic texlive-binextra latexmk
 
 # macOS
-brew install fzf ripgrep fd bat git-delta ruff
+brew install texlab && brew install --cask mactex
+```
+
+### Optional: Typst Support
+
+```bash
+# Arch Linux
+sudo pacman -S --needed typst tinymist
+
+# macOS
+brew install typst && cargo install tinymist
+```
+
+### Optional: Strudel (Live Coding Music)
+
+```bash
+# Requires Node.js (included in full installation)
+# Browser: chromium, brave, or firefox
+sudo pacman -S --needed chromium  # or: brave-bin (AUR)
 ```
 
 ## Installation
