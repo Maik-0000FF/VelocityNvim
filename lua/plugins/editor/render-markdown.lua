@@ -23,6 +23,10 @@ render_markdown.setup({
   -- LaTeX support disabled (utftex/latex2text not available)
   latex = { enabled = false },
 
+  -- Disable HTML/YAML (parsers not installed)
+  html = { enabled = false },
+  yaml = { enabled = false },
+
   -- IMPORTANT: blink.cmp integration for VelocityNvim
   completions = {
     blink = { enabled = true }, -- RATIONALE: VelocityNvim-specific integration
@@ -62,7 +66,10 @@ end
 -- Markdown FileType autocmd for additional performance
 vim.api.nvim_create_autocmd("FileType", {
   pattern = "markdown",
-  callback = function()
+  callback = function(ev)
+    -- Enable treesitter highlighting (required for render-markdown)
+    vim.treesitter.start(ev.buf, "markdown")
+
     -- Performance optimizations for Markdown
     vim.opt_local.wrap = false -- No wrap
     vim.opt_local.linebreak = false -- No intelligent line breaks
@@ -78,12 +85,12 @@ local map = vim.keymap.set
 local opts = { noremap = true, silent = true }
 
 -- render-markdown toggle - The centerpiece for large files (correct API)
-map("n", "<leader>um", function()
+map("n", "<leader>Tm", function()
   vim.cmd.RenderMarkdown("toggle")
   vim.notify("render-markdown toggled", vim.log.levels.INFO)
-end, vim.tbl_extend("force", opts, { desc = "UI: render-markdown Toggle" }))
+end, vim.tbl_extend("force", opts, { desc = "Toggle: render-markdown" }))
 
 -- Status query for render-markdown (simplified)
 map("n", "<leader>us", function()
-  vim.notify("render-markdown Toggle: <leader>um", vim.log.levels.INFO)
+  vim.notify("render-markdown Toggle: <leader>Tm", vim.log.levels.INFO)
 end, vim.tbl_extend("force", opts, { desc = "UI: render-markdown Status" }))

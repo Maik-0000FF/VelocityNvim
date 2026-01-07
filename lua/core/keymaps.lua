@@ -166,12 +166,9 @@ map("n", "<C-n>", "<cmd>Neotree toggle<CR>", { desc = "Toggle NeoTree" })
 map("n", "<leader>ge", "<cmd>Neotree git_status<CR>", { desc = "Git Explorer" })
 map("n", "<leader>be", "<cmd>Neotree buffers<CR>", { desc = "Buffer Explorer" })
 
--- Hop Navigation
-map("n", "<leader>ll", "<cmd>HopLine<CR>", { desc = "Hop Line" })
-map("n", "<leader>ww", "<cmd>HopWord<CR>", { desc = "Hop Word" })
-
--- Suda (Sudo Write)
-map("n", "<leader>W", "<cmd>SudaWrite<CR>", { desc = "Write with sudo" })
+-- Hop Navigation (h = hop)
+map("n", "<leader>hl", "<cmd>HopLine<CR>", { desc = "Hop Line" })
+map("n", "<leader>hw", "<cmd>HopWord<CR>", { desc = "Hop Word" })
 
 -- LSP Diagnostic FZF Keymaps (diese wurden nach lsp-debug.lua verschoben)
 -- <leader>le und <leader>lE werden in fzf-lua.lua definiert
@@ -292,11 +289,11 @@ map("n", "\\<CR>", function()
 end, { desc = "LaTeX: Quick build + display" })
 
 ----------------------------------------
--- Web Development Server (Leader: <leader>w)
+-- Web Development Server (Leader: <leader>W)
 ----------------------------------------
 
--- Web server control
-map("n", "<leader>ws", "<cmd>WebServerStart<CR>", { desc = "Web: Start server" })
-map("n", "<leader>wS", "<cmd>WebServerStop<CR>", { desc = "Web: Stop server" })
-map("n", "<leader>wo", "<cmd>WebServerOpen<CR>", { desc = "Web: Open browser" })
-map("n", "<leader>wi", "<cmd>WebServerInfo<CR>", { desc = "Web: Server info" })
+-- Web server control (using <leader>W to avoid overlap with <leader>w for save)
+map("n", "<leader>Ws", "<cmd>WebServerStart<CR>", { desc = "Web: Start server" })
+map("n", "<leader>WS", "<cmd>WebServerStop<CR>", { desc = "Web: Stop server" })
+map("n", "<leader>Wo", "<cmd>WebServerOpen<CR>", { desc = "Web: Open browser" })
+map("n", "<leader>Wi", "<cmd>WebServerInfo<CR>", { desc = "Web: Server info" })

@@ -328,7 +328,7 @@ function M.setup()
   vim.keymap.set("n", "<A-i>", M.toggle_floating_terminal,
     vim.tbl_extend("force", keymap_opts, { desc = "Terminal floating" }))
 
-  -- Leader-based keymaps for which-key grouping
+  -- Leader-based keymaps for which-key grouping (t = Terminal, T = Toggle)
   vim.keymap.set("n", "<leader>tf", M.toggle_floating_terminal,
     vim.tbl_extend("force", keymap_opts, { desc = "Terminal floating" }))
   vim.keymap.set("n", "<leader>tc", M.close_all_terminals,

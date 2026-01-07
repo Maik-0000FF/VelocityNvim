@@ -11,10 +11,14 @@ wk.add({
   { "<leader>g", group = "Git" },
   { "<leader>b", group = "Buffer" },
   { "<leader>m", group = "Format" },
-  { "<leader>h", group = "Git Hunks" },
-  { "<leader>t", group = "Toggle" },
+  { "<leader>h", group = "Hop" },
+  { "<leader>T", group = "Toggle" },
+  { "<leader>Tc", desc = "Toggle Colorizer" },
+  { "<leader>Tf", desc = "Toggle Auto-Format" },
+  { "<leader>Tm", desc = "Toggle render-markdown" },
   { "<leader>s", group = "Split" },
   { "<leader>u", group = "UI/Utils" },
+  { "<leader>W", group = "Web Server" },
 
   -- LaTeX Mappings (Backslash Leader)
   { "\\", group = "LaTeX" },

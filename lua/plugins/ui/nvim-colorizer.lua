@@ -87,7 +87,7 @@ colorizer.setup({
 
 -- Keybindings for color highlighting control
 local icons = require("core.icons")
-vim.keymap.set("n", "<leader>ct", "<cmd>ColorizerToggle<CR>", {
+vim.keymap.set("n", "<leader>Tc", "<cmd>ColorizerToggle<CR>", {
   desc = icons.misc.gear .. " Toggle Colorizer",
 })
 vim.keymap.set("n", "<leader>cr", "<cmd>ColorizerReloadAllBuffers<CR>", {

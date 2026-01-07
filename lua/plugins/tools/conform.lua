@@ -144,7 +144,7 @@ vim.keymap.set({ "n", "v" }, "<leader>mp", function()
 end, { desc = "Format file or range (in visual mode)" })
 
 -- Toggle auto-format on save
-vim.keymap.set("n", "<leader>uf", function()
+vim.keymap.set("n", "<leader>Tf", function()
   local conform = require("conform")
   if conform.will_fallback_lsp() then
     -- Silent success - auto-format toggle is expected behavior
