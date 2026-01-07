@@ -567,10 +567,12 @@ M.is_installed = function(pkg)
 end
 
 -- Get install command for a package
-M.get_install_cmd = function(pkg, sys)
+-- Note: assume_tools_available=true means npm/cargo/pip will be installed first
+M.get_install_cmd = function(pkg, sys, assume_tools_available)
   local pkg_name = nil
   local method = "system"
 
+  -- System package managers take priority
   if sys.is_arch and pkg.arch then
     pkg_name = pkg.arch
     method = "pacman"
@@ -586,13 +588,14 @@ M.get_install_cmd = function(pkg, sys)
   elseif sys.is_macos and pkg.macos_cask then
     pkg_name = pkg.macos_cask
     method = "brew_cask"
-  elseif pkg.npm and vim.fn.executable("npm") == 1 then
+  -- For npm/cargo/pip: always include if assume_tools_available or if tool exists
+  elseif pkg.npm and (assume_tools_available or vim.fn.executable("npm") == 1) then
     pkg_name = pkg.npm
     method = "npm"
-  elseif pkg.cargo and vim.fn.executable("cargo") == 1 then
+  elseif pkg.cargo and (assume_tools_available or vim.fn.executable("cargo") == 1) then
     pkg_name = pkg.cargo
     method = "cargo"
-  elseif pkg.pip and vim.fn.executable("pip3") == 1 then
+  elseif pkg.pip and (assume_tools_available or vim.fn.executable("pip3") == 1) then
     pkg_name = pkg.pip
     method = "pip"
   elseif pkg.rustup then
@@ -632,12 +635,18 @@ M.get_missing_packages = function(categories)
   local sys = M.detect_os()
   local missing = {}
 
+  -- Check if nodejs/rust/python are in the categories being installed
+  -- If so, npm/cargo/pip will be available after system packages install
+  local will_have_npm = vim.tbl_contains(categories, "nodejs") or vim.fn.executable("npm") == 1
+  local will_have_cargo = vim.tbl_contains(categories, "rust") or vim.fn.executable("cargo") == 1
+  local assume_tools = will_have_npm or will_have_cargo
+
   for _, cat_name in ipairs(categories) do
     local category = M.packages[cat_name]
     if category then
       for _, pkg in ipairs(category.packages) do
         if not M.is_installed(pkg) then
-          local cmd, method = M.get_install_cmd(pkg, sys)
+          local cmd, method = M.get_install_cmd(pkg, sys, assume_tools)
           if cmd then
             table.insert(missing, {
               name = pkg.name,
@@ -749,17 +758,32 @@ M.generate_install_script = function(categories)
       end
     end
     table.insert(script_lines, "# npm packages (global install requires sudo on Linux)")
-    table.insert(script_lines, "# Find npm (might be freshly installed)")
-    table.insert(script_lines, 'NPM_CMD=$(command -v npm || echo "/usr/bin/npm")')
-    table.insert(script_lines, 'if [ -x "$NPM_CMD" ]; then')
+    table.insert(script_lines, "# Find npm - check multiple locations for freshly installed npm")
+    table.insert(script_lines, 'NPM_CMD=""')
+    table.insert(script_lines, 'for npm_path in /usr/bin/npm /usr/local/bin/npm "$HOME/.local/bin/npm"; do')
+    table.insert(script_lines, '  if [ -x "$npm_path" ]; then')
+    table.insert(script_lines, '    NPM_CMD="$npm_path"')
+    table.insert(script_lines, '    break')
+    table.insert(script_lines, '  fi')
+    table.insert(script_lines, 'done')
+    table.insert(script_lines, '# Fallback to command -v')
+    table.insert(script_lines, 'if [ -z "$NPM_CMD" ]; then')
+    table.insert(script_lines, '  NPM_CMD=$(command -v npm 2>/dev/null || true)')
+    table.insert(script_lines, 'fi')
+    table.insert(script_lines, "")
+    table.insert(script_lines, 'if [ -n "$NPM_CMD" ] && [ -x "$NPM_CMD" ]; then')
+    table.insert(script_lines, '  echo "Found npm at: $NPM_CMD"')
     -- Use sudo on Linux, no sudo on macOS (uses ~/.npm-global)
     if sys.is_macos then
       table.insert(script_lines, '  "$NPM_CMD" install -g ' .. table.concat(pkgs, " "))
     else
+      table.insert(script_lines, '  echo "Installing npm packages globally (requires sudo)..."')
       table.insert(script_lines, '  sudo "$NPM_CMD" install -g ' .. table.concat(pkgs, " "))
     end
     table.insert(script_lines, "else")
-    table.insert(script_lines, '  echo "Warning: npm not found, skipping npm packages"')
+    table.insert(script_lines, '  echo "ERROR: npm not found! Please install nodejs/npm first."')
+    table.insert(script_lines, '  echo "Arch Linux: sudo pacman -S nodejs npm"')
+    table.insert(script_lines, '  echo "macOS: brew install node"')
     table.insert(script_lines, "fi")
     table.insert(script_lines, "")
   end
