@@ -8,6 +8,8 @@ local icons = require("core.icons")
 
 -- Installation phases with improved timing
 local PHASES = {
+  { name = "System Detection", key = "sysdetect", duration = 1.0 },
+  { name = "Dependency Setup", key = "sysdeps", duration = 0 }, -- User interaction for system deps
   { name = "Compatibility Check", key = "compat", duration = 1.5 },
   { name = "Package Selection", key = "selection", duration = 0 }, -- User interaction
   { name = "Plugin Installation", key = "plugins", duration = 0 }, -- Variable based on plugin count
@@ -98,7 +100,7 @@ end
 -- STABLE state tracking - no race conditions
 local state = {
   current_phase = 1,
-  total_phases = #PHASES,
+  total_phases = 10, -- Updated to include system detection + dependency setup phases
   phase_progress = 0, -- 0.0 to 1.0 within current phase
   errors = {},
   warnings = {},
@@ -107,6 +109,7 @@ local state = {
   phase_start_time = nil,
   ui_buffer = nil,
   ui_window = nil,
+  selection_cursor = 1, -- For UI navigation
 }
 
 -- STABLE progress display with dedicated UI window
@@ -210,6 +213,531 @@ local function cleanup_progress_ui()
   end
   state.ui_window = nil
   state.ui_buffer = nil
+end
+
+-- Store detected system info for later phases
+local detected_system = nil
+
+-- ASYNC Phase 0a: System Detection
+local function phase_sysdetect(callback)
+  state.phase_start_time = vim.fn.reltime()
+  update_progress_ui("Detecting operating system...", 0)
+
+  local sysdeps_ok, sysdeps = pcall(require, "core.system-deps")
+  if not sysdeps_ok then
+    update_progress_ui("System dependency module not found", 1.0)
+    vim.defer_fn(function() callback(true) end, 500)
+    return
+  end
+
+  vim.defer_fn(function()
+    update_progress_ui("Analyzing system configuration...", 0.3)
+
+    detected_system = sysdeps.detect_os()
+
+    vim.defer_fn(function()
+      update_progress_ui("Checking installed packages...", 0.6)
+
+      vim.defer_fn(function()
+        local status = sysdeps.get_status()
+        local os_info = string.format("%s (%s)", detected_system.distro, detected_system.pkg_manager or "unknown")
+
+        update_progress_ui(string.format("Detected: %s - %d packages missing", os_info, status.total_missing), 1.0)
+
+        vim.defer_fn(function() callback(true) end, 800)
+      end, 500)
+    end, 500)
+  end, 300)
+end
+
+-- ASYNC Phase 0b: System Dependency Installation UI
+local function phase_sysdeps(callback)
+  state.phase_start_time = vim.fn.reltime()
+
+  local sysdeps_ok, sysdeps = pcall(require, "core.system-deps")
+  if not sysdeps_ok then
+    callback(true)
+    return
+  end
+
+  if not detected_system then
+    detected_system = sysdeps.detect_os()
+  end
+
+  -- Check if package manager is available
+  if not detected_system.pkg_manager then
+    update_progress_ui("No supported package manager found - skipping", 1.0)
+    table.insert(state.warnings, "No package manager detected (pacman/apt/dnf/brew)")
+    vim.defer_fn(function() callback(true) end, 1000)
+    return
+  end
+
+  -- Create selection UI
+  local width = 90
+  local height = 30
+  local row = math.floor((vim.o.lines - height) / 2)
+  local col = math.floor((vim.o.columns - width) / 2)
+
+  -- Create buffer for selection
+  local sel_buf = vim.api.nvim_create_buf(false, true)
+  vim.bo[sel_buf].bufhidden = 'wipe'
+  vim.bo[sel_buf].buftype = 'nofile'
+  vim.bo[sel_buf].swapfile = false
+
+  -- Create window
+  local sel_win = vim.api.nvim_open_win(sel_buf, true, {
+    relative = 'editor',
+    width = width,
+    height = height,
+    row = row,
+    col = col,
+    style = 'minimal',
+    border = 'rounded',
+    title = ' VelocityNvim - System Dependencies ',
+    title_pos = 'center'
+  })
+
+  -- Track selection state
+  local current_screen = "profile" -- "profile", "custom", "confirm"
+  local selected_profile = "standard"
+  local selected_categories = {}
+  local cursor_pos = 2 -- 1-indexed, default to "standard"
+
+  -- Profile definitions
+  local profiles = {
+    { key = "minimal", name = "Minimal", desc = "Core functionality only (editor + search)" },
+    { key = "standard", name = "Standard (Recommended)", desc = "Full development environment" },
+    { key = "full", name = "Full", desc = "Everything including LaTeX, Typst, web tools" },
+    { key = "custom", name = "Custom", desc = "Choose individual package categories" },
+    { key = "skip", name = "Skip", desc = "Skip system dependency installation" },
+  }
+
+  -- Category order for custom selection
+  local category_order = { "core", "search", "clipboard", "git_tools", "rust", "nodejs", "lsp", "formatters", "pdf", "latex", "typst", "web", "strudel" }
+
+  -- Initialize custom selection from standard profile
+  for _, cat in ipairs(sysdeps.profiles.standard.categories) do
+    selected_categories[cat] = true
+  end
+
+  -- Get status for display
+  local status = sysdeps.get_status()
+
+  -- Render profile selection screen
+  local function render_profile_screen()
+    local lines = {
+      "",
+      string.format("  %s VelocityNvim First-Run Setup", icons.status.rocket),
+      "",
+      string.format("  Detected: %s (%s)", detected_system.distro:upper(), detected_system.pkg_manager),
+      string.format("  Missing packages: %d | Installed: %d", status.total_missing, status.total_installed),
+      "",
+      "  " .. string.rep("─", width - 6),
+      "",
+      "  Choose an installation profile:",
+      "",
+    }
+
+    for i, profile in ipairs(profiles) do
+      local cursor = (i == cursor_pos) and " ▶ " or "   "
+      local checkbox = ""
+      if profile.key == selected_profile then
+        checkbox = "[●] "
+      else
+        checkbox = "[ ] "
+      end
+
+      if profile.key == "skip" then
+        table.insert(lines, "")
+      end
+
+      table.insert(lines, string.format("%s%s%s", cursor, checkbox, profile.name))
+      table.insert(lines, string.format("       %s", profile.desc))
+
+      -- Show included categories for non-skip profiles
+      if profile.key ~= "skip" and profile.key ~= "custom" and sysdeps.profiles[profile.key] then
+        local cats = table.concat(sysdeps.profiles[profile.key].categories, ", ")
+        table.insert(lines, string.format("       Categories: %s", cats))
+      end
+      table.insert(lines, "")
+    end
+
+    table.insert(lines, "  " .. string.rep("─", width - 6))
+    table.insert(lines, "")
+    table.insert(lines, "  [j/k] Navigate  |  [Enter/Space] Select  |  [q] Skip installation")
+    table.insert(lines, "")
+
+    vim.bo[sel_buf].modifiable = true
+    vim.api.nvim_buf_set_lines(sel_buf, 0, -1, false, lines)
+    vim.bo[sel_buf].modifiable = false
+  end
+
+  -- Render custom category selection screen
+  local function render_custom_screen()
+    local lines = {
+      "",
+      string.format("  %s Custom Package Selection", icons.status.gear),
+      "",
+      "  Select which package categories to install:",
+      "",
+      "  " .. string.rep("─", width - 6),
+      "",
+    }
+
+    for i, cat_name in ipairs(category_order) do
+      local cat = sysdeps.packages[cat_name]
+      if cat then
+        local cursor = (i == cursor_pos) and " ▶ " or "   "
+        local checkbox = selected_categories[cat_name] and "[x]" or "[ ]"
+        local required = cat.required and " (required)" or ""
+
+        -- Count installed/missing
+        local cat_status = status.categories[cat_name]
+        local status_str = ""
+        if cat_status then
+          if cat_status.missing > 0 then
+            status_str = string.format(" [%d missing]", cat_status.missing)
+          else
+            status_str = " [all installed]"
+          end
+        end
+
+        table.insert(lines, string.format("%s%s %s%s%s", cursor, checkbox, cat.title, required, status_str))
+        table.insert(lines, string.format("       %s", cat.description))
+        table.insert(lines, "")
+      end
+    end
+
+    table.insert(lines, "  " .. string.rep("─", width - 6))
+    table.insert(lines, "")
+    table.insert(lines, "  [j/k] Navigate  |  [Space] Toggle  |  [a] All  |  [n] None  |  [Enter] Continue")
+    table.insert(lines, "")
+
+    vim.bo[sel_buf].modifiable = true
+    vim.api.nvim_buf_set_lines(sel_buf, 0, -1, false, lines)
+    vim.bo[sel_buf].modifiable = false
+  end
+
+  -- Render confirmation screen with install commands
+  local function render_confirm_screen()
+    local categories = {}
+    if selected_profile == "custom" then
+      for cat, enabled in pairs(selected_categories) do
+        if enabled then
+          table.insert(categories, cat)
+        end
+      end
+    elseif selected_profile ~= "skip" and sysdeps.profiles[selected_profile] then
+      categories = sysdeps.profiles[selected_profile].categories
+    end
+
+    local missing = sysdeps.get_missing_packages(categories)
+
+    local lines = {
+      "",
+      string.format("  %s Installation Summary", icons.status.info),
+      "",
+      string.format("  Profile: %s", selected_profile:upper()),
+      string.format("  Packages to install: %d", #missing),
+      "",
+      "  " .. string.rep("─", width - 6),
+      "",
+    }
+
+    if #missing == 0 then
+      table.insert(lines, "  All required packages are already installed!")
+      table.insert(lines, "")
+    else
+      table.insert(lines, "  Missing packages:")
+      table.insert(lines, "")
+
+      -- Group by category
+      local by_category = {}
+      for _, pkg in ipairs(missing) do
+        by_category[pkg.category_title] = by_category[pkg.category_title] or {}
+        table.insert(by_category[pkg.category_title], pkg.name)
+      end
+
+      for cat_title, pkgs in pairs(by_category) do
+        table.insert(lines, string.format("    %s: %s", cat_title, table.concat(pkgs, ", ")))
+      end
+      table.insert(lines, "")
+
+      -- Show install command
+      local script, _ = sysdeps.generate_install_script(categories)
+      if script then
+        table.insert(lines, "  Installation will run these commands:")
+        table.insert(lines, "")
+
+        -- Extract key commands from script
+        for line in script:gmatch("[^\n]+") do
+          if line:match("^sudo") or line:match("^brew") or line:match("^npm") or line:match("^cargo") or line:match("^pip") or line:match("^curl") then
+            table.insert(lines, "    " .. line:sub(1, width - 8))
+          end
+        end
+      end
+    end
+
+    table.insert(lines, "")
+    table.insert(lines, "  " .. string.rep("─", width - 6))
+    table.insert(lines, "")
+
+    if #missing > 0 then
+      table.insert(lines, "  [i] Install now  |  [c] Copy commands  |  [b] Back  |  [s] Skip")
+    else
+      table.insert(lines, "  [Enter] Continue  |  [b] Back")
+    end
+    table.insert(lines, "")
+
+    vim.bo[sel_buf].modifiable = true
+    vim.api.nvim_buf_set_lines(sel_buf, 0, -1, false, lines)
+    vim.bo[sel_buf].modifiable = false
+  end
+
+  -- Render current screen
+  local function render()
+    if current_screen == "profile" then
+      render_profile_screen()
+    elseif current_screen == "custom" then
+      render_custom_screen()
+    elseif current_screen == "confirm" then
+      render_confirm_screen()
+    end
+  end
+
+  -- Navigation functions
+  local function move_cursor(delta)
+    local max_pos
+    if current_screen == "profile" then
+      max_pos = #profiles
+    elseif current_screen == "custom" then
+      max_pos = #category_order
+    else
+      return
+    end
+
+    cursor_pos = cursor_pos + delta
+    if cursor_pos < 1 then cursor_pos = max_pos end
+    if cursor_pos > max_pos then cursor_pos = 1 end
+    render()
+  end
+
+  local function select_current()
+    if current_screen == "profile" then
+      selected_profile = profiles[cursor_pos].key
+      if selected_profile == "custom" then
+        current_screen = "custom"
+        cursor_pos = 1
+      elseif selected_profile == "skip" then
+        finish_selection(true)
+        return
+      else
+        current_screen = "confirm"
+      end
+      render()
+    elseif current_screen == "custom" then
+      -- Move to confirm
+      current_screen = "confirm"
+      render()
+    end
+  end
+
+  local function toggle_category()
+    if current_screen == "custom" then
+      local cat_name = category_order[cursor_pos]
+      if cat_name then
+        local cat = sysdeps.packages[cat_name]
+        -- Don't allow deselecting required categories
+        if cat and not cat.required then
+          selected_categories[cat_name] = not selected_categories[cat_name]
+        end
+        render()
+      end
+    end
+  end
+
+  local function select_all_categories()
+    if current_screen == "custom" then
+      for _, cat_name in ipairs(category_order) do
+        selected_categories[cat_name] = true
+      end
+      render()
+    end
+  end
+
+  local function select_no_categories()
+    if current_screen == "custom" then
+      for _, cat_name in ipairs(category_order) do
+        local cat = sysdeps.packages[cat_name]
+        if cat and not cat.required then
+          selected_categories[cat_name] = false
+        end
+      end
+      render()
+    end
+  end
+
+  local function go_back()
+    if current_screen == "custom" then
+      current_screen = "profile"
+      cursor_pos = 4 -- Custom option
+    elseif current_screen == "confirm" then
+      if selected_profile == "custom" then
+        current_screen = "custom"
+        cursor_pos = 1
+      else
+        current_screen = "profile"
+        cursor_pos = 1
+      end
+    end
+    render()
+  end
+
+  local function copy_commands()
+    if current_screen == "confirm" then
+      local categories = {}
+      if selected_profile == "custom" then
+        for cat, enabled in pairs(selected_categories) do
+          if enabled then table.insert(categories, cat) end
+        end
+      elseif sysdeps.profiles[selected_profile] then
+        categories = sysdeps.profiles[selected_profile].categories
+      end
+
+      local script, _ = sysdeps.generate_install_script(categories)
+      if script then
+        vim.fn.setreg("+", script)
+        vim.fn.setreg("*", script)
+        vim.notify("Install commands copied to clipboard!", vim.log.levels.INFO)
+      end
+    end
+  end
+
+  local function run_installation()
+    if current_screen == "confirm" then
+      local categories = {}
+      if selected_profile == "custom" then
+        for cat, enabled in pairs(selected_categories) do
+          if enabled then table.insert(categories, cat) end
+        end
+      elseif sysdeps.profiles[selected_profile] then
+        categories = sysdeps.profiles[selected_profile].categories
+      end
+
+      local missing = sysdeps.get_missing_packages(categories)
+      if #missing == 0 then
+        finish_selection(false)
+        return
+      end
+
+      -- Close selection window
+      if vim.api.nvim_win_is_valid(sel_win) then
+        vim.api.nvim_win_close(sel_win, true)
+      end
+
+      -- Generate and save install script
+      local script, _ = sysdeps.generate_install_script(categories)
+      if script then
+        local script_path = vim.fn.stdpath("data") .. "/velocity-install-deps.sh"
+        vim.fn.writefile(vim.split(script, "\n"), script_path)
+        vim.fn.setfperm(script_path, "rwxr-xr-x")
+
+        update_progress_ui("Running system package installation...", 0.1)
+
+        -- Inform user about what's happening
+        vim.defer_fn(function()
+          update_progress_ui("Please enter your password if prompted...", 0.2)
+
+          -- Run installation script in terminal
+          vim.fn.jobstart({ "bash", script_path }, {
+            on_stdout = function(_, data)
+              if data and #data > 0 and data[1] ~= "" then
+                update_progress_ui("Installing packages...", 0.5)
+              end
+            end,
+            on_stderr = function(_, data)
+              if data and #data > 0 and data[1] ~= "" then
+                -- Some output goes to stderr but isn't an error
+                update_progress_ui("Installing packages...", 0.6)
+              end
+            end,
+            on_exit = function(_, exit_code)
+              if exit_code == 0 then
+                update_progress_ui("System dependencies installed successfully!", 1.0)
+                -- Refresh detected packages
+                status = sysdeps.get_status()
+              else
+                update_progress_ui("Some packages may have failed to install", 1.0)
+                table.insert(state.warnings, "System package installation had errors (exit code: " .. exit_code .. ")")
+              end
+
+              vim.defer_fn(function()
+                callback(true)
+              end, 1000)
+            end,
+          })
+        end, 500)
+        return
+      else
+        finish_selection(false)
+      end
+    end
+  end
+
+  -- Finish and close
+  function finish_selection(skipped)
+    if vim.api.nvim_win_is_valid(sel_win) then
+      vim.api.nvim_win_close(sel_win, true)
+    end
+    if vim.api.nvim_buf_is_valid(sel_buf) then
+      vim.api.nvim_buf_delete(sel_buf, { force = true })
+    end
+
+    if skipped then
+      update_progress_ui("System dependency installation skipped", 1.0)
+    else
+      update_progress_ui("System dependency setup complete", 1.0)
+    end
+
+    vim.defer_fn(function()
+      callback(true)
+    end, 500)
+  end
+
+  -- Set up keymaps
+  local opts = { buffer = sel_buf, noremap = true, silent = true }
+  vim.keymap.set('n', 'j', function() move_cursor(1) end, opts)
+  vim.keymap.set('n', 'k', function() move_cursor(-1) end, opts)
+  vim.keymap.set('n', '<Down>', function() move_cursor(1) end, opts)
+  vim.keymap.set('n', '<Up>', function() move_cursor(-1) end, opts)
+  vim.keymap.set('n', '<CR>', select_current, opts)
+  vim.keymap.set('n', '<Space>', function()
+    if current_screen == "custom" then
+      toggle_category()
+    else
+      select_current()
+    end
+  end, opts)
+  vim.keymap.set('n', 'a', select_all_categories, opts)
+  vim.keymap.set('n', 'n', select_no_categories, opts)
+  vim.keymap.set('n', 'b', go_back, opts)
+  vim.keymap.set('n', 'c', copy_commands, opts)
+  vim.keymap.set('n', 'i', run_installation, opts)
+  vim.keymap.set('n', 's', function() finish_selection(true) end, opts)
+  vim.keymap.set('n', 'q', function() finish_selection(true) end, opts)
+  vim.keymap.set('n', '<Esc>', function()
+    if current_screen ~= "profile" then
+      go_back()
+    else
+      finish_selection(true)
+    end
+  end, opts)
+
+  -- Initial render
+  render()
+
+  -- Focus the selection window
+  vim.api.nvim_set_current_win(sel_win)
 end
 
 -- ASYNC Phase 1: Compatibility Check
@@ -966,6 +1494,8 @@ function M.run_installation()
 
   -- ASYNC phase execution chain with callbacks
   local phases = {
+    { name = "System Detection", func = phase_sysdetect, critical = false },
+    { name = "Dependency Setup", func = phase_sysdeps, critical = false },
     { name = "Compatibility Check", func = phase_compatibility, critical = true },
     { name = "Package Selection", func = phase_selection, critical = false },
     { name = "Plugin Installation", func = phase_plugins, critical = true },

@@ -1426,3 +1426,6 @@ cmd("WebServerInfo", function()
 end, {
   desc = "Show web server information",
 })
+
+-- Load system dependency manager (provides :SystemDeps, :SystemDepsInstall, :SystemDepsScript)
+pcall(require, "core.system-deps")

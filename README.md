@@ -163,6 +163,9 @@ During first installation, you can choose to include:
 | `:VelocityInfo` | Show version information |
 | `:LspStatus` | LSP server status |
 | `:NotifyHistory` | View notification history |
+| `:SystemDeps` | Show system dependency status |
+| `:SystemDepsInstall [profile]` | Install dependencies (minimal/standard/full) |
+| `:SystemDepsScript [profile]` | Generate install script for clipboard |
 
 ## Key Mappings
 
