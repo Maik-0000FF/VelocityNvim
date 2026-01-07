@@ -1165,8 +1165,12 @@ end
 local function phase_rust(callback)
   state.phase_start_time = vim.fn.reltime()
 
-  -- Check if Cargo is available
-  if vim.fn.executable("cargo") == 0 then
+  -- Check if Cargo is available (also check ~/.cargo/bin for freshly installed cargo)
+  local cargo_cmd = "cargo"
+  local cargo_in_path = vim.fn.executable("cargo") == 1
+  local cargo_in_home = vim.fn.executable(vim.fn.expand("~/.cargo/bin/cargo")) == 1
+
+  if not cargo_in_path and not cargo_in_home then
     update_progress_ui("Cargo not available - skipping Rust builds", 0.5)
     table.insert(state.warnings, "Cargo not available - skipping Rust builds")
     vim.defer_fn(function()
@@ -1174,6 +1178,12 @@ local function phase_rust(callback)
       vim.defer_fn(function() callback(true) end, 500)
     end, 1000)
     return
+  end
+
+  -- Use full path if cargo not in PATH (freshly installed)
+  if not cargo_in_path and cargo_in_home then
+    cargo_cmd = vim.fn.expand("~/.cargo/bin/cargo")
+    update_progress_ui("Using freshly installed Cargo...", 0.05)
   end
 
   update_progress_ui("Rust detected - preparing build environment...", 0.1)
@@ -1192,8 +1202,8 @@ local function phase_rust(callback)
 
   update_progress_ui("Building blink.cmp Rust fuzzy matching (this may take a while)...", 0.2)
 
-  -- ASYNC Rust build using jobstart
-  local build_cmd = { "cargo", "build", "--release" }
+  -- ASYNC Rust build using jobstart (use detected cargo path)
+  local build_cmd = { cargo_cmd, "build", "--release" }
 
   vim.fn.jobstart(build_cmd, {
     cwd = blink_path,
