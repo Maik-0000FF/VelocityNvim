@@ -104,10 +104,7 @@ sudo pacman -S --needed chromium  # or: brave-bin (AUR)
 # Clone VelocityNvim
 git clone https://github.com/Maik-0000FF/VelocityNvim.git ~/.config/nvim
 
-# Install plugins
-nvim -c "PluginSync" -c "qall"
-
-# Launch
+# Launch - First-Run Installer starts automatically
 nvim
 ```
 
@@ -117,19 +114,45 @@ nvim
 # Clone to separate directory
 git clone https://github.com/Maik-0000FF/VelocityNvim.git ~/.config/VelocityNvim
 
-# Install plugins
-NVIM_APPNAME=VelocityNvim nvim -c "PluginSync" -c "qall"
-
-# Launch
+# Launch - First-Run Installer starts automatically
 NVIM_APPNAME=VelocityNvim nvim
 
 # Optional: Add alias to ~/.bashrc or ~/.zshrc
 alias velocity="NVIM_APPNAME=VelocityNvim nvim"
 ```
 
+### First-Run Installer
+
+On first launch, VelocityNvim automatically starts a terminal-based installer that guides you through the setup:
+
+**Phase 1: System Detection**
+- Detects OS, package manager, and installed tools
+- Checks for C compiler, Rust, Node.js, and LSP servers
+
+**Phase 2: Package Selection**
+- **[1] Core Installation** - Basic editor with LSP, completion, file explorer, git
+- **[2] Extended Installation** - Core + LaTeX, Typst, Strudel (live coding music)
+- **[3] Custom Selection** - Choose individual optional packages
+
+**Phase 3: Plugin Installation**
+- Clones all plugins via Git (27 plugins)
+- Progress display with status indicators
+
+**Phase 4: Treesitter Parser Installation**
+- Compiles syntax parsers for 15+ languages
+- Requires GCC/Clang
+
+**Phase 5: Rust Performance Build**
+- Builds blink.cmp fuzzy matcher for maximum completion speed
+- Falls back to Lua if Rust unavailable
+
+**Phase 6: Optional Dependencies** (Extended/Custom only)
+- Checks for LaTeX, Typst, or Strudel dependencies
+- Shows installation commands for missing tools
+
 ## Optional Packages
 
-During first installation, you can choose to include:
+During first-run installation, you can choose to include:
 
 | Package | Description | Dependencies |
 |---------|-------------|--------------|
@@ -172,11 +195,33 @@ During first installation, you can choose to include:
 | Key | Description |
 |-----|-------------|
 | `<Space>` | Leader key |
-| `<leader>e` | Toggle file explorer |
+| **File Explorer** | |
+| `<C-n>` | Toggle Neo-tree |
+| `<leader>e` | Focus Neo-tree |
+| `s` | Open file in split (Neo-tree) |
+| **Buffers** | |
+| `<leader>j` / `<leader>k` | Next / Previous buffer |
+| `<leader>cc` | Close current buffer |
+| `<leader>w` | Save file |
+| **Search** | |
 | `<leader>ff` | Find files |
 | `<leader>fg` | Live grep |
-| `<leader>nh` | Notification history |
-| `<leader>ne` | Error messages |
+| `<leader>fb` | Find buffers |
+| **LSP** | |
+| `gd` | Go to definition |
+| `K` | Hover documentation |
+| `<leader>le` | Workspace diagnostics |
+| `]d` / `[d` | Next / Previous diagnostic |
+| `<leader>dl` | Show diagnostic float |
+| `<leader>ca` | Code actions |
+| `<leader>rn` | Rename symbol |
+| **Terminal** | |
+| `<Alt-i>` | Toggle floating terminal |
+| `<leader>tf` | Toggle floating terminal |
+| `jk` | Exit terminal mode |
+| **Navigation** | |
+| `<leader>hw` | Hop to word |
+| `<leader>hl` | Hop to line |
 
 ## Adding Plugins
 
