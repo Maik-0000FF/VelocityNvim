@@ -26,21 +26,25 @@ local function get_footer()
   local nvim_ver = vim.version()
   local nvim_version_string = string.format("%d.%d.%d", nvim_ver.major, nvim_ver.minor, nvim_ver.patch)
 
-  -- Count actually installed plugins (real directory count)
-  local plugin_count = 0
-  local pack_dir = vim.fn.stdpath("data") .. "/site/pack/user/start"
-  if vim.fn.isdirectory(pack_dir) == 1 then
-    local handle = vim.uv.fs_scandir(pack_dir)
-    if handle then
-      while true do
-        local name, type = vim.uv.fs_scandir_next(handle)
-        if not name then break end
-        if type == "directory" then
-          plugin_count = plugin_count + 1
+  -- Count actually installed plugins (cached for performance)
+  if not vim.g._velocitynvim_plugin_count then
+    local count = 0
+    local pack_dir = vim.fn.stdpath("data") .. "/site/pack/user/start"
+    if vim.fn.isdirectory(pack_dir) == 1 then
+      local handle = vim.uv.fs_scandir(pack_dir)
+      if handle then
+        while true do
+          local name, type = vim.uv.fs_scandir_next(handle)
+          if not name then break end
+          if type == "directory" then
+            count = count + 1
+          end
         end
       end
     end
+    vim.g._velocitynvim_plugin_count = count
   end
+  local plugin_count = vim.g._velocitynvim_plugin_count
 
   -- Calculate native startup time (from init.lua start to now)
   local startup_time = "N/A"
