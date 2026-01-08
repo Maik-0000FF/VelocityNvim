@@ -135,3 +135,26 @@ opt.foldminlines = 2 -- Minimum 2 lines for fold
 
 -- NOTE: maxmempattern and synmaxcol are already set above (lines 89-90)
 -- Removed duplicate definitions for clarity and consistency
+
+-- Neovide GUI Performance Optimizations
+if vim.g.neovide then
+  -- Refresh rate (idle = power saving when unfocused)
+  vim.g.neovide_refresh_rate = 60
+  vim.g.neovide_refresh_rate_idle = 5
+
+  -- Faster animations (reduce for snappier feel)
+  vim.g.neovide_scroll_animation_length = 0.1
+  vim.g.neovide_cursor_animation_length = 0.05
+  vim.g.neovide_position_animation_length = 0
+
+  -- Disable cursor particles (reduces GPU load)
+  vim.g.neovide_cursor_vfx_mode = ""
+
+  -- Disable floating window effects (reduces GPU load)
+  vim.g.neovide_floating_blur_amount_x = 0
+  vim.g.neovide_floating_blur_amount_y = 0
+  vim.g.neovide_floating_shadow = false
+
+  -- Profiler for debugging (set to true to show FPS)
+  vim.g.neovide_profiler = false
+end
