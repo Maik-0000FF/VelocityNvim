@@ -73,7 +73,7 @@ colorizer.setup({
   ["fugitive"] = {}, -- vim-fugitive
   ["gitcommit"] = {}, -- Git Commit Messages
   ["gitrebase"] = {}, -- Git Rebase
-  ["log"] = {}, -- Log-Dateien
+  ["log"] = {}, -- Log files
   ["diff"] = {}, -- Diff-Ansicht
   ["undotree"] = {}, -- Undotree
   ["dbout"] = {}, -- Database Output

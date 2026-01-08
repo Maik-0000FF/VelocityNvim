@@ -66,8 +66,8 @@ local default_exclude_dirs = {
   "Thumbs.db",
 }
 
--- OPTIMIERT: Einfache Sign-Definition ohne unnötige Prioritäten
--- PERFORMANCE: Keine Priority-Berechnungen, da alle Diagnostics relevant sind
+-- OPTIMIZED: Simple sign definition without unnecessary priorities
+-- PERFORMANCE: No priority calculations since all diagnostics are relevant
 vim.fn.sign_define("DiagnosticSignError", {
   text = icons.diagnostics.error,
   texthl = "DiagnosticSignError",
@@ -88,13 +88,13 @@ vim.fn.sign_define("DiagnosticSignHint", {
 -- SCHRITT 2: Konfiguriere Diagnostics mit korrekten Icons
 vim.diagnostic.config({
   virtual_text = {
-    -- DAUERHAFT SICHTBAR: Icons bleiben auch bei Cursor-Bewegung
+    -- PERMANENTLY VISIBLE: Icons stay visible during cursor movement
     prefix = function(diagnostic)
       return SEVERITY_ICONS[diagnostic.severity] or "●"
     end,
     spacing = 2,
     source = "if_many",
-    -- KRITISCH: suffix verhindert dass Text bei cursor movement verschwindet
+    -- CRITICAL: suffix prevents text from disappearing during cursor movement
     suffix = "",
     format = function(diagnostic)
       return diagnostic.message
@@ -103,7 +103,7 @@ vim.diagnostic.config({
   signs = {
     text = SEVERITY_ICONS,
   },
-  update_in_insert = false, -- Performance: keine Updates während Typing
+  update_in_insert = false, -- Performance: no updates during Typing
   underline = true,
   severity_sort = true,
   float = {
@@ -169,14 +169,14 @@ local function get_targeted_lua_libraries()
   local libraries = {}
   local project_root = vim.fn.getcwd()
 
-  -- 1. IMMER: Neovim Core APIs (unverzichtbar für vim.* completion)
+  -- 1. ALWAYS: Neovim Core APIs (essential for vim.* completion)
   local nvim_runtime_paths = vim.api.nvim_get_runtime_file("lua/vim", false)
   if #nvim_runtime_paths > 0 then
     local nvim_lua_dir = vim.fn.fnamemodify(nvim_runtime_paths[1], ":p:h:h")
     table.insert(libraries, nvim_lua_dir)
   end
 
-  -- 2. CONDITIONAL: Plugin-spezifische Libraries nur wenn geladen (MyNvim-Style)
+  -- 2. CONDITIONAL: Plugin-specific libraries only when loaded (MyNvim-Style)
   local function is_plugin_loaded(plugin_name)
     return package.loaded[plugin_name] ~= nil
   end
@@ -216,7 +216,7 @@ local function get_targeted_lua_libraries()
     end
   end
 
-  -- 3. PROJECT-SPECIFIC: Lokale Lua-Module im aktuellen Projekt
+  -- 3. PROJECT-SPECIFIC: Local Lua modules in current project
   local local_lua_dirs = {
     project_root .. "/lua",
     project_root .. "/scripts/lua",
@@ -229,7 +229,7 @@ local function get_targeted_lua_libraries()
     end
   end
 
-  -- 4. VelocityNvim spezifische Module (immer hinzufügen für diese Config)
+  -- 4. VelocityNvim specific modules (always add for this config)
   local velocitynvim_lua_dir = vim.fn.expand("~/.config/VelocityNvim/lua")
   if vim.fn.isdirectory(velocitynvim_lua_dir) == 1 then
     table.insert(libraries, velocitynvim_lua_dir)
@@ -252,14 +252,14 @@ vim.lsp.config.lua_ls = {
       runtime = { version = "LuaJIT" },
       diagnostics = {
         globals = { "vim" },
-        workspaceDelay = 200, -- Performance: Längere Delay für weniger frequent updates
+        workspaceDelay = 200, -- Performance: Longer delay for less frequent updates
       },
       workspace = {
         library = get_targeted_lua_libraries(), -- VelocityNvim: Intelligente Library-Erkennung
         checkThirdParty = false,
         maxPreload = 1500, -- Performance: Optimiert von 3000
         preloadFileSize = 3000, -- Performance: Optimiert von 5000
-        useGitIgnore = false, -- Performance: Keine "filtering directories" Meldungen
+        useGitIgnore = false, -- Performance: No "filtering directories" messages
       },
       telemetry = { enable = false },
     },
@@ -585,9 +585,9 @@ vim.lsp.config("tinymist", {
   filetypes = { "typst" },
   root_markers = { "typst.toml", ".git", "main.typ" }, -- VelocityNvim: Typst project detection
   settings = {
-    formatterMode = "typstyle", -- Formatter: typstyle (empfohlen) oder typstfmt
+    formatterMode = "typstyle", -- Formatter: typstyle (recommended) or typstfmt
     exportPdf = "onSave", -- PDF-Export: onType, onSave, never
-    semanticTokens = "disable", -- Performance: Semantic tokens deaktiviert (global config)
+    semanticTokens = "disable", -- Performance: Semantic tokens disabled (global config)
   },
 })
 
@@ -622,7 +622,7 @@ end
 
 -- Function for scanning all files in workspace with extended edge cases
 local function scan_workspace_files(client)
-  -- EDGE CASE: Client ohne root_dir oder bereits gescannt
+  -- EDGE CASE: Client without root_dir or already scanned
   if not client.config.root_dir or scanned_workspaces[client.config.root_dir] then
     return
   end
@@ -655,19 +655,19 @@ local function scan_workspace_files(client)
     end
   end
 
-  -- EDGE CASE: Sehr großes Workspace (>10GB) warnen
+  -- EDGE CASE: Warn about very large workspace (>10GB)
 
-  -- Projektspezifische Ausschlüsse hinzufügen
+  -- Add project-specific exclusions
   local size_exclude_dirs = vim.deepcopy(default_exclude_dirs)
   local custom_excludes = rawget(_G, "velocitynvim_lsp_exclude_dirs")
   if custom_excludes and type(custom_excludes) == "table" then
     vim.list_extend(size_exclude_dirs, custom_excludes)
   end
 
-  -- Erstelle du exclude-Pattern für alle exclude_dirs
+  -- Create exclude pattern for all exclude_dirs
   local exclude_pattern = ""
   for _, exclude in ipairs(size_exclude_dirs) do
-    if not exclude:match("%*") then -- Nur echte Verzeichnisse, keine Wildcards
+    if not exclude:match("%*") then -- Only real directories, no wildcards
       exclude_pattern = exclude_pattern .. string.format(" --exclude='%s'", exclude)
     end
   end
@@ -714,7 +714,7 @@ local function scan_workspace_files(client)
 
   mark_workspace_scanned(client.config.root_dir)
 
-  -- Finde alle relevanten Dateien im Workspace
+  -- Find all relevant files in workspace
   local filetypes = client.config.filetypes or {}
   local patterns = {}
 
@@ -751,33 +751,33 @@ local function scan_workspace_files(client)
   end
 
   -- Verwende globale Standard-Ausschlussverzeichnisse
-  -- Projektspezifische Ausschlüsse (aus .gitignore oder custom config)
+  -- Project-specific exclusions (from .gitignore or custom config)
   -- NOTE: Wiederverwendung von size_exclude_dirs (bereits mit custom_excludes erweitert)
   local exclude_dirs = size_exclude_dirs
 
-  -- DEAKTIVIERT: .gitignore-Parsing für exclude_dirs (verhindert LSP-Meldungen)
-  -- .gitignore wird vom LSP nicht mehr als Filter verwendet (useGitIgnore = false)
-  -- Das Custom-Parsing ist daher überflüssig und kann Verwirrung stiften
+  -- DISABLED: .gitignore-Parsing for exclude_dirs (prevents LSP messages)
+  -- .gitignore is no longer used as filter by LSP (useGitIgnore = false)
+  -- Custom parsing is therefore redundant and can cause confusion
 
-  -- PERFORMANCE-KRITISCH: vim.fs.find ist 10-20x schneller als shell-find für <1000 Dateien
-  -- Verwendet native C-Implementierung statt subprocess, wichtig für große Workspaces
+  -- PERFORMANCE-CRITICAL: vim.fs.find is 10-20x faster than shell-find <1000 files
+  -- Uses native C implementation instead of subprocess, important for large workspaces
   local files = {}
   for _, pattern in ipairs(patterns) do
     local found = vim.fs.find(function(name, path)
-      -- WARUM: Pfad-basierte Filterung vor Pattern-Matching aus Performance-Gründen
-      -- String-Operationen sind billiger als File-I/O oder Regex-Matching
+      -- WHY: Path-based filtering before pattern matching for performance
+      -- String operations are cheaper than File-I/O or Regex-Matching
       for _, exclude in ipairs(exclude_dirs) do
         if path:find("/" .. exclude .. "/") or path:find("/" .. exclude .. "$") then
           return false
         end
       end
-      -- WARUM: Pattern wird zu Lua-Regex konvertiert statt externe grep zu verwenden
-      -- Vermeidet subprocess-Overhead bei jedem Match-Test
+      -- WHY: Pattern converted to Lua regex instead of using external grep
+      -- Avoids subprocess overhead on every match test
       return name:match(pattern:gsub("%*", ".*") .. "$")
     end, {
       path = client.config.root_dir,
       type = "file",
-      limit = math.huge, -- WARUM: Keine künstliche Begrenzung, Batch-Processing regelt Load
+      limit = math.huge, -- WHY: No artificial limit, batch processing handles load
     })
     vim.list_extend(files, found)
   end
@@ -955,4 +955,4 @@ if manage_ok then
   end
 end
 
--- LspStatus Command wird jetzt in core/commands.lua behandelt
+-- LspStatus Command is now handled in core/commands.lua

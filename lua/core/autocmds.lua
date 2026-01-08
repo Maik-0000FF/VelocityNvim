@@ -4,10 +4,10 @@
 local augroup = vim.api.nvim_create_augroup
 local autocmd = vim.api.nvim_create_autocmd
 
--- Cross-version compatibility layer für fs_stat access (cached at module level)
+-- Cross-version compatibility layer for fs_stat access (cached at module level)
 local fs_stat_func = rawget(vim.uv, 'fs_stat') or rawget(vim.loop, 'fs_stat')
 
--- VelocityNvim Autocommand Gruppen
+-- VelocityNvim Autocommand Groups
 local velocity_general = augroup("VelocityGeneral", { clear = true })
 local velocity_lsp = augroup("VelocityLsp", { clear = true })
 local velocity_ui = augroup("VelocityUI", { clear = true })
@@ -228,13 +228,13 @@ autocmd("VimLeavePre", {
   end,
 })
 
--- LaTeX/Typst: Auto-compile on save (aktiviert beim ersten Öffnen einer .tex/.typ Datei)
+-- LaTeX/Typst: Auto-compile on save (enabled on first opening of .tex/.typ file)
 autocmd("FileType", {
   group = velocity_general,
   desc = "Enable LaTeX/Typst live preview",
   pattern = { "tex", "typst" },
   callback = function()
-    -- Lade das Modul (aktiviert automatisch die Live-Preview)
+    -- Load the module (automatically enables the Live-Preview)
     pcall(require, "utils.latex-performance")
   end,
 })

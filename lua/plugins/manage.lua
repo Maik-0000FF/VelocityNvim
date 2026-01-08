@@ -234,7 +234,7 @@ end
 
 function M.sync()
   local pack_dir = vim.fn.stdpath("data") .. "/site/pack/user/start/"
-  -- Robuste Verzeichnisprüfung mit Fallback
+  -- Robust directory check with fallback
   local dir_exists = false
   if fs_stat_func then
     local ok, stat = pcall(fs_stat_func, pack_dir)
@@ -255,7 +255,7 @@ function M.sync()
   local strudel_updated = false
   for name, url in pairs(all_plugins) do
     local plugin_path = pack_dir .. name
-    -- Robuste Plugin-Prüfung mit Fallback
+    -- Robust plugin check with fallback
     local plugin_exists = false
     if fs_stat_func then
       local ok, stat = pcall(fs_stat_func, plugin_path)

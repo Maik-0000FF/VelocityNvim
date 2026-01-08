@@ -20,14 +20,12 @@ wk.add({
   { "<leader>u", group = "UI/Utils" },
   { "<leader>W", group = "Web Server" },
 
-  -- LaTeX Mappings (Backslash Leader)
-  { "\\", group = "LaTeX" },
+  -- LaTeX/Typst Mappings (Backslash Leader)
+  { "\\", group = "LaTeX/Typst" },
   { "\\s", desc = "LaTeX: Performance Status" },
-  { "\\i", desc = "LaTeX: Enable live preview" },
-  { "\\b", desc = "LaTeX: Build with Tectonic (Ultra-Fast)" },
-  { "\\B", desc = "LaTeX: Build with Typst (Modern)" },
-  { "\\c", desc = "LaTeX: Compile current file + display" },
-  { "\\v", desc = "LaTeX: Open PDF viewer" },
+  { "\\i", desc = "LaTeX/Typst: Toggle live preview" },
+  { "\\c", desc = "LaTeX/Typst: Compile + display PDF" },
+  { "\\v", desc = "LaTeX/Typst: Open PDF viewer" },
   { "\\x", desc = "LaTeX: Clean auxiliary files" },
   { "\\<CR>", desc = "LaTeX: Quick build + display" },
 })

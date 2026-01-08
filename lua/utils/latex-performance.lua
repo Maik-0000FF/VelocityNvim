@@ -213,8 +213,8 @@ function M.reload_viewer(pdf_file, viewer_pid)
 end
 
 -- Cross-platform PDF viewer
--- Linux: zathura, macOS: Skim (falls installiert) oder Preview
--- Öffnet nur wenn Viewer nicht bereits mit dieser PDF läuft
+-- Linux: zathura, macOS: Skim (if installed) or Preview
+-- Opens only if viewer is not already running with this PDF
 function M.open_pdf(pdf_file, force)
   if vim.fn.filereadable(pdf_file) ~= 1 then
     return false
@@ -231,8 +231,8 @@ function M.open_pdf(pdf_file, force)
 
   if IS_MACOS then
     if is_tool_available("skim") then
-      -- AppleScript für zuverlässiges Öffnen neuer PDFs
-      -- Löst Problem: Skim öffnet neue Dateien nicht wenn bereits aktiv
+      -- AppleScript for reliable opening of new PDFs
+      -- Fixes issue: Skim does not open new files when already active
       local pdf_path = vim.fn.fnamemodify(pdf_file, ":p")
       local applescript = string.format([[
         tell application "Skim"
@@ -355,7 +355,7 @@ local function compile_and_preview(file, filetype)
 end
 
 -- Setup live preview (called automatically or manually)
--- silent: wenn true, keine Aktivierungsnachricht
+-- silent: if true, no activation message
 function M.setup_live_preview(silent)
   if M.live_preview_active then
     if not silent then

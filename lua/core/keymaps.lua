@@ -171,7 +171,7 @@ map("n", "<leader>hl", "<cmd>HopLine<CR>", { desc = "Hop Line" })
 map("n", "<leader>hw", "<cmd>HopWord<CR>", { desc = "Hop Word" })
 
 -- LSP Diagnostic FZF Keymaps (diese wurden nach lsp-debug.lua verschoben)
--- <leader>le und <leader>lE werden in fzf-lua.lua definiert
+-- <leader>le and <leader>lE are defined in fzf-lua.lua
 
 ----------------------------------------
 -- LaTeX Keymaps (Leader: \)
@@ -181,11 +181,7 @@ map("n", "<leader>hw", "<cmd>HopWord<CR>", { desc = "Hop Word" })
 map("n", "\\s", "<cmd>LaTeXStatus<CR>", { desc = "LaTeX: Performance Status" })
 map("n", "\\i", "<cmd>LaTeXLivePreviewToggle<CR>", { desc = "LaTeX: Toggle live preview" })
 
--- LaTeX building
-map("n", "\\b", "<cmd>LaTeXBuildTectonic<CR>", { desc = "LaTeX: Build with Tectonic (ultra-fast)" })
-map("n", "\\B", "<cmd>LaTeXBuildTypst<CR>", { desc = "LaTeX: Build with Typst (modern)" })
-
--- LaTeX compilation (traditional)
+-- LaTeX/Typst compilation (auto-detect by filetype)
 map("n", "\\c", function()
   local file = vim.fn.expand("%:p")
   local bufname = vim.fn.bufname()

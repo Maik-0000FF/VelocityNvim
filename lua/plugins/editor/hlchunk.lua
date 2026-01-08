@@ -1,12 +1,12 @@
 -- ~/.config/VelocityNvim/lua/plugins/hlchunk.lua
--- MINIMAL hlchunk config - NUR Standard-Funktionen + embedded icons
+-- MINIMAL hlchunk config - standard features + embedded icons
 
 local ok, hlchunk = pcall(require, "hlchunk")
 if not ok then
   return
 end
 
--- Embedded icons (keine Abhängigkeit zu core.icons)
+-- Embedded icons (no dependency on core.icons)
 local hlchunk_icons = {
   horizontal_line = "─",
   vertical_line = "│",
@@ -21,12 +21,12 @@ hlchunk.setup({
     use_treesitter = true,
     chars = hlchunk_icons,
     style = { { fg = "#00ffff" }, { fg = "#ff00ff" } }, -- Custom colors: Cyan + Magenta
-    duration = 50, -- Keine Animation für instant highlighting
-    delay = 150, -- Optimierte Verzögerung für responsive Navigation
+    duration = 50, -- No animation for instant highlighting
+    delay = 150, -- Optimized delay for responsive navigation
     max_file_size = 1024 * 1024, -- Performance limit
-    error_sign = true, -- Aktiviert: Farbumschlag bei Syntax-Fehlern (Cyan → Pink)
+    error_sign = true, -- Color change on syntax errors (Cyan → Pink)
   },
   indent = {
-    enable = false, -- Native leadmultispace übernimmt indent lines
+    enable = false, -- Native leadmultispace handles indent lines
   },
 })

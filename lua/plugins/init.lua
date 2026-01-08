@@ -40,19 +40,19 @@ end
 
 -- Load plugin configurations safely (Performance-optimized with defer-loading)
 
--- UI Plugins (sofort - für Layout-Stabilität)
+-- UI Plugins (immediately - for layout stability)
 safe_require("plugins.ui.tokyonight") -- Theme first for consistent UI
 safe_require("plugins.ui.bufferline") -- Bufferline immediately to avoid Alpha layout shift
 safe_require("plugins.ui.lualine") -- Lualine immediately to avoid Alpha layout shift
 safe_require("plugins.ui.alpha") -- Dashboard after bufferline+lualine for correct layout
 
--- Completion + Core Editor (sofort - für Development)
+-- Completion + Core Editor (sofort - for development)
 safe_require("plugins.lsp.blink-cmp")
 safe_require("plugins.editor.nvim-treesitter") -- Treesitter first for syntax
 safe_require("plugins.editor.which-key") -- Which-key immediately for keybinding help
 safe_require("plugins.editor.hop") -- Hop immediately for health check compatibility
 
--- Batch 1: Editor + LSP (50ms delay - optimiert für schnelleren Startup)
+-- Batch 1: Editor + LSP (50ms delay - optimiert for faster Startup)
 vim.defer_fn(function()
   safe_require("plugins.ui.noice")
   safe_require("plugins.ui.nvim-colorizer")
@@ -65,7 +65,7 @@ vim.defer_fn(function()
   safe_require("plugins.editor.render-markdown")
 end, 50)
 
--- Batch 2: Tools (100ms delay - optimiert für schnelleren Startup)
+-- Batch 2: Tools (100ms delay - optimiert for faster Startup)
 vim.defer_fn(function()
   safe_require("plugins.lsp.lsp-debug")
   safe_require("plugins.tools.fzf-lua")

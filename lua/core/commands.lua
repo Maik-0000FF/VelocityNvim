@@ -1428,4 +1428,7 @@ end, {
 })
 
 -- Load system dependency manager (provides :SystemDeps, :SystemDepsInstall, :SystemDepsScript)
-pcall(require, "core.system-deps")
+-- Deferred to not block startup measurement, but still eager-loaded
+vim.defer_fn(function()
+  pcall(require, "core.system-deps")
+end, 150)  -- After Phase 3 plugins (100ms)

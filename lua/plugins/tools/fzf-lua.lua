@@ -1,9 +1,9 @@
 -- ~/.config/VelocityNvim/lua/plugins/tools/fzf-lua.lua
 -- DEFAULT-PROFILE fzf-lua Konfiguration (CLAUDE.md optimiert)
 -- BEGRÜNDUNG: "default" Profile nutzt Standard fzf-lua Look mit NerdFont Icons
--- VALIDATION: WebSearch + Tests bestätigt - Ersetzt 200+ Zeilen Custom-Config
+-- VALIDATION: WebSearch + Tests confirmed - Replaces 200+ lines custom config
 
--- Icons laden für VelocityNvim-spezifische Features
+-- Load icons for VelocityNvim-specific features
 local icons = require("core.icons")
 
 -- Delta integration check for enhanced Git performance
@@ -38,16 +38,16 @@ require("fzf-lua").setup({
 })
 
 -- ALLE ANDEREN FEATURES NUTZEN DEFAULT-PROFILE STANDARDS:
--- ✅ Winopts: Standard fzf window layout und border
+-- ✅ Winopts: Standard fzf window layout and border
 -- ✅ Keymap: Standard fzf keybindings (Ctrl+j/k, F1-F6, etc.)
 -- ✅ Fzf_opts: Native fzf prompt (> ), pointer, marker
 -- ✅ Preview: Standard builtin previewer mit devicons
--- ✅ File Icons: Standard devicons integration (NerdFont - keine Emojis)
+-- ✅ File Icons: Standard devicons integration (NerdFont - no emojis)
 -- ✅ Git Icons: Standard git file indicators
--- ✅ LSP: Standard symbol icons und navigation
+-- ✅ LSP: Standard symbol icons and navigation
 -- ✅ Performance: Optimized defaults ohne Custom-Overhead
 
--- VelocityNvim Standard-Keymaps (unverändert - funktionieren mit jedem Profile)
+-- VelocityNvim standard keymaps (unchanged - work with any profile)
 local map = vim.keymap.set
 
 -- File navigation

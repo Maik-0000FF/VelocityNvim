@@ -40,7 +40,7 @@ require("blink.cmp").setup({
             -- SICHER: Tab-Navigation
             ["<Tab>"] = { "show_and_insert", "select_next" },
             ["<S-Tab>"] = { "show_and_insert", "select_prev" },
-            -- KORRIGIERT: Pfeiltasten mit Fallback für History-Navigation
+            -- FIXED: Arrow keys with fallback for history navigation
             ["<Down>"] = { "select_next", "fallback" },
             ["<Up>"] = { "select_prev", "fallback" },
             ["<Right>"] = { "select_and_accept" }, -- Ghost-Text
