@@ -3,8 +3,8 @@
 
 local M = {}
 
--- Safe fs_stat function for cross-version compatibility
-local fs_stat_func = rawget(vim.uv, 'fs_stat') or rawget(vim.loop, 'fs_stat')
+-- Modern Neovim 0.11+ uses vim.uv (libuv bindings)
+local fs_stat_func = vim.uv.fs_stat
 
 -- Path for optional features configuration
 M.optional_config_path = vim.fn.stdpath("data") .. "/optional-features.json"

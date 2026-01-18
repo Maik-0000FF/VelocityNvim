@@ -49,7 +49,7 @@ local function get_footer()
   -- Calculate native startup time (from init.lua start to now)
   local startup_time = "N/A"
   if vim.g.velocitynvim_start_time then
-    local elapsed_ns = (vim.uv or vim.loop).hrtime() - vim.g.velocitynvim_start_time
+    local elapsed_ns = vim.uv.hrtime() - vim.g.velocitynvim_start_time
     local elapsed_ms = elapsed_ns / 1000000
     startup_time = string.format("%.2fms", elapsed_ms)
   end

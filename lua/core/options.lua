@@ -81,7 +81,6 @@ opt.updatetime = 250 -- Optimized for WezTerm responsiveness
 opt.timeoutlen = 500 -- Timeout for key combinations
 opt.ttimeoutlen = 10 -- Very fast terminal escapes (critical for WezTerm)
 opt.lazyredraw = false -- Immediate redraw for smooth cursor movement
-opt.ttyfast = true -- Terminal optimization for WezTerm
 opt.redrawtime = 10000 -- More time for complex syntax highlighting
 
 -- Ultra-performance optimizations

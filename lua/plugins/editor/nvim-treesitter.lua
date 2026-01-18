@@ -1,15 +1,11 @@
 -- ~/.config/VelocityNvim/lua/plugins/nvim-treesitter.lua
 -- Native Treesitter for Syntax Highlighting
 
--- Check if Treesitter is available (nvim-treesitter renamed 'configs' to 'config' in recent versions)
+-- Check if Treesitter is available
 local ok, treesitter = pcall(require, "nvim-treesitter.config")
 if not ok then
-  -- Fallback for older versions
-  ok, treesitter = pcall(require, "nvim-treesitter.configs")
-  if not ok then
-    print("Treesitter not available. Run :PluginSync and restart Neovim.")
-    return
-  end
+  vim.notify("Treesitter not available. Run :PluginSync and restart Neovim.", vim.log.levels.WARN)
+  return
 end
 
 -- SOLUTION: Set install directory BEFORE nvim-treesitter.install is loaded
@@ -29,13 +25,6 @@ local buffer_metadata_cache = {}
 vim.api.nvim_create_autocmd("BufDelete", {
   callback = function(event)
     buffer_metadata_cache[event.buf] = nil
-  end
-})
-
--- Clear entire cache on VimLeavePre (memory cleanup for long sessions)
-vim.api.nvim_create_autocmd("VimLeavePre", {
-  callback = function()
-    buffer_metadata_cache = {}
   end
 })
 

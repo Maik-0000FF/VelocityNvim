@@ -3,11 +3,11 @@
 
 local M = {}
 
--- Safe cross-version compatibility for uv API functions
-local fs_stat_func = rawget(vim.uv, 'fs_stat') or rawget(vim.loop, 'fs_stat')
-local fs_mkdir_func = rawget(vim.uv, 'fs_mkdir') or rawget(vim.loop, 'fs_mkdir')
-local fs_unlink_func = rawget(vim.uv, 'fs_unlink') or rawget(vim.loop, 'fs_unlink')
-local fs_symlink_func = rawget(vim.uv, 'fs_symlink') or rawget(vim.loop, 'fs_symlink')
+-- Modern Neovim 0.11+ uses vim.uv (libuv bindings)
+local fs_stat_func = vim.uv.fs_stat
+local fs_mkdir_func = vim.uv.fs_mkdir
+local fs_unlink_func = vim.uv.fs_unlink
+local fs_symlink_func = vim.uv.fs_symlink
 
 -- Rust-based tools checker
 M.rust_tools = {

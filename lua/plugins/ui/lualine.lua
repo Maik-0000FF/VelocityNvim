@@ -14,7 +14,7 @@ local LSP_CACHE_TTL_MS = 500  -- Update at most every 500ms
 
 local function get_lsp_status()
   local bufnr = vim.api.nvim_get_current_buf()
-  local now = vim.loop.now()
+  local now = vim.uv.now()
 
   -- Return cached value if still valid
   if bufnr == lsp_status_cache.last_bufnr and (now - lsp_status_cache.last_update) < LSP_CACHE_TTL_MS then

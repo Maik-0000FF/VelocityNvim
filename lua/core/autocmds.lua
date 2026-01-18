@@ -4,8 +4,8 @@
 local augroup = vim.api.nvim_create_augroup
 local autocmd = vim.api.nvim_create_autocmd
 
--- Cross-version compatibility layer for fs_stat access (cached at module level)
-local fs_stat_func = rawget(vim.uv, 'fs_stat') or rawget(vim.loop, 'fs_stat')
+-- Modern Neovim 0.11+ uses vim.uv (libuv bindings)
+local fs_stat = vim.uv.fs_stat
 
 -- VelocityNvim Autocommand Groups
 local velocity_general = augroup("VelocityGeneral", { clear = true })
@@ -114,33 +114,6 @@ autocmd("FileType", {
   end,
 })
 
--- LSP-specific autocommands
-autocmd("LspAttach", {
-  group = velocity_lsp,
-  desc = "LSP keymaps and options on attach",
-  callback = function(event)
-    local bufnr = event.buf
-    local client = vim.lsp.get_client_by_id(event.data.client_id)
-
-    if not client then
-      return
-    end
-
-    -- Buffer-local settings
-    vim.bo[bufnr].omnifunc = "v:lua.vim.lsp.omnifunc"
-
-    -- Enable inlay hints (if available)
-    if client and client.supports_method then
-      local supports_inlay = pcall(client.supports_method, client, "textDocument/inlayHint")
-      if supports_inlay then
-        vim.defer_fn(function()
-          vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
-        end, 500)
-      end
-    end
-  end,
-})
-
 -- Diagnostics update for Neo-tree (performance-optimized)
 autocmd("DiagnosticChanged", {
   group = velocity_lsp,
@@ -174,7 +147,7 @@ autocmd("BufReadPre", {
   group = velocity_general,
   desc = "Optimize settings for large files (ultra-performance)",
   callback = function()
-    local ok, stats = fs_stat_func and pcall(fs_stat_func, vim.fn.expand("<afile>")) or false, nil
+    local ok, stats = pcall(fs_stat, vim.fn.expand("<afile>"))
     if ok and stats and stats.size > 512 * 1024 then -- 512KB (more aggressive than 1MB)
       -- Ultra-performance settings for large files
       vim.opt_local.swapfile = false

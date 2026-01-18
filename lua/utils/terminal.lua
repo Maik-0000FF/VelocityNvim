@@ -3,8 +3,8 @@
 
 local M = {}
 
--- Compatibility layer
-local uv = vim.uv or vim.loop
+-- Modern Neovim 0.11+ uses vim.uv (libuv bindings)
+local uv = vim.uv
 local api = vim.api
 local icons = require("core.icons")
 
