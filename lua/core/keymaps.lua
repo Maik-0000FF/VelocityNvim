@@ -82,8 +82,18 @@ map("n", "<leader>q", ":q<CR>", opts)
 map("n", "<leader>w", ":w<CR>", { desc = "Save file" })
 map("n", "<leader>wa", ":wa<CR>", { desc = "Save all files" })
 
--- Close buffer
-map("n", "<leader>x", ":%bd|e#|bd#<CR>", { desc = "Close all buffers except current" })
+-- Close all buffers except current (handles terminals correctly)
+map("n", "<leader>x", function()
+  local current = vim.api.nvim_get_current_buf()
+  local buffers = vim.api.nvim_list_bufs()
+  for _, buf in ipairs(buffers) do
+    if buf ~= current and vim.api.nvim_buf_is_valid(buf) and vim.bo[buf].buflisted then
+      -- Force close terminals, normal close for others
+      local force = vim.bo[buf].buftype == "terminal"
+      pcall(vim.api.nvim_buf_delete, buf, { force = force })
+    end
+  end
+end, { desc = "Close all buffers except current" })
 
 -- Safe buffer close with confirmation prompt
 map("n", "<leader>cc", function()
