@@ -1,31 +1,5 @@
 -- Native vim.pack Plugin Management
 
--- Define Vim global for LSP
----@diagnostic disable-next-line: undefined-global
-local vim = vim
-
--- Load manage.lua
-local manage = require("plugins.manage")
-
--- Check for missing plugins (optimized with cached base path)
-local required_plugins = vim.tbl_keys(manage.plugins)
-local missing_plugins = {}
-local pack_base = vim.fn.stdpath("data") .. "/site/pack/user/start/"
-for _, plugin in ipairs(required_plugins) do
-  if vim.fn.isdirectory(pack_base .. plugin) == 0 then
-    table.insert(missing_plugins, plugin)
-  end
-end
-
--- Silent plugin check - only report on explicit request
--- if #missing_plugins > 0 then
---   print(
---     "Missing plugins: "
---       .. table.concat(missing_plugins, ", ")
---       .. ". Run :PluginSync to install them."
---   )
--- end
-
 -- Function for safely loading modules (SILENT - only real errors)
 local function safe_require(module)
   local ok, err = pcall(require, module)
