@@ -126,17 +126,13 @@ vim.opt.foldlevelstart = 99 -- Always start with everything unfolded
 -- Auto-install missing parsers on first start (runs once, minimal overhead)
 vim.api.nvim_create_autocmd("VimEnter", {
   callback = function()
-    local parser_dir = vim.fn.stdpath("data") .. "/site/parser"
     local missing = {}
 
     for _, parser in ipairs(core_parsers) do
-      local parser_file = parser_dir .. "/" .. parser .. ".so"
-      if vim.fn.filereadable(parser_file) == 0 then
-        -- Also check Neovim's built-in parsers
-        local builtin = vim.fn.globpath(vim.o.runtimepath, "parser/" .. parser .. ".so", false, true)
-        if #builtin == 0 then
-          table.insert(missing, parser)
-        end
+      -- Use nvim_get_runtime_file which searches all runtime paths correctly
+      local found = vim.api.nvim_get_runtime_file("parser/" .. parser .. ".so", false)
+      if #found == 0 then
+        table.insert(missing, parser)
       end
     end
 
