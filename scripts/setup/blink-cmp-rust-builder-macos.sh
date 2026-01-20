@@ -123,9 +123,9 @@ export PATH="$HOME/.cargo/bin:$PATH"
 echo "🧹 Cleaning previous builds..."
 cargo clean
 
-# Start compilation
+# Start compilation (nightly required for blink.cmp performance)
 echo "⚙️  Starting compilation (this may take several minutes)..."
-if cargo build --release --verbose; then
+if cargo +nightly build --release --verbose; then
     echo ""
     # Verify build success
     if [ -f "target/release/libblink_cmp_fuzzy.dylib" ]; then

@@ -359,8 +359,8 @@ fi
 section "Phase 4: Treesitter Parser Installation"
 
 PARSERS="%s"
-# IMPORTANT: Treesitter installs parsers to data_dir/site/parser, NOT in the plugin folder
-PARSER_DIR="$DATA_DIR/site/parser"
+# IMPORTANT: Treesitter installs parsers to the nvim-treesitter plugin folder (set via vim.g.ts_install_dir)
+PARSER_DIR="$PACK_DIR/nvim-treesitter/parser"
 TS_INSTALLED=0
 TS_FAILED=0
 TS_TOTAL=0

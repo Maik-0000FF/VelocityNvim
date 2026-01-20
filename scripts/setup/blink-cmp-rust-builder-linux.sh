@@ -106,6 +106,21 @@ else
     echo -e "${GREEN}✓ Rust available: $rust_version${NC}"
 fi
 
+# Check/install nightly toolchain (REQUIRED for blink.cmp performance)
+if ! rustup run nightly rustc --version &>/dev/null; then
+    echo -e "${YELLOW}⚠ Rust nightly not found - installing...${NC}"
+    if rustup install nightly; then
+        echo -e "${GREEN}✓ Rust nightly installed${NC}"
+    else
+        echo -e "${RED}✗ Failed to install Rust nightly!${NC}"
+        echo "  Manual installation: rustup install nightly"
+        exit 1
+    fi
+else
+    nightly_version=$(rustup run nightly rustc --version 2>/dev/null || echo "unknown")
+    echo -e "${GREEN}✓ Rust nightly available: $nightly_version${NC}"
+fi
+
 # Plugin already validated through path detection
 echo -e "${GREEN}✓ blink.cmp Plugin: $BLINK_DIR${NC}"
 
@@ -139,8 +154,8 @@ echo -e "${YELLOW}Starting Rust compilation...${NC}"
 echo "This may take several minutes..."
 echo ""
 
-# Rust build with detailed output
-if cargo build --profile "$BUILD_PROFILE" --verbose; then
+# Rust build with detailed output (nightly required for blink.cmp performance)
+if cargo +nightly build --profile "$BUILD_PROFILE" --verbose; then
     echo ""
     echo -e "${GREEN}✓ Rust compilation successful!${NC}"
     
