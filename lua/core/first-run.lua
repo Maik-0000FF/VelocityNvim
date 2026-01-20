@@ -355,7 +355,7 @@ fi
 
 section "Phase 4: Treesitter Parsers"
 
-# Check for compiler (required for parser compilation on first start)
+# Check for compiler (required for parser compilation)
 if ! command -v gcc &>/dev/null && ! command -v clang &>/dev/null; then
   warn "No C compiler found!"
   warn "Install with: pacman -S gcc / apt install build-essential / brew install gcc"
@@ -364,8 +364,8 @@ else
   success "C compiler available for parser compilation"
 fi
 
-info "Treesitter parsers will be compiled automatically on first Neovim start"
-info "This requires a working internet connection and C compiler"
+info "Install parsers manually with :TSInstall <parser>"
+info "Recommended: lua vim vimdoc markdown bash python javascript typescript html css json rust toml yaml"
 
 # ============================================================================
 # PHASE 5: Rust Performance Build (blink.cmp)
@@ -482,7 +482,7 @@ fi
 section "Installation Summary"
 
 echo -e "  ${BOLD}Plugins:${NC}     $INSTALLED_PLUGINS/$TOTAL_PLUGINS installed"
-echo -e "  ${BOLD}Treesitter:${NC}  Will compile on first start"
+echo -e "  ${BOLD}Treesitter:${NC}  Manual installation via :TSInstall"
 
 if [ -f "$BLINK_PATH/target/release/libblink_cmp_fuzzy.so" ] || \
    [ -f "$BLINK_PATH/target/release/libblink_cmp_fuzzy.dylib" ]; then
