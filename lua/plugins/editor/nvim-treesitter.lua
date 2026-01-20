@@ -61,16 +61,13 @@ local function should_disable_treesitter(lang, bufnr)
   return should_disable
 end
 
--- Core parsers to install automatically on first start
-local core_parsers = {
-  "lua", "vim", "vimdoc", "markdown", "markdown_inline",
-  "python", "javascript", "typescript", "html", "css",
-  "json", "bash", "rust", "toml", "yaml"
-}
+-- Recommended parsers (install manually with :TSInstall <parser>)
+-- lua, vim, vimdoc, markdown, markdown_inline, python, javascript,
+-- typescript, html, css, json, bash, rust, toml, yaml
 
 treesitter.setup({
-  -- Auto-install core parsers on first start (works with UI, not headless)
-  ensure_installed = core_parsers,
+  -- Manual parser installation: use :TSInstall <parser>
+  ensure_installed = {},
   auto_install = false,
   sync_install = false,
   ignore_install = {},
@@ -123,30 +120,3 @@ vim.opt.foldexpr = "v:lua.vim.treesitter.foldexpr()" -- New async Lua API
 vim.opt.foldlevel = 99 -- Always everything unfolded
 vim.opt.foldlevelstart = 99 -- Always start with everything unfolded
 
--- Auto-install missing parsers on first start (runs once, minimal overhead)
-vim.api.nvim_create_autocmd("VimEnter", {
-  callback = function()
-    local missing = {}
-
-    for _, parser in ipairs(core_parsers) do
-      -- Use nvim_get_runtime_file which searches all runtime paths correctly
-      local found = vim.api.nvim_get_runtime_file("parser/" .. parser .. ".so", false)
-      if #found == 0 then
-        table.insert(missing, parser)
-      end
-    end
-
-    if #missing > 0 then
-      vim.notify(
-        "Installing " .. #missing .. " Treesitter parsers: " .. table.concat(missing, ", "),
-        vim.log.levels.INFO
-      )
-      vim.schedule(function()
-        for _, parser in ipairs(missing) do
-          vim.cmd("TSInstall " .. parser)
-        end
-      end)
-    end
-  end,
-  once = true,
-})
