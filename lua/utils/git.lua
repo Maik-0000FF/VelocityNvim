@@ -242,26 +242,25 @@ end
 function M.print_info(path)
   vim.validate({ path = { path, "string", true } })
 
+  -- PERFORMANCE: Load icons once per function call
+  local icons = require("core.icons")
+
   if not M.is_available() then
-    local icons = require("core.icons")
     print(icons.status.error .. " Git is not available")
     return
   end
 
   if not M.is_repo(path) then
-    local icons = require("core.icons")
     print(icons.status.error .. " Not a git repository")
     return
   end
 
   local info = M.get_repo_info(path)
   if not info then
-    local icons = require("core.icons")
     print(icons.status.error .. " Could not get repository information")
     return
   end
 
-  local icons = require("core.icons")
   print(icons.status.sync .. " Git Repository Information:")
   print("  Root: " .. (info.root or "Unknown"))
   print("  Branch: " .. (info.branch or "Unknown"))

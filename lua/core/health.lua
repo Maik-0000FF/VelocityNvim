@@ -208,11 +208,14 @@ function M.check()
   -- System resources
   health.start("System Resources")
 
-  -- Memory usage (rough estimate)
-  local mem_usage = vim.fn.system("ps -o rss= -p " .. vim.fn.getpid()):gsub("%s+", "")
-  if mem_usage and tonumber(mem_usage) then
-    local mem_mb = math.floor(tonumber(mem_usage) / 1024)
-    health.info("Current memory usage: ~" .. mem_mb .. " MB")
+  -- Memory usage (rough estimate) - using vim.system() for better performance
+  local mem_result = vim.system({ "ps", "-o", "rss=", "-p", tostring(vim.fn.getpid()) }, { text = true }):wait()
+  if mem_result.code == 0 and mem_result.stdout then
+    local mem_usage = mem_result.stdout:gsub("%s+", "")
+    if tonumber(mem_usage) then
+      local mem_mb = math.floor(tonumber(mem_usage) / 1024)
+      health.info("Current memory usage: ~" .. mem_mb .. " MB")
+    end
   end
 
   -- Check startup time
@@ -256,22 +259,28 @@ function M.check()
     health.warn("Web server not available - install Node.js and npm first")
   end
 
-  -- Node.js version check
+  -- Node.js version check - using vim.system() for better performance
   if has_node then
-    local node_version = vim.fn.system("node --version"):gsub("\n", "")
-    health.info("Node.js version: " .. node_version)
+    local result = vim.system({ "node", "--version" }, { text = true }):wait()
+    if result.code == 0 and result.stdout then
+      health.info("Node.js version: " .. vim.trim(result.stdout))
+    end
   end
 
   -- npm version check
   if has_npm then
-    local npm_version = vim.fn.system("npm --version"):gsub("\n", "")
-    health.info("npm version: " .. npm_version)
+    local result = vim.system({ "npm", "--version" }, { text = true }):wait()
+    if result.code == 0 and result.stdout then
+      health.info("npm version: " .. vim.trim(result.stdout))
+    end
   end
 
   -- live-server version check
   if has_live_server then
-    local ls_version = vim.fn.system("live-server --version"):gsub("\n", "")
-    health.info("live-server version: " .. ls_version)
+    local result = vim.system({ "live-server", "--version" }, { text = true }):wait()
+    if result.code == 0 and result.stdout then
+      health.info("live-server version: " .. vim.trim(result.stdout))
+    end
   end
 
   -- Recommendations

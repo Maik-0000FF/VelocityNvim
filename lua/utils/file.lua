@@ -132,14 +132,15 @@ end
 function M.print_info(path)
   vim.validate({ path = { path, "string" } })
 
+  -- PERFORMANCE: Load icons once per function call
+  local icons = require("core.icons")
+
   local info = M.get_info(path)
   if not info then
-    local icons = require("core.icons")
     print(icons.status.error .. " File not found: " .. path)
     return
   end
 
-  local icons = require("core.icons")
   print(icons.status.info .. " File Information:")
   print("  Path: " .. info.path)
   print("  Name: " .. info.name)

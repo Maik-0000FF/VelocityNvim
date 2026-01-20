@@ -3,6 +3,9 @@
 
 local M = {}
 
+-- PERFORMANCE: Load icons once at module load, not per-function
+local icons = require("core.icons")
+
 -- Modern Neovim 0.11+ uses vim.uv (libuv bindings)
 local fs_stat_func = vim.uv.fs_stat
 local fs_mkdir_func = vim.uv.fs_mkdir
@@ -42,7 +45,6 @@ end
 
 -- Delta Git Performance Status
 function M.get_delta_status()
-  local icons = require("core.icons")
   local use_delta = vim.fn.executable("delta") == 1
 
   if use_delta then
@@ -63,7 +65,6 @@ end
 
 -- Performance status for Rust-based plugins
 function M.get_performance_status()
-  local icons = require("core.icons")
   local status = M.check_rust_tools()
 
   print(icons.misc.gear .. " VelocityNvim Rust Performance Status:")
@@ -126,7 +127,6 @@ end
 -- Blink.cmp Rust Binary Builder
 function M.build_blink_rust()
   local blink_path = vim.fn.stdpath("data") .. "/site/pack/user/start/blink.cmp"
-  local icons = require("core.icons")
 
   if not (fs_stat_func and fs_stat_func(blink_path)) then
     print(icons.status.error .. " Blink.cmp plugin not found!")
@@ -194,7 +194,6 @@ end
 
 -- Performance benchmark for fuzzy matching
 function M.benchmark_fuzzy_performance()
-  local icons = require("core.icons")
 
   if vim.fn.executable("hyperfine") ~= 1 then
     print(icons.status.warn .. " hyperfine not available - install with: cargo install hyperfine")
@@ -220,7 +219,6 @@ end
 
 -- Mold Linker Detection and Setup
 function M.check_mold_linker()
-  local icons = require("core.icons")
   local has_mold = vim.fn.executable("mold") == 1
 
   if has_mold then
@@ -237,7 +235,6 @@ end
 
 -- Cargo Ultra-Profile Setup
 function M.setup_cargo_ultra_profile()
-  local icons = require("core.icons")
   local cargo_config = os.getenv("HOME") .. "/.cargo/config.toml"
 
   local ultra_profile = [[
@@ -306,7 +303,6 @@ end
 -- Adaptive LSP Configuration Generator
 function M.generate_adaptive_lsp_config()
   local analysis = M.analyze_rust_ecosystem()
-  local icons = require("core.icons")
 
   local config = {
     ["rust-analyzer"] = {
@@ -360,7 +356,6 @@ end
 
 -- Cross-Compilation Setup
 function M.setup_cross_compilation()
-  local icons = require("core.icons")
   local targets = {
     "x86_64-unknown-linux-gnu",    -- Standard Linux
     "x86_64-unknown-linux-musl",   -- Static linking
@@ -399,7 +394,6 @@ end
 
 -- Ultimate Setup: All in one command (EXTENDED)
 function M.ultimate_setup()
-  local icons = require("core.icons")
   local status = M.check_rust_tools()
   local analysis = M.analyze_rust_ecosystem()
 
@@ -508,7 +502,6 @@ end
 -- Auto-Setup for optimal Rust performance
 function M.optimize_for_rust()
   local status = M.check_rust_tools()
-  local icons = require("core.icons")
 
   print(icons.misc.gear .. " Optimizing for Rust performance...")
 
@@ -536,7 +529,6 @@ end
 
 -- COMPREHENSIVE Performance Benchmarking System (ULTIMATE)
 function M.ultimate_benchmark()
-  local icons = require("core.icons")
   local analysis = M.analyze_rust_ecosystem()
 
   print(icons.performance.benchmark .. " VelocityNvim ULTIMATE Performance Benchmark")

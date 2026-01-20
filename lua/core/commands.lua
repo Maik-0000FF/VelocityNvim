@@ -487,19 +487,18 @@ end, {
 
 -- Performance vs Diagnostics Compatibility Test (NEU - Cursor Movement Fix)
 cmd("PerformanceDiagnosticTest", function()
-  -- Use global icons from top of file
-  local perf = require("core.performance")
+  local ok, perf = pcall(require, "core.performance")
+  if not ok then
+    vim.notify(icons.status.error .. " core.performance module not available", vim.log.levels.ERROR)
+    return
+  end
 
-  print(
-    ".. icons.misc.flash .. "
-      .. icons.status.success
-      .. " Performance vs Diagnostics Compatibility Test:"
-  )
+  print(icons.misc.flash .. " " .. icons.status.success .. " Performance vs Diagnostics Compatibility Test:")
   print("")
 
   -- Performance System Status
   local status = perf.status()
-  print(".. icons.status.rocket .. ")
+  print(icons.status.rocket .. " Performance System Status:")
   print("  Ultra Active: " .. (status.ultra_active and "✓ ACTIVE" or "✗ Standard"))
   print("  Update Time: " .. status.updatetime .. "ms")
   print("  Original Update Time: " .. (status.original_updatetime or "not set"))
@@ -507,7 +506,7 @@ cmd("PerformanceDiagnosticTest", function()
   -- Diagnostic Configuration Status
   local config = vim.diagnostic.config()
   print("")
-  print(".. icons.status.gear .. ")
+  print(icons.status.gear .. " Diagnostic Configuration:")
   print("  Virtual Text: " .. (config and config.virtual_text and "✓ ACTIVE" or "✗ DISABLED"))
   print("  Signs: " .. (config and config.signs and "✓ ACTIVE" or "✗ DISABLED"))
   print(
@@ -516,7 +515,7 @@ cmd("PerformanceDiagnosticTest", function()
 
   -- Test if icons are correctly defined
   print("")
-  print(".. icons.misc.folder .. ")
+  print(icons.misc.folder .. " Sign Definitions:")
   local sign_groups = vim.fn.sign_getdefined()
   local diagnostic_signs =
     { "DiagnosticSignError", "DiagnosticSignWarn", "DiagnosticSignInfo", "DiagnosticSignHint" }
@@ -548,7 +547,7 @@ cmd("PerformanceDiagnosticTest", function()
 
   -- Problem Analysis
   print("")
-  print(".. icons.lsp.references .. ")
+  print(icons.lsp.references .. " Compatibility Analysis:")
   if status.ultra_active then
     print(
       "  "
@@ -584,7 +583,7 @@ cmd("PerformanceDiagnosticTest", function()
 
   -- Performance Optimization Analysis
   print("")
-  print(".. icons.misc.flash .. ")
+  print(icons.misc.flash .. " Performance Analysis:")
   local has_priorities = false
   for _, sign in ipairs(sign_groups) do
     if sign.name and sign.name:match("Diagnostic") and rawget(sign, 'priority') then
@@ -606,7 +605,7 @@ cmd("PerformanceDiagnosticTest", function()
   end
 
   print("")
-  print(".. icons.status.hint .. ")
+  print(icons.status.hint .. " Test Instructions:")
   print("  1. Open a .lua file with errors")
   print("  2. Move cursor with j/k")
   print("  3. Diagnostics should remain PERMANENTLY visible")
@@ -619,24 +618,22 @@ end, {
 
 -- Bufferline Diagnostic Icons Test (NEU - Bufferline Integration)
 cmd("BufferlineDiagnosticTest", function()
-  -- Use global icons from top of file
-
-  print(".. icons.status.stats .. " .. icons.status.success .. " Bufferline Diagnostic Icons Test:")
+  print(icons.status.stats .. " " .. icons.status.success .. " Bufferline Diagnostic Icons Test:")
   print("")
 
   -- Check bufferline configuration
   local bufferline_ok, _ = pcall(require, "bufferline")
   if not bufferline_ok then
-    print(".. icons.status.error .. ")
+    print(icons.status.error .. " Bufferline not available")
     return
   end
 
-  print(".. icons.status.success .. ")
+  print(icons.status.success .. " Bufferline loaded")
 
   -- Current buffer list and their diagnostics
   local buffers = vim.fn.getbufinfo({ bufloaded = 1 })
   print("")
-  print(".. icons.misc.folder .. ")
+  print(icons.misc.folder .. " Buffer Diagnostics:")
 
   local total_diagnostics = 0
   for _, buf in ipairs(buffers) do
@@ -727,12 +724,16 @@ end, {
 
 -- Rust LSP 2025 Optimization Status
 cmd("RustAnalyzer2025Status", function()
-  local rust_perf = require("utils.rust-performance")
+  local ok, rust_perf = pcall(require, "utils.rust-performance")
+  if not ok then
+    vim.notify(icons.status.error .. " utils.rust-performance module not available", vim.log.levels.ERROR)
+    return
+  end
   local analysis = rust_perf.analyze_rust_ecosystem()
   local total_memory_gb = analysis.toolchain.total_memory_gb
   local cpu_cores = tonumber(vim.fn.system("nproc 2>/dev/null")) or 4
 
-  print(".. icons.status.rocket .. ")
+  print(icons.status.rocket .. " Rust-Analyzer 2025 Optimization Status")
   print("=" .. string.rep("=", 50))
 
   -- Hardware Analysis
@@ -781,7 +782,11 @@ end, {
 
 -- Formatting Commands
 cmd("FormatInfo", function()
-  local conform = require("conform")
+  local ok, conform = pcall(require, "conform")
+  if not ok then
+    vim.notify(icons.status.error .. " conform.nvim not available", vim.log.levels.ERROR)
+    return
+  end
   local formatters = conform.list_formatters()
 
   print(icons.misc.build .. " Formatter Status for " .. vim.bo.filetype .. ":")
@@ -796,10 +801,10 @@ cmd("FormatInfo", function()
 
   -- Check for LSP fallback capability (safe API call)
   local has_lsp_fallback = false
-  local ok, result = pcall(function()
+  local fallback_ok, result = pcall(function()
     return conform.will_fallback_lsp and conform.will_fallback_lsp() or false
   end)
-  if ok then
+  if fallback_ok then
     has_lsp_fallback = result
   end
 
@@ -811,11 +816,16 @@ end, {
 })
 
 cmd("FormatToggle", function()
-  local conform = require("conform")
+  local ok, conform = pcall(require, "conform")
+  if not ok then
+    vim.notify(icons.status.error .. " conform.nvim not available", vim.log.levels.ERROR)
+    return
+  end
 
   -- Check current state by trying to get format_on_save config
-  local config = require("conform.config")
-  local format_on_save_enabled = config.options.format_on_save ~= false
+  local config_ok, config = pcall(require, "conform.config")
+  local format_on_save_enabled = config_ok and config.options
+    and config.options.format_on_save ~= false
     and config.options.format_on_save ~= nil
 
   if format_on_save_enabled then
