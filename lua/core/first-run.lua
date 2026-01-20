@@ -32,9 +32,6 @@ local function generate_install_script()
     ))
   end
 
-  -- Treesitter parsers to install
-  local parsers = "lua vim vimdoc markdown markdown_inline python javascript typescript html css json bash rust toml yaml"
-
   local script = string.format([=[#!/bin/bash
 # VelocityNvim First-Run Installation Script
 # Generated automatically - runs completely in terminal
@@ -353,67 +350,22 @@ else
 fi
 
 # ============================================================================
-# PHASE 4: Treesitter Parser Installation
+# PHASE 4: Treesitter Parser Check
 # ============================================================================
 
-section "Phase 4: Treesitter Parser Installation"
+section "Phase 4: Treesitter Parsers"
 
-PARSERS="%s"
-# IMPORTANT: Treesitter installs parsers to the nvim-treesitter plugin folder (set via vim.g.ts_install_dir)
-PARSER_DIR="$PACK_DIR/nvim-treesitter/parser"
-TS_INSTALLED=0
-TS_FAILED=0
-TS_TOTAL=0
-
-# Ensure parser directory exists
-mkdir -p "$PARSER_DIR"
-
-# Check for compiler
+# Check for compiler (required for parser compilation on first start)
 if ! command -v gcc &>/dev/null && ! command -v clang &>/dev/null; then
-  warn "No C compiler found - skipping Treesitter parsers"
+  warn "No C compiler found!"
   warn "Install with: pacman -S gcc / apt install build-essential / brew install gcc"
+  warn "Treesitter parsers will fail to compile without a C compiler"
 else
-  info "Installing Treesitter parsers (this takes a few minutes)..."
-  info "Parser directory: $PARSER_DIR"
-  echo ""
-
-  for parser in $PARSERS; do
-    TS_TOTAL=$((TS_TOTAL + 1))
-
-    # Check if already installed
-    if [ -f "$PARSER_DIR/${parser}.so" ]; then
-      success "$parser (cached)"
-      TS_INSTALLED=$((TS_INSTALLED + 1))
-      continue
-    fi
-
-    printf "  ${CYAN}◐${NC} Compiling $parser..."
-
-    # Run TSInstall synchronously (foreground, wait for completion)
-    # sleep 3 gives nvim time to complete the async compilation
-    NVIM_APPNAME="$NVIM_APPNAME" nvim --headless \
-      -c "TSInstall! $parser" \
-      -c "sleep 3" \
-      -c "qa!" \
-      2>/dev/null
-
-    # Check result
-    if [ -f "$PARSER_DIR/${parser}.so" ]; then
-      printf "\r  ${GREEN}✓${NC} $parser                              \n"
-      TS_INSTALLED=$((TS_INSTALLED + 1))
-    else
-      printf "\r  ${RED}✗${NC} $parser (failed)                      \n"
-      TS_FAILED=$((TS_FAILED + 1))
-    fi
-  done
-
-  echo ""
-  if [ $TS_FAILED -eq 0 ]; then
-    success "All $TS_TOTAL parsers compiled successfully!"
-  else
-    warn "$TS_INSTALLED/$TS_TOTAL parsers compiled ($TS_FAILED failed)"
-  fi
+  success "C compiler available for parser compilation"
 fi
+
+info "Treesitter parsers will be compiled automatically on first Neovim start"
+info "This requires a working internet connection and C compiler"
 
 # ============================================================================
 # PHASE 5: Rust Performance Build (blink.cmp)
@@ -530,7 +482,7 @@ fi
 section "Installation Summary"
 
 echo -e "  ${BOLD}Plugins:${NC}     $INSTALLED_PLUGINS/$TOTAL_PLUGINS installed"
-echo -e "  ${BOLD}Treesitter:${NC}  $TS_INSTALLED/$TS_TOTAL parsers compiled"
+echo -e "  ${BOLD}Treesitter:${NC}  Will compile on first start"
 
 if [ -f "$BLINK_PATH/target/release/libblink_cmp_fuzzy.so" ] || \
    [ -f "$BLINK_PATH/target/release/libblink_cmp_fuzzy.dylib" ]; then
@@ -554,7 +506,7 @@ echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━
 echo ""
 read -r
 
-]=], data_dir, pack_dir, nvim_appname, table.concat(plugin_commands, "\n"), parsers)
+]=], data_dir, pack_dir, nvim_appname, table.concat(plugin_commands, "\n"))
 
   return script
 end
