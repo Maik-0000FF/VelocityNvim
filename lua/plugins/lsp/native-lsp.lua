@@ -19,6 +19,10 @@ local SEVERITY_ICONS_FLOAT = {
   [vim.diagnostic.severity.HINT] = icons.diagnostics.hint .. " HINT",
 }
 
+-- PERFORMANCE: Pre-cache CPU core count at module load (non-blocking via libuv)
+local CPU_CORES = #(vim.uv.cpu_info() or {}) or 4
+if CPU_CORES < 1 then CPU_CORES = 4 end
+
 -- Diagnostic configuration with modern API (signs.text replaces sign_define)
 vim.diagnostic.config({
   virtual_text = {
@@ -318,9 +322,24 @@ local function find_tsserver_path()
     return local_ts
   end
 
-  -- 3. Global npm (expensive - only as last resort)
-  local global_npm = vim.fn.system("npm root -g 2>/dev/null"):gsub("%s+", "")
-  if vim.v.shell_error == 0 and global_npm ~= "" then
+  -- 3. Common global paths (fast file checks, no subprocess)
+  local home = os.getenv("HOME") or ""
+  local global_paths = {
+    home .. "/.npm/lib/node_modules/typescript/lib/tsserver.js",
+    home .. "/.nvm/versions/node/*/lib/node_modules/typescript/lib/tsserver.js",
+    "/usr/local/lib/node_modules/typescript/lib/tsserver.js",
+  }
+  for _, path in ipairs(global_paths) do
+    if vim.fn.filereadable(path) == 1 then
+      cached_tsserver_path = path
+      return path
+    end
+  end
+
+  -- 4. Global npm (last resort - uses vim.system for better performance)
+  local result = vim.system({ "npm", "root", "-g" }, { text = true }):wait()
+  if result.code == 0 and result.stdout then
+    local global_npm = vim.trim(result.stdout)
     local global_ts = global_npm .. "/typescript/lib/tsserver.js"
     if vim.fn.filereadable(global_ts) == 1 then
       cached_tsserver_path = global_ts
@@ -328,7 +347,7 @@ local function find_tsserver_path()
     end
   end
 
-  -- 4. Not found - show hint once
+  -- 5. Not found - show hint once
   if not ts_warning_shown then
     ts_warning_shown = true
     vim.defer_fn(function()
@@ -384,8 +403,8 @@ local function get_adaptive_rust_config()
   local analysis = rust_perf.analyze_rust_ecosystem()
   local total_memory_gb = analysis.toolchain.total_memory_gb
 
-  -- Get physical CPU core count for optimal threading
-  local cpu_cores = tonumber(vim.fn.system("nproc 2>/dev/null")) or 4
+  -- PERFORMANCE: Use pre-cached CPU core count (non-blocking)
+  local cpu_cores = CPU_CORES
 
   -- 2025 Base Configuration mit modernen Optimierungen
   local base_config = {

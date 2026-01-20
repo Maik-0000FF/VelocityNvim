@@ -275,8 +275,16 @@ rustflags = ["-C", "link-arg=-fuse-ld=mold", "-C", "target-cpu=native"]
   end
 end
 
+-- PERFORMANCE: Cached ecosystem analysis (computed once, reused)
+local cached_ecosystem_analysis = nil
+
 -- EXTENDED Performance Analysis
 function M.analyze_rust_ecosystem()
+  -- Return cached result if available
+  if cached_ecosystem_analysis then
+    return cached_ecosystem_analysis
+  end
+
   local analysis = {
     toolchain = {},
     project_health = {},
@@ -284,19 +292,33 @@ function M.analyze_rust_ecosystem()
     performance_metrics = {}
   }
 
-  -- Rust Toolchain Analysis
-  analysis.toolchain.rustc_version = vim.fn.system("rustc --version 2>/dev/null"):gsub("\n", "")
-  analysis.toolchain.cargo_version = vim.fn.system("cargo --version 2>/dev/null"):gsub("\n", "")
-  analysis.toolchain.has_nightly = vim.fn.system("rustup toolchain list 2>/dev/null"):match("nightly") ~= nil
+  -- PERFORMANCE: Use vim.uv for CPU/memory info (no subprocess)
+  local cpu_info_table = vim.uv.cpu_info() or {}
+  analysis.toolchain.cpu_target = cpu_info_table[1] and cpu_info_table[1].model or "unknown"
 
-  -- CPU Target Detection
-  local cpu_info = vim.fn.system("cat /proc/cpuinfo | grep 'model name' | head -1"):match("model name%s*:%s*(.+)")
-  analysis.toolchain.cpu_target = cpu_info or "unknown"
+  -- PERFORMANCE: Read /proc/meminfo directly (no subprocess)
+  local meminfo_file = io.open("/proc/meminfo", "r")
+  if meminfo_file then
+    local content = meminfo_file:read("*l") or ""
+    meminfo_file:close()
+    local memory_kb = content:match("MemTotal:%s*(%d+)")
+    analysis.toolchain.total_memory_gb = memory_kb and math.floor(tonumber(memory_kb) / 1024 / 1024) or 8
+  else
+    analysis.toolchain.total_memory_gb = 8 -- Default fallback
+  end
 
-  -- Memory Analysis
-  local memory_kb = vim.fn.system("grep MemTotal /proc/meminfo"):match("(%d+)")
-  analysis.toolchain.total_memory_gb = memory_kb and math.floor(tonumber(memory_kb) / 1024 / 1024) or 0
+  -- Rust Toolchain Analysis (use vim.system for better performance)
+  local rustc_result = vim.system({ "rustc", "--version" }, { text = true }):wait()
+  analysis.toolchain.rustc_version = rustc_result.code == 0 and vim.trim(rustc_result.stdout or "") or "not installed"
 
+  local cargo_result = vim.system({ "cargo", "--version" }, { text = true }):wait()
+  analysis.toolchain.cargo_version = cargo_result.code == 0 and vim.trim(cargo_result.stdout or "") or "not installed"
+
+  local rustup_result = vim.system({ "rustup", "toolchain", "list" }, { text = true }):wait()
+  analysis.toolchain.has_nightly = rustup_result.code == 0 and (rustup_result.stdout or ""):match("nightly") ~= nil
+
+  -- Cache the result
+  cached_ecosystem_analysis = analysis
   return analysis
 end
 
