@@ -39,14 +39,14 @@ mini_pairs.setup({
 
 -- Health Check Integration
 local function check_mini_pairs_health()
-  local health = require("core.health")
+  local health = vim.health
 
-  health.report_start("Mini.pairs Autopairs")
+  health.start("Mini.pairs Autopairs")
 
   -- Test if mini.pairs loaded correctly
   local pairs_ok, pairs_module = pcall(require, "mini.pairs")
   if pairs_ok and pairs_module then
-    health.report_ok("Mini.pairs active and functional")
+    health.ok("Mini.pairs active and functional")
 
     -- Test basic functionality
     local test_pairs = {
@@ -57,11 +57,11 @@ local function check_mini_pairs_health()
       { "'", "'" },
     }
 
-    health.report_info("Available pairs: " .. table.concat(vim.iter(test_pairs):flatten():totable(), " "))
-    health.report_info("Performance: Ultra-fast (<200 LoC, Pure Lua)")
-    health.report_info("Features: Treesitter-aware, Skip-Pattern, Markdown-Support")
+    health.info("Available pairs: " .. table.concat(vim.iter(test_pairs):flatten():totable(), " "))
+    health.info("Performance: Ultra-fast (<200 LoC, Pure Lua)")
+    health.info("Features: Treesitter-aware, Skip-Pattern, Markdown-Support")
   else
-    health.report_error("Mini.pairs could not be loaded")
+    health.error("Mini.pairs could not be loaded")
   end
 end
 

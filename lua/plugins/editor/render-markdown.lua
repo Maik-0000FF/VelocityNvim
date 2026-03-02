@@ -35,25 +35,25 @@ render_markdown.setup({
 
 -- Health Check Integration
 local function check_render_markdown_health()
-  local health = require("core.health")
+  local health = vim.health
 
-  health.report_start("Render-Markdown Performance")
+  health.start("Render-Markdown Performance")
 
   local markdown_ok, markdown_module = pcall(require, "render-markdown")
   if markdown_ok and markdown_module then
-    health.report_ok("render-markdown.nvim active - Markdown performance boost available")
+    health.ok("render-markdown.nvim active - Markdown performance boost available")
 
     -- Performance settings status
-    health.report_info("Max File Size: 5MB, Buffer Update: 200ms")
-    health.report_info("Preset: Obsidian (feature-rich, optimized defaults)")
-    health.report_info("LaTeX: Disabled (utftex/latex2text not available)")
-    health.report_info("blink.cmp Integration: Enabled for VelocityNvim")
+    health.info("Max File Size: 5MB, Buffer Update: 200ms")
+    health.info("Preset: Obsidian (feature-rich, optimized defaults)")
+    health.info("LaTeX: Disabled (utftex/latex2text not available)")
+    health.info("blink.cmp Integration: Enabled for VelocityNvim")
 
     -- Avoid Treesitter conflicts
-    health.report_ok("Anti-Conceal active - prevents Treesitter conflicts")
+    health.ok("Anti-Conceal active - prevents Treesitter conflicts")
   else
-    health.report_error("render-markdown.nvim not available - PluginSync required")
-    health.report_info("GitHub: MeanderingProgrammer/render-markdown.nvim")
+    health.error("render-markdown.nvim not available - PluginSync required")
+    health.info("GitHub: MeanderingProgrammer/render-markdown.nvim")
   end
 end
 
