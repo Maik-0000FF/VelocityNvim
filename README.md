@@ -5,6 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Neovim](https://img.shields.io/badge/Neovim-0.11+-green.svg)](https://neovim.io)
 [![Native vim.pack](https://img.shields.io/badge/Architecture-Native_vim.pack-brightgreen.svg)](#architecture)
+[![Ko-fi](https://img.shields.io/badge/Ko--fi-Support%20me-ff5f5f?logo=ko-fi&logoColor=white)](https://ko-fi.com/maik0000ff)
 
 A modern Neovim distribution built on native vim.pack architecture with modern vim.lsp.config API.
 
@@ -271,6 +272,7 @@ rm -rf ~/.cache/VelocityNvim
 ## Support
 
 - [GitHub Issues](https://github.com/Maik-0000FF/VelocityNvim/issues)
+- [Ko-fi](https://ko-fi.com/maik0000ff)
 - Star this repository
 
 ### Bitcoin Donations
