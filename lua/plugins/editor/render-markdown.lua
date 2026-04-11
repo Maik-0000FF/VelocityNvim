@@ -1,0 +1,94 @@
+-- render-markdown.nvim - Ultra-Performance Markdown Rendering
+-- Solves Treesitter performance issues with large MD files containing code snippets
+
+local ok, render_markdown = pcall(require, "render-markdown")
+if not ok then
+  vim.notify(
+    "render-markdown not available - Plugin installation required",
+    vim.log.levels.WARN
+  )
+  return
+end
+
+-- 'obsidian' preset provides optimized defaults for performance + features
+render_markdown.setup({
+  -- Optimized defaults instead of custom code
+  preset = "obsidian", -- Predefined, tested configuration
+
+  -- MINIMAL custom overrides only where standard preset is insufficient:
+  max_file_size = 5.0, -- RATIONALE: Preset has no file size limit
+
+  -- LaTeX support disabled (utftex/latex2text not available)
+  latex = { enabled = false },
+
+  -- Disable HTML/YAML (parsers not installed)
+  html = { enabled = false },
+  yaml = { enabled = false },
+
+  -- IMPORTANT: blink.cmp integration for VelocityNvim
+  completions = {
+    blink = { enabled = true }, -- RATIONALE: VelocityNvim-specific integration
+  },
+})
+
+-- Health Check Integration
+local function check_render_markdown_health()
+  local health = vim.health
+
+  health.start("Render-Markdown Performance")
+
+  local markdown_ok, markdown_module = pcall(require, "render-markdown")
+  if markdown_ok and markdown_module then
+    health.ok("render-markdown.nvim active - Markdown performance boost available")
+
+    -- Performance settings status
+    health.info("Max File Size: 5MB, Buffer Update: 200ms")
+    health.info("Preset: Obsidian (feature-rich, optimized defaults)")
+    health.info("LaTeX: Disabled (utftex/latex2text not available)")
+    health.info("blink.cmp Integration: Enabled for VelocityNvim")
+
+    -- Avoid Treesitter conflicts
+    health.ok("Anti-Conceal active - prevents Treesitter conflicts")
+  else
+    health.error("render-markdown.nvim not available - PluginSync required")
+    health.info("GitHub: MeanderingProgrammer/render-markdown.nvim")
+  end
+end
+
+-- Register health check
+local health_ok, health = pcall(require, "core.health")
+if health_ok and health.register then
+  health.register("render_markdown", check_render_markdown_health)
+end
+
+-- Markdown FileType autocmd for additional performance
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "markdown",
+  callback = function(ev)
+    -- Enable treesitter highlighting (required for render-markdown)
+    vim.treesitter.start(ev.buf, "markdown")
+
+    -- Performance optimizations for Markdown
+    vim.opt_local.wrap = false -- No wrap
+    vim.opt_local.linebreak = false -- No intelligent line breaks
+    vim.opt_local.showbreak = "" -- No indicator for wrapped lines
+
+    -- Performance: Reduce update frequency for Markdown
+    vim.opt_local.updatetime = 200 -- Faster updates for live rendering
+  end,
+})
+
+-- UI KEYMAP SYSTEM: <leader>u for all UI/graphical functions
+local map = vim.keymap.set
+local opts = { noremap = true, silent = true }
+
+-- render-markdown toggle - The centerpiece for large files (correct API)
+map("n", "<leader>Tm", function()
+  vim.cmd.RenderMarkdown("toggle")
+  vim.notify("render-markdown toggled", vim.log.levels.INFO)
+end, vim.tbl_extend("force", opts, { desc = "Toggle: render-markdown" }))
+
+-- Status query for render-markdown (simplified)
+map("n", "<leader>us", function()
+  vim.notify("render-markdown Toggle: <leader>Tm", vim.log.levels.INFO)
+end, vim.tbl_extend("force", opts, { desc = "UI: render-markdown Status" }))

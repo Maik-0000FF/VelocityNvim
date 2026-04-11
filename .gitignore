@@ -1,0 +1,182 @@
+# VelocityNvim Repository .gitignore
+
+# Neovim runtime files
+*.tmp
+*.swp
+*.swo
+*~
+
+# Neovim state and cache directories
+.netrwhist
+
+# Plugin directories (managed by native vim.pack)
+# These should NOT be committed - users install via :PluginSync
+pack/*/start/*/
+pack/*/opt/*/
+
+# Local user data and logs
+*.log
+
+# System files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.sublime-*
+
+# Temporary backup files
+*.backup.*
+*.bak
+
+# Local environment variables
+.env
+.env.local
+
+# Python cache (if any Python scripts)
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Node.js (if any Node.js tools)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Rust build artifacts (for blink.cmp compilation)
+target/
+Cargo.lock
+
+# User-specific configuration overrides
+# (Allow users to create local customizations)
+local/
+user-config.lua
+
+# Testing artifacts
+test-results/
+coverage/
+
+# Documentation build artifacts
+docs/_build/
+docs/.doctrees/
+
+# Generated internal documentation (not for users)
+VelocityNvim-Complete-Documentation.md
+*-Complete-Documentation.md
+
+# Temporary plugin test directories
+plugin-test/
+temp-plugins/
+
+# Internal development files (not for public release)
+CLAUDE.md
+.claude/
+*.claude*
+
+# Development and internal files
+*debug*.log
+docs/EMOJI_POLICY.md
+
+# Test and installation documentation (not for repository)
+ARCH_INSTALLATION.md
+*_INSTALLATION.md
+TEST_*.md
+
+# Performance benchmarks (machine-specific, not for repository)
+# BENCHMARKS.md - NOW PUBLIC FOR SEO
+
+# Internal debugging reports (development only)
+DEBUG_*.md
+*_DEBUG.md
+debug-*.md
+# DEBUGGING.md - NOW PUBLIC FOR SEO
+
+# NvChad LSP system documentation (internal analysis only)
+docs/NVCHAD_LSP_COMPLETE_ARCHITECTURE.md
+
+# New specialized documentation files (development only, not for public release)
+# docs/PLUGINS.md - NOW PUBLIC FOR SEO
+docs/DEVELOPMENT.md
+docs/ARCHITECTURE-DETAILS.md
+docs/SOLUTIONS.md
+
+# Private files
+private/
+*personal*
+*confidential*
+*secret*
+
+# Credentials
+*.pem
+*.key
+*.cert
+*.crt
+credentials.json
+auth.json
+secrets.json
+token.txt
+*.token
+id_rsa*
+id_ed25519*
+*.pub.private
+config.local.*
+*.credentials
+*.passwd
+.config/gh/
+gh-token*
+cookies.txt
+*.cookie
+
+# Backups
+*backup.tar.gz
+*backup.zip
+backup/personal/
+backup/private/
+
+# Development notes
+NOTES.txt
+TODO.txt
+notes/
+scratch/
+
+# Migration plans (internal development only)
+SNACKS_MIGRATION_PLAN.md
+*_MIGRATION_PLAN.md
+
+# Data exports
+*.mbox
+*.vcf
+contacts.*
+*invoice*
+*rechnung*
+*banking*
+
+# Temporary files
+*.tmp.png
+*.tmp.jpg
+*-temp.*
+
+# Website/Docs development documentation (internal only)
+website/GITHUB_PAGES_SETUP.md
+website/MIGRATION.md
+website/README.md
+website/SESSION_STATUS.md
+docs/GITHUB_PAGES_SETUP.md
+docs/MIGRATION.md
+docs/README.md
+docs/SESSION_STATUS.md
+docs/EMOJI_POLICY.md
+docs/ERROR_HANDLING.md
+docs/ICON_GUIDELINES.md
+docs/MACOS-OPTIMIZATION.md
+docs/PLUGIN_INSTALLATION_GUIDE.md
+docs/REFACTORING.md
+docs/RUST_PERFORMANCE.md
+docs/TESTING.md
