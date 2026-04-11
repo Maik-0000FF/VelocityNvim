@@ -629,27 +629,33 @@ vim.api.nvim_create_autocmd("LspAttach", {
   end,
 })
 
--- MODERN LSP ACTIVATION: Dynamic activation based on optional features
--- Core LSP servers (always enabled)
-vim.lsp.enable("lua_ls")        -- Lua with intelligent library detection
-vim.lsp.enable("pyright")       -- Python with superior project detection
-vim.lsp.enable("htmlls")        -- HTML with web project detection
-vim.lsp.enable("cssls")         -- CSS with naming convention support
-vim.lsp.enable("ts_ls")         -- TypeScript with comprehensive configuration
-vim.lsp.enable("jsonls")        -- JSON for package.json and config files
-vim.lsp.enable("rust_analyzer") -- Rust with adaptive memory configuration (if available)
+-- MODERN LSP ACTIVATION: Dynamic activation based on executable availability
+-- Only enable servers whose binary is installed (prevents silent failures)
+local core_servers = {
+  { name = "lua_ls",        bin = "lua-language-server" },
+  { name = "pyright",       bin = "pyright-langserver" },
+  { name = "htmlls",        bin = "vscode-html-language-server" },
+  { name = "cssls",         bin = "vscode-css-language-server" },
+  { name = "ts_ls",         bin = "typescript-language-server" },
+  { name = "jsonls",        bin = "vscode-json-language-server" },
+  { name = "rust_analyzer", bin = "rust-analyzer" },
+}
 
--- Optional LSP servers (enabled based on optional-features.json)
+for _, server in ipairs(core_servers) do
+  if vim.fn.executable(server.bin) == 1 then
+    vim.lsp.enable(server.name)
+  end
+end
+
+-- Optional LSP servers (enabled based on optional-features.json + executable check)
 local manage_ok, manage = pcall(require, "plugins.manage")
 if manage_ok then
-  -- LaTeX support (optional)
-  if manage.is_feature_enabled("latex") then
-    vim.lsp.enable("texlab")    -- LaTeX with specialized root markers
+  if manage.is_feature_enabled("latex") and vim.fn.executable("texlab") == 1 then
+    vim.lsp.enable("texlab")
   end
 
-  -- Typst support (optional)
-  if manage.is_feature_enabled("typst") then
-    vim.lsp.enable("tinymist")  -- Typst with PDF export on save
+  if manage.is_feature_enabled("typst") and vim.fn.executable("tinymist") == 1 then
+    vim.lsp.enable("tinymist")
   end
 end
 

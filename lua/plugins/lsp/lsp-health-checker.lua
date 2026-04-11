@@ -13,10 +13,17 @@ local health_checks = {
         "typescript-language-server not found. Installation: npm install -g typescript-language-server"
     end
 
-    -- TypeScript runtime check
+    -- TypeScript runtime check (npm root -g cached to avoid ~500ms system call)
+    local npm_global_root = M._npm_root_cache
+    if npm_global_root == nil then
+      local result = vim.system({ "npm", "root", "-g" }, { text = true }):wait(2000)
+      npm_global_root = (result.code == 0 and result.stdout) and vim.trim(result.stdout) or ""
+      M._npm_root_cache = npm_global_root
+    end
+
     local ts_paths = {
       vim.fn.getcwd() .. "/node_modules/typescript/lib/tsserver.js",
-      vim.fn.system("npm root -g 2>/dev/null"):gsub("%s+", "") .. "/typescript/lib/tsserver.js",
+      npm_global_root .. "/typescript/lib/tsserver.js",
       "/usr/lib/node_modules/typescript/lib/tsserver.js",
     }
 
@@ -156,6 +163,9 @@ function M.check_lsp(lsp_name)
 
   return check_fn()
 end
+
+-- Cached npm global root (populated lazily in ts_ls health check)
+M._npm_root_cache = nil
 
 -- Auto-fix for common issues
 function M.auto_fix()
