@@ -477,8 +477,8 @@ sudo pacman -Sy
 # Rust binary compilation reminder
 if [[ " ${install_categories[*]} " =~ " rust " ]]; then
     echo ""
-    echo -e "${CYAN}📋 Rust Performance Setup Required:${NC}"
-    echo "  Run: bash ./scripts/setup/blink-cmp-rust-builder-linux.sh"
+    echo -e "${CYAN}📋 Rust Performance Setup:${NC}"
+    echo "  blink.cmp's native matcher will be compiled automatically by :PluginSync"
     echo ""
 fi
 
@@ -500,9 +500,8 @@ echo ""
 
 echo -e "${CYAN}Next Steps:${NC}"
 echo "1. Start VelocityNvim: ${YELLOW}NVIM_APPNAME=VelocityNvim nvim${NC}"
-echo "2. Run: ${YELLOW}:PluginSync${NC}"
-echo "3. Build Rust binaries: ${YELLOW}bash ./scripts/setup/blink-cmp-rust-builder-linux.sh${NC}"
-echo "4. Test health: ${YELLOW}:VelocityHealth${NC}"
+echo "2. Run: ${YELLOW}:PluginSync${NC}  (installs plugins and compiles blink.cmp Rust matcher)"
+echo "3. Test health: ${YELLOW}:VelocityHealth${NC}"
 echo ""
 echo -e "${BLUE}🎉 VelocityNvim is now fully equipped!${NC}"
 

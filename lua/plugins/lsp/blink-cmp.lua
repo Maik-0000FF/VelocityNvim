@@ -1,9 +1,6 @@
 -- ~/.config/VelocityNvim/lua/plugins/blink-cmp.lua
 -- Ultra-performante Blink Completion
 
--- REMOVED: Force Rust script (replaced with prefer_rust_with_warning for graceful fallback)
--- require('plugins.lsp.blink-cmp-force-rust')
-
 require("blink.cmp").setup({
     keymap = { preset = "default" },
 
@@ -25,12 +22,8 @@ require("blink.cmp").setup({
     },
 
     fuzzy = {
-        -- Use prefer_rust_with_warning for graceful fallback
+        -- v2: prebuilt_binaries removed; build the Rust matcher locally via :BlinkCmp build
         implementation = "prefer_rust_with_warning", -- Graceful fallback to Lua if Rust fails
-        prebuilt_binaries = {
-            download = false, -- Always use local compilation
-            force_version = "1.*",
-        },
     },
 
     cmdline = {
@@ -58,29 +51,7 @@ require("blink.cmp").setup({
             ["<C-d>"] = { "scroll_documentation_down" },
             ["<C-u>"] = { "scroll_documentation_up" },
         },
-        completion = {
-            trigger = {
-                show_on_blocked_trigger_characters = {},
-                show_on_x_blocked_trigger_characters = {},
-            },
-            list = {
-                selection = {
-                    preselect = true,
-                    auto_insert = true,
-                },
-            },
-            menu = { auto_show = true },
-            ghost_text = { enabled = true },
-        },
-        sources = function()
-            local type = vim.fn.getcmdtype()
-            if type == "/" or type == "?" then
-                return { "buffer" }
-            end
-            if type == ":" or type == "@" then
-                return { "cmdline" }
-            end
-            return {}
-        end,
+        -- v2: cmdline `sources` and `completion` are managed internally,
+        -- no longer user-configurable on the cmdline config.
     },
 })

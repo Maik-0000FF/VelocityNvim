@@ -102,84 +102,9 @@ end
 -- Call global setup
 setup_global_lsp_config()
 
--- Intelligent Lua library detection (MyNvim-Style - NO SYSTEM CALLS)
-local function get_targeted_lua_libraries()
-  local libraries = {}
-  local project_root = vim.fn.getcwd()
-
-  -- 1. ALWAYS: Neovim Core APIs (essential for vim.* completion)
-  local nvim_runtime_paths = vim.api.nvim_get_runtime_file("lua/vim", false)
-  if #nvim_runtime_paths > 0 then
-    local nvim_lua_dir = vim.fn.fnamemodify(nvim_runtime_paths[1], ":p:h:h")
-    table.insert(libraries, nvim_lua_dir)
-  end
-
-  -- 2. CONDITIONAL: Plugin-specific libraries only when loaded (MyNvim-Style)
-  local function is_plugin_loaded(plugin_name)
-    return package.loaded[plugin_name] ~= nil
-  end
-
-  local function find_plugin_library(plugin_name)
-    local possible_paths = {
-      vim.fn.stdpath("data") .. "/site/pack/user/start/" .. plugin_name .. "/lua",
-      vim.fn.expand("~/.local/share/VelocityNvim/site/pack/user/start/" .. plugin_name .. "/lua"),
-    }
-
-    for _, path in ipairs(possible_paths) do
-      if vim.fn.isdirectory(path) == 1 then
-        return vim.fn.resolve(path)
-      end
-    end
-    return nil
-  end
-
-  -- Check for frequently used plugins (only if loaded - MyNvim-Style)
-  local common_plugins = {
-    { module = "telescope", dir = "telescope.nvim" },
-    { module = "fzf-lua", dir = "fzf-lua" },
-    { module = "blink.cmp", dir = "blink.cmp" },
-    { module = "neo-tree", dir = "neo-tree.nvim" },
-    { module = "which-key", dir = "which-key.nvim" },
-    { module = "lualine", dir = "lualine.nvim" },
-    { module = "alpha", dir = "alpha-nvim" },
-    { module = "gitsigns", dir = "gitsigns.nvim" },
-  }
-
-  for _, plugin in ipairs(common_plugins) do
-    if is_plugin_loaded(plugin.module) then
-      local plugin_lib = find_plugin_library(plugin.dir)
-      if plugin_lib then
-        table.insert(libraries, plugin_lib)
-      end
-    end
-  end
-
-  -- 3. PROJECT-SPECIFIC: Local Lua modules in current project
-  local local_lua_dirs = {
-    project_root .. "/lua",
-    project_root .. "/scripts/lua",
-    project_root .. "/config/lua",
-  }
-
-  for _, dir in ipairs(local_lua_dirs) do
-    if vim.fn.isdirectory(dir) == 1 then
-      table.insert(libraries, vim.fn.resolve(dir))
-    end
-  end
-
-  -- 4. VelocityNvim specific modules (always add for this config)
-  local velocitynvim_lua_dir = vim.fn.expand("~/.config/VelocityNvim/lua")
-  if vim.fn.isdirectory(velocitynvim_lua_dir) == 1 then
-    table.insert(libraries, velocitynvim_lua_dir)
-  end
-
-  -- Libraries are optimized - no debug output needed
-
-  return libraries
-end
-
 -- MODERN LSP CONFIG: Server-specific settings only (global config applied automatically)
 -- Only settings, cmd, filetypes, root_markers - capabilities/on_init are global
+-- Lua workspace.library is managed dynamically by lazydev.nvim (see plugins/lsp/lazydev.lua)
 
 vim.lsp.config.lua_ls = {
   cmd = { "lua-language-server" },
@@ -193,10 +118,9 @@ vim.lsp.config.lua_ls = {
         workspaceDelay = 200, -- Performance: Longer delay for less frequent updates
       },
       workspace = {
-        library = get_targeted_lua_libraries(), -- VelocityNvim: Intelligente Library-Erkennung
         checkThirdParty = false,
-        maxPreload = 1500, -- Performance: Optimiert von 3000
-        preloadFileSize = 3000, -- Performance: Optimiert von 5000
+        maxPreload = 1500,
+        preloadFileSize = 3000,
         useGitIgnore = false, -- Performance: No "filtering directories" messages
       },
       telemetry = { enable = false },

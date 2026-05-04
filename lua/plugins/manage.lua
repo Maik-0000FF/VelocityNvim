@@ -27,6 +27,8 @@ M.plugins = {
   ["noice.nvim"] = "https://github.com/folke/noice.nvim",
   ["nvim-notify"] = "https://github.com/rcarriga/nvim-notify",
   -- Ultra-performant Lua Development
+  ["lazydev.nvim"] = "https://github.com/folke/lazydev.nvim",
+  ["blink.lib"] = "https://github.com/Saghen/blink.lib", -- required by blink.cmp v2
   ["blink.cmp"] = "https://github.com/Saghen/blink.cmp",
   ["friendly-snippets"] = "https://github.com/rafamadriz/friendly-snippets",
   ["nvim-treesitter"] = "https://github.com/nvim-treesitter/nvim-treesitter",
@@ -207,28 +209,28 @@ local function auto_build_strudel(pack_dir)
 end
 
 -- Automatic blink.cmp Rust compilation after updates
+-- v2 ships its own cross-platform builder; we call it via the public API
+-- and block up to 60s until the cargo build finishes.
 local function auto_build_blink_rust(pack_dir)
   local blink_path = pack_dir .. "blink.cmp"
-  if fs_stat_func and fs_stat_func(blink_path .. "/Cargo.toml") then
-    local icons = require("core.icons")
-    print(icons.status.sync .. " Compiling blink.cmp Rust binaries...")
+  if not (fs_stat_func and fs_stat_func(blink_path .. "/Cargo.toml")) then
+    return
+  end
+  local icons = require("core.icons")
+  print(icons.status.sync .. " Compiling blink.cmp Rust binaries...")
 
-    -- Cross-platform script detection
-    local config_path = vim.fn.stdpath("config") .. "/scripts/setup/"
-    local script_name = "blink-cmp-rust-builder-linux.sh"
-
-    -- macOS detection
-    if vim.fn.has("mac") == 1 or vim.fn.has("macunix") == 1 then
-      script_name = "blink-cmp-rust-builder-macos.sh"
-    end
-
-    local script_path = config_path .. script_name
-    if fs_stat_func and fs_stat_func(script_path) then
-      vim.fn.system({ "bash", script_path })
-      print(icons.status.success .. " blink.cmp Rust performance enabled!")
-    else
-      print(icons.status.warn .. " Build script not found: " .. script_name)
-    end
+  local ok_cmp, cmp = pcall(require, "blink.cmp")
+  if not ok_cmp then
+    print(icons.status.warn .. " blink.cmp not loadable; skipping build")
+    return
+  end
+  local ok_build, err = pcall(function()
+    cmp.build({ force = true }):wait(60000)
+  end)
+  if ok_build then
+    print(icons.status.success .. " blink.cmp Rust performance enabled!")
+  else
+    print(icons.status.warn .. " blink.cmp build failed: " .. tostring(err))
   end
 end
 

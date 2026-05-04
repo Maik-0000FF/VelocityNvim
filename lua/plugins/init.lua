@@ -30,6 +30,7 @@ safe_require("plugins.editor.hop") -- Hop immediately for health check compatibi
 vim.defer_fn(function()
   safe_require("plugins.ui.noice")
   safe_require("plugins.ui.nvim-colorizer")
+  safe_require("plugins.lsp.lazydev") -- must be before native-lsp so lua_ls picks up library hooks
   safe_require("plugins.lsp.native-lsp")
   safe_require("plugins.editor.neo-tree")
   safe_require("plugins.editor.lsp-file-operations")

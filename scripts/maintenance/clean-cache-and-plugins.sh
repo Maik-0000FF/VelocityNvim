@@ -202,16 +202,9 @@ else
     # Method 2: Standard nvim
     echo "1. Start Neovim: ${YELLOW}nvim${NC}"
 fi
-echo "2. Run: ${YELLOW}:PluginSync${NC}"
-echo "3. Close Neovim"
-echo "4. IMPORTANT for blink.cmp:"
-if [[ "$VELOCITYNVIM_CONFIG" == *"VelocityNvim"* ]]; then
-    echo "   ${YELLOW}bash ./scripts/setup/blink-cmp-rust-builder-linux.sh${NC}"
-else
-    echo "   ${YELLOW}bash ./scripts/setup/blink-cmp-rust-builder-linux.sh${NC}"
-fi
-echo "5. Restart Neovim"
-echo "6. Test: ${YELLOW}:VelocityHealth${NC}"
+echo "2. Run: ${YELLOW}:PluginSync${NC}  (also compiles the blink.cmp Rust matcher)"
+echo "3. Restart Neovim"
+echo "4. Test: ${YELLOW}:VelocityHealth${NC}"
 echo ""
 echo -e "${BLUE}All VelocityNvim data has been cleaned!${NC}"
 echo -e "${BLUE}Configuration is ready for fresh install.${NC}"

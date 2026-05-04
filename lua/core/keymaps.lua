@@ -171,8 +171,17 @@ end, { noremap = true, silent = true, desc = "Buffer: Safe close" })
 -- Neo-tree (File Browser)
 ----------------------------------------
 
-map("n", "<leader>e", "<cmd>Neotree focus<CR>", { desc = "Focus NeoTree" })
-map("n", "<C-n>", "<cmd>Neotree toggle<CR>", { desc = "Toggle NeoTree" })
+-- Special buffers (health://, help, terminal, quickfix ...) have no real file path,
+-- which crashes Neo-tree's implicit reveal when follow_current_file is enabled.
+local function neotree_cmd(action)
+  return function()
+    local suffix = vim.bo.buftype ~= "" and " reveal=false" or ""
+    vim.cmd("Neotree " .. action .. suffix)
+  end
+end
+
+map("n", "<leader>e", neotree_cmd("focus"), { desc = "Focus NeoTree" })
+map("n", "<C-n>", neotree_cmd("toggle"), { desc = "Toggle NeoTree" })
 map("n", "<leader>ge", "<cmd>Neotree git_status<CR>", { desc = "Git Explorer" })
 map("n", "<leader>be", "<cmd>Neotree buffers<CR>", { desc = "Buffer Explorer" })
 
