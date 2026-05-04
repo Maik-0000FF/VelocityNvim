@@ -22,7 +22,8 @@ require("blink.cmp").setup({
     },
 
     fuzzy = {
-        -- v2: prebuilt_binaries removed; build the Rust matcher locally via :BlinkCmp build
+        -- v2: native matcher is built automatically by :PluginSync (see manage.lua).
+        -- :BlinkCmp build is the manual fallback if the auto-build is skipped.
         implementation = "prefer_rust_with_warning", -- Graceful fallback to Lua if Rust fails
     },
 

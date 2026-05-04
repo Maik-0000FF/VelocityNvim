@@ -153,74 +153,42 @@ end, {
   desc = "Re-trigger natural LSP workspace scan",
 })
 
--- Lua Library Optimization Status
+-- Lua Library Status - shows the workspace.library that lazydev.nvim
+-- has injected into the active lua_ls client.
 cmd("LuaLibraryStatus", function()
-  local function get_targeted_lua_libraries()
-    local libraries = {}
-    local project_root = vim.fn.getcwd()
-
-    -- Neovim Core APIs
-    local nvim_runtime_paths = vim.api.nvim_get_runtime_file("lua/vim", false)
-    if #nvim_runtime_paths > 0 then
-      local nvim_lua_dir = vim.fn.fnamemodify(nvim_runtime_paths[1], ":p:h:h")
-      table.insert(libraries, nvim_lua_dir)
-    end
-
-    -- VelocityNvim modules
-    local velocitynvim_lua_dir = vim.fn.expand("~/.config/VelocityNvim/lua")
-    if vim.fn.isdirectory(velocitynvim_lua_dir) == 1 then
-      table.insert(libraries, velocitynvim_lua_dir)
-    end
-
-    -- Project-specific modules
-    if vim.fn.isdirectory(project_root .. "/lua") == 1 then
-      table.insert(libraries, project_root .. "/lua")
-    end
-
-    return libraries
-  end
-
-  print(icons.status.success .. " " .. icons.status.rocket .. " Lua Library Optimization Status:")
+  print(icons.status.gear .. " Lua workspace library status")
   print("")
 
-  -- Show current optimized libraries
-  local current_libs = get_targeted_lua_libraries()
-  print(icons.lsp.module .. " Optimized libraries (" .. #current_libs .. " instead of >2000):")
-  for i, lib in ipairs(current_libs) do
-    local short_path = lib:gsub(vim.fn.expand("~"), "~")
-    print("  " .. i .. ". " .. short_path)
+  local clients = vim.lsp.get_clients({ name = "lua_ls" })
+  if #clients == 0 then
+    print(icons.status.error .. " lua_ls is not active - open a .lua file first")
+    return
   end
 
-  print("")
-  print(icons.misc.flash .. " Performance improvements:")
-  print("  " .. icons.status.success .. " Startup time: ~75% faster")
-  print("  " .. icons.status.success .. " Memory usage: ~65% less")
-  print("  " .. icons.status.success .. " Library count: " .. #current_libs .. " instead of >2400")
-  print("  " .. icons.status.success .. " Completion relevance: ~85% (was 40%)")
+  local client = clients[1]
+  local ws = client.settings and client.settings.Lua and client.settings.Lua.workspace or {}
+  local libs = ws.library or {}
 
-  -- Show LSP lua-language-server status
-  local lsp_clients = vim.lsp.get_clients({ name = "lua_ls" })
-  if #lsp_clients > 0 then
-    print("")
-    print(icons.status.gear .. " LSP Status:")
-    print("  " .. icons.status.success .. " Client active (ID: " .. lsp_clients[1].id .. ")")
-    print("  " .. icons.status.success .. " Optimized libraries loaded")
-    print("  " .. icons.status.success .. " maxPreload: 1500 (reduced from 3000)")
-    print("  " .. icons.status.success .. " preloadFileSize: 3000 (reduced from 5000)")
+  print(icons.status.success .. " lua_ls active (id=" .. client.id .. ", root=" .. (client.config.root_dir or "?") .. ")")
+  print("")
+  print(icons.lsp.module .. " workspace.library (" .. #libs .. " entries, managed by lazydev.nvim):")
+  if #libs == 0 then
+    print("  (empty - lazydev injects paths on first Lua buffer event)")
   else
-    print("")
-    print(icons.status.error .. "  lua-language-server not active - open a .lua file")
+    local home = vim.fn.expand("~")
+    for i, lib in ipairs(libs) do
+      print(string.format("  %2d. %s", i, tostring(lib):gsub(home, "~")))
+    end
   end
 
-  -- Performance metrics from cache
-  local debug_file = vim.fn.stdpath("cache") .. "/velocity_lib_debug_count"
-  if vim.fn.filereadable(debug_file) == 1 then
-    local count = tonumber(vim.fn.readfile(debug_file)[1]) or 0
-    print("")
-    print(icons.status.stats .. " Optimization enabled: " .. count .. "x")
-  end
+  print("")
+  print(icons.status.gear .. " workspace tunables:")
+  print("  maxPreload       = " .. tostring(ws.maxPreload))
+  print("  preloadFileSize  = " .. tostring(ws.preloadFileSize))
+  print("  checkThirdParty  = " .. tostring(ws.checkThirdParty))
+  print("  useGitIgnore     = " .. tostring(ws.useGitIgnore))
 end, {
-  desc = "Show Lua library optimization status and performance metrics",
+  desc = "Show lua_ls workspace.library entries injected by lazydev",
 })
 
 -- Diagnostic Icons Test & Status
