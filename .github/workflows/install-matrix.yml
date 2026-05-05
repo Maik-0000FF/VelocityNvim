@@ -44,6 +44,7 @@ jobs:
       fail-fast: false
       matrix:
         profile: [core, extended]
+        distro: [arch, ubuntu, debian, fedora, opensuse]
         include:
           - distro: arch
             image: archlinux:latest
@@ -86,7 +87,7 @@ jobs:
         run: ${{ matrix.install_tools }}
 
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       # Containers run as root with a different $HOME than checkout assumes;
       # git complains about ownership when actions touch the workspace.
@@ -140,7 +141,7 @@ jobs:
 
       - name: Upload logs on failure
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: logs-${{ matrix.distro }}-${{ matrix.profile }}
           path: |
@@ -160,7 +161,7 @@ jobs:
         profile: [core, extended]
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Install Neovim
         run: brew install neovim
@@ -194,7 +195,7 @@ jobs:
 
       - name: Upload logs on failure
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: logs-macos-${{ matrix.profile }}
           path: |
