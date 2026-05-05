@@ -181,17 +181,17 @@ M.packages = {
   },
 
   -- ═══════════════════════════════════════════════════════════════════════════
-  -- RUST TOOLCHAIN (for blink.cmp performance - needs nightly)
+  -- RUST TOOLCHAIN (for blink.cmp performance — stable Rust is sufficient)
   -- ═══════════════════════════════════════════════════════════════════════════
   rust = {
     title = "Rust Toolchain",
-    description = "Required for blink.cmp ultra-fast completion (needs nightly)",
+    description = "Required for blink.cmp ultra-fast completion (stable toolchain)",
     required = false,
     packages = {
       {
         name = "rustup",
         check_cmd = "rustup",
-        description = "Rust toolchain manager (for nightly support)",
+        description = "Rust toolchain manager",
         arch = "rustup",
         debian = nil, -- Use curl installer
         fedora = "rustup",

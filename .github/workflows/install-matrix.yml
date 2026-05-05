@@ -150,6 +150,105 @@ jobs:
           if-no-files-found: ignore
 
   # ────────────────────────────────────────────────────────────────────────────
+  # Dedicated job that exercises the blink.cmp Rust build on stable Rust.
+  # The matrix jobs above run without a Rust toolchain and fall back to the
+  # Lua matcher; this job installs `rust` from Arch repos (no rustup, no
+  # nightly), runs the full first-run installation and asserts that the
+  # Rust binary was produced.
+  # ────────────────────────────────────────────────────────────────────────────
+  rust-build:
+    name: rust-build (arch, stable)
+    runs-on: ubuntu-latest
+    container:
+      image: archlinux:latest
+      options: --user root
+    steps:
+      - name: Install host tooling + stable Rust
+        shell: bash
+        run: |
+          pacman -Sy --noconfirm --needed \
+            git curl tar gzip ca-certificates findutils \
+            gcc make sed gawk grep coreutils which \
+            rust
+
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Trust workspace for git
+        shell: bash
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+      - name: Install Neovim (stable tarball)
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fL --retry 3 -o /tmp/nvim.tar.gz \
+            https://github.com/neovim/neovim/releases/download/stable/nvim-linux-x86_64.tar.gz
+          mkdir -p /opt
+          tar -C /opt -xzf /tmp/nvim.tar.gz
+          ln -sf /opt/nvim-linux-x86_64/bin/nvim /usr/local/bin/nvim
+          nvim --version | head -1
+          rustc --version
+          cargo --version
+
+      - name: Stage VelocityNvim config
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$HOME/.config"
+          cp -a "$GITHUB_WORKSPACE/." "$HOME/.config/VelocityNvim/"
+
+      - name: Run first-run installation (CI mode, with cargo present)
+        shell: bash
+        env:
+          VELOCITY_CI: "1"
+          VELOCITY_PROFILE: core
+          NVIM_APPNAME: VelocityNvim
+        run: |
+          set -o pipefail
+          nvim --headless 2>&1 | tee install.log
+          test "${PIPESTATUS[0]}" -eq 0
+
+      - name: Assert blink.cmp Rust binary exists
+        shell: bash
+        run: |
+          set -euo pipefail
+          BLINK="$HOME/.local/share/VelocityNvim/site/pack/user/start/blink.cmp"
+          SO="$BLINK/target/release/libblink_cmp_fuzzy.so"
+          if [ -f "$SO" ]; then
+            echo "blink.cmp Rust matcher built successfully on stable Rust"
+            file "$SO"
+            ls -lh "$SO"
+          else
+            echo "ERROR: Rust matcher .so missing — Phase 5 must have failed"
+            ls -la "$BLINK/target/release/" 2>/dev/null || echo "no target/ dir"
+            echo "--- last 80 lines of install.log ---"
+            tail -80 install.log
+            exit 1
+          fi
+
+      - name: Run install verifier
+        shell: bash
+        env:
+          NVIM_APPNAME: VelocityNvim
+        run: |
+          set -o pipefail
+          nvim --headless \
+            -c 'lua dofile(vim.fn.stdpath("config").."/tests/ci/verify_install.lua")' \
+            2>&1 | tee verify.log
+          test "${PIPESTATUS[0]}" -eq 0
+
+      - name: Upload logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: logs-rust-build
+          path: |
+            install.log
+            verify.log
+          if-no-files-found: ignore
+
+  # ────────────────────────────────────────────────────────────────────────────
   # macOS via GitHub-hosted runner
   # ────────────────────────────────────────────────────────────────────────────
   macos:

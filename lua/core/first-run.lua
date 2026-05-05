@@ -435,34 +435,22 @@ elif ! command -v cargo &>/dev/null && [ ! -x "$HOME/.cargo/bin/cargo" ]; then
   warn "Cargo not found - skipping Rust build (blink.cmp will use Lua fallback)"
   warn "Install Rust: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh"
 else
+  # blink.cmp v2 builds on stable Rust (edition 2021, no nightly features).
   CARGO_CMD="${HOME}/.cargo/bin/cargo"
   [ -x "$(command -v cargo)" ] && CARGO_CMD="cargo"
 
-  RUSTUP_CMD="${HOME}/.cargo/bin/rustup"
-  [ -x "$(command -v rustup)" ] && RUSTUP_CMD="rustup"
+  info "Building blink.cmp fuzzy matcher..."
+  echo ""
 
-  # Check/install nightly
-  if ! "$RUSTUP_CMD" run nightly rustc --version &>/dev/null 2>&1; then
-    info "Installing Rust nightly toolchain..."
-    "$RUSTUP_CMD" install nightly 2>/dev/null || warn "Could not install nightly"
-  fi
-
-  if "$RUSTUP_CMD" run nightly rustc --version &>/dev/null 2>&1; then
-    info "Building blink.cmp fuzzy matcher..."
-    echo ""
-
-    cd "$BLINK_PATH"
-    CARGO_OUTPUT=$("$CARGO_CMD" +nightly build --release 2>&1) && CARGO_RC=0 || CARGO_RC=$?
-    echo "$CARGO_OUTPUT" | tail -5
-    echo ""
-    if [ $CARGO_RC -eq 0 ] && { [ -f "$BLINK_PATH/target/release/libblink_cmp_fuzzy.so" ] || \
-       [ -f "$BLINK_PATH/target/release/libblink_cmp_fuzzy.dylib" ]; }; then
-      success "Rust build successful! Full performance enabled."
-    else
-      warn "Rust build failed - blink.cmp will use Lua fallback"
-    fi
+  cd "$BLINK_PATH"
+  CARGO_OUTPUT=$("$CARGO_CMD" build --release 2>&1) && CARGO_RC=0 || CARGO_RC=$?
+  echo "$CARGO_OUTPUT" | tail -5
+  echo ""
+  if [ $CARGO_RC -eq 0 ] && { [ -f "$BLINK_PATH/target/release/libblink_cmp_fuzzy.so" ] || \
+     [ -f "$BLINK_PATH/target/release/libblink_cmp_fuzzy.dylib" ]; }; then
+    success "Rust build successful! Full performance enabled."
   else
-    warn "Rust nightly not available - skipping blink.cmp build"
+    warn "Rust build failed - blink.cmp will use Lua fallback"
   fi
 fi
 
