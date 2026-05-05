@@ -34,6 +34,8 @@ M.detect_os = function()
       pkg_manager = "apt"
     elseif vim.fn.executable("dnf") == 1 then
       pkg_manager = "dnf"
+    elseif vim.fn.executable("zypper") == 1 then
+      pkg_manager = "zypper"
     elseif vim.fn.executable("brew") == 1 then
       pkg_manager = "brew"
     end
@@ -43,9 +45,10 @@ M.detect_os = function()
     os = os_name,
     distro = distro,
     pkg_manager = pkg_manager,
-    is_arch = distro == "arch" or distro == "archlinux" or distro == "manjaro" or distro == "endeavouros",
-    is_debian = distro == "ubuntu" or distro == "debian" or distro == "linuxmint" or distro == "pop",
-    is_fedora = distro == "fedora" or distro == "rhel" or distro == "centos",
+    is_arch = distro == "arch" or distro == "archlinux" or distro == "manjaro" or distro == "endeavouros" or distro == "cachyos",
+    is_debian = distro == "ubuntu" or distro == "debian" or distro == "linuxmint" or distro == "pop" or distro == "elementary" or distro == "kali",
+    is_fedora = distro == "fedora" or distro == "rhel" or distro == "centos" or distro == "rocky" or distro == "almalinux",
+    is_opensuse = distro == "opensuse" or distro == "opensuse-tumbleweed" or distro == "opensuse-leap" or distro == "suse" or distro == "sles",
     is_macos = os_name == "macos",
   }
 end
@@ -582,6 +585,10 @@ M.get_install_cmd = function(pkg, sys, assume_tools_available)
   elseif sys.is_fedora and pkg.fedora then
     pkg_name = pkg.fedora
     method = "dnf"
+  elseif sys.is_opensuse and (pkg.opensuse or pkg.fedora) then
+    -- Most package names match between Fedora and openSUSE; explicit pkg.opensuse wins
+    pkg_name = pkg.opensuse or pkg.fedora
+    method = "zypper"
   elseif sys.is_macos and pkg.macos then
     pkg_name = pkg.macos
     method = "brew"
@@ -613,6 +620,8 @@ M.get_install_cmd = function(pkg, sys, assume_tools_available)
     cmd = "sudo apt install -y " .. pkg_name
   elseif method == "dnf" then
     cmd = "sudo dnf install -y " .. pkg_name
+  elseif method == "zypper" then
+    cmd = "sudo zypper --non-interactive install " .. pkg_name
   elseif method == "brew" then
     cmd = "brew install " .. pkg_name
   elseif method == "brew_cask" then
@@ -717,6 +726,19 @@ M.generate_install_script = function(categories)
       end
     end
     table.insert(script_lines, "sudo apt install -y " .. table.concat(pkgs, " "))
+    table.insert(script_lines, "")
+    needs_path_refresh = true
+  end
+
+  if by_method.zypper then
+    local pkgs = {}
+    for _, p in ipairs(by_method.zypper) do
+      for pkg in p.cmd:gmatch("install%s+(.+)$") do
+        table.insert(pkgs, pkg)
+      end
+    end
+    table.insert(script_lines, "# openSUSE packages")
+    table.insert(script_lines, "sudo zypper --non-interactive install " .. table.concat(pkgs, " "))
     table.insert(script_lines, "")
     needs_path_refresh = true
   end

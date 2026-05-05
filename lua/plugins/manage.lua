@@ -47,7 +47,7 @@ M.plugins = {
   -- SudaWrite for sudo privileges when writing
   ["suda.vim"] = "https://github.com/lambdalisue/suda.vim",
   -- Hop for ultra-fast cursor navigation
-  ["hop.nvim"] = "https://github.com/phaazon/hop.nvim",
+  ["hop.nvim"] = "https://github.com/smoka7/hop.nvim",
   ["nvim-colorizer.lua"] = "https://github.com/NvChad/nvim-colorizer.lua",
   -- Ultra-performant Markdown Rendering (solves Treesitter performance issues)
   ["render-markdown.nvim"] = "https://github.com/MeanderingProgrammer/render-markdown.nvim",

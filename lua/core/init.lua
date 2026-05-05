@@ -8,8 +8,14 @@ if vim.fn.isdirectory(plugins_dir) == 0 then
   -- First installation - load complete first-run system
   local first_run = require("core.first-run")
 
-  -- Interactive start: Show installation UI
   if first_run.is_needed() then
+    -- CI / unattended mode: run bash installer non-interactively, propagate exit code
+    if vim.env.VELOCITY_CI == "1" then
+      first_run.run_installation_ci()
+      return
+    end
+
+    -- Interactive start: Show installation UI
     first_run.run_installation()
     return  -- Exit early - installation will reload config when complete
   end

@@ -61,7 +61,8 @@ WARNINGS=()
 
 # Print header
 print_header() {
-  clear
+  # `clear` writes terminal escape sequences; only useful with a real TTY
+  [ -t 1 ] && clear
   echo -e "${CYAN}"
   echo "╔══════════════════════════════════════════════════════════════════════════════╗"
   echo "║                                                                              ║"
@@ -153,15 +154,41 @@ PKG_MANAGER=""
 
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then
   OS="linux"
-  if [ -f /etc/arch-release ]; then
-    DISTRO="arch"
-    PKG_MANAGER="pacman"
-  elif [ -f /etc/debian_version ]; then
-    DISTRO="debian"
-    PKG_MANAGER="apt"
-  elif [ -f /etc/fedora-release ]; then
-    DISTRO="fedora"
-    PKG_MANAGER="dnf"
+  # Prefer /etc/os-release (modern, distro-agnostic) over legacy release files
+  if [ -f /etc/os-release ]; then
+    OS_RELEASE_ID=$(. /etc/os-release && echo "${ID:-}")
+    OS_RELEASE_LIKE=$(. /etc/os-release && echo "${ID_LIKE:-}")
+    case "$OS_RELEASE_ID" in
+      arch|manjaro|endeavouros|cachyos)
+        DISTRO="arch"; PKG_MANAGER="pacman" ;;
+      ubuntu|debian|linuxmint|pop|elementary|kali|raspbian)
+        DISTRO="debian"; PKG_MANAGER="apt" ;;
+      fedora|rhel|centos|rocky|almalinux)
+        DISTRO="fedora"; PKG_MANAGER="dnf" ;;
+      opensuse-tumbleweed|opensuse-leap|opensuse|suse|sles)
+        DISTRO="opensuse"; PKG_MANAGER="zypper" ;;
+      *)
+        # Fall back to ID_LIKE when ID is unknown (e.g. derivative distros)
+        case "$OS_RELEASE_LIKE" in
+          *arch*)   DISTRO="arch"; PKG_MANAGER="pacman" ;;
+          *debian*) DISTRO="debian"; PKG_MANAGER="apt" ;;
+          *fedora*|*rhel*) DISTRO="fedora"; PKG_MANAGER="dnf" ;;
+          *suse*)   DISTRO="opensuse"; PKG_MANAGER="zypper" ;;
+        esac
+        ;;
+    esac
+  fi
+  # Legacy fallback if /etc/os-release was missing or didn't match
+  if [ "$DISTRO" = "unknown" ]; then
+    if [ -f /etc/arch-release ]; then
+      DISTRO="arch"; PKG_MANAGER="pacman"
+    elif [ -f /etc/debian_version ]; then
+      DISTRO="debian"; PKG_MANAGER="apt"
+    elif [ -f /etc/fedora-release ]; then
+      DISTRO="fedora"; PKG_MANAGER="dnf"
+    elif [ -f /etc/SUSE-brand ] || [ -f /etc/SuSE-release ]; then
+      DISTRO="opensuse"; PKG_MANAGER="zypper"
+    fi
   fi
 elif [[ "$OSTYPE" == "darwin"* ]]; then
   OS="macos"
@@ -256,54 +283,81 @@ echo -e "      Choose individual optional packages"
 echo ""
 
 SELECTED_PACKAGES=""
-while true; do
-  echo -ne "  Select [1/2/3]: "
-  read -r PROFILE_CHOICE
 
-  case "$PROFILE_CHOICE" in
-    1)
-      success "Core Installation selected"
+# Non-interactive mode: honor VELOCITY_PROFILE / VELOCITY_PACKAGES, skip prompts.
+# Used by CI and unattended installs. Falls back to "core" if neither is set
+# but stdin is not a TTY (running under pipe / nvim --headless).
+if [ -n "${VELOCITY_PROFILE:-}" ] || [ -n "${VELOCITY_PACKAGES:-}" ] || [ ! -t 0 ]; then
+  PROFILE="${VELOCITY_PROFILE:-core}"
+  case "$PROFILE" in
+    core|minimal|1)
+      success "Core Installation selected (non-interactive: VELOCITY_PROFILE=$PROFILE)"
       SELECTED_PACKAGES=""
-      break
       ;;
-    2)
-      success "Extended Installation selected"
+    extended|full|2)
+      success "Extended Installation selected (non-interactive: VELOCITY_PROFILE=$PROFILE)"
       SELECTED_PACKAGES="strudel latex typst"
-      break
       ;;
-    3)
-      echo ""
-      info "Custom package selection:"
-      echo ""
-
-      # Strudel
-      echo -ne "  ${BOLD}Strudel${NC} (Live coding music with TidalCycles) [y/N]: "
-      read -r CHOICE_STRUDEL
-      [[ "$CHOICE_STRUDEL" =~ ^[Yy]$ ]] && SELECTED_PACKAGES="$SELECTED_PACKAGES strudel"
-
-      # LaTeX
-      echo -ne "  ${BOLD}LaTeX${NC} (Scientific writing with texlab LSP) [y/N]: "
-      read -r CHOICE_LATEX
-      [[ "$CHOICE_LATEX" =~ ^[Yy]$ ]] && SELECTED_PACKAGES="$SELECTED_PACKAGES latex"
-
-      # Typst
-      echo -ne "  ${BOLD}Typst${NC} (Modern typesetting with tinymist LSP) [y/N]: "
-      read -r CHOICE_TYPST
-      [[ "$CHOICE_TYPST" =~ ^[Yy]$ ]] && SELECTED_PACKAGES="$SELECTED_PACKAGES typst"
-
-      echo ""
-      if [ -z "$SELECTED_PACKAGES" ]; then
-        success "No optional packages selected"
-      else
-        success "Selected:$SELECTED_PACKAGES"
-      fi
-      break
+    custom|3)
+      # Custom requires explicit VELOCITY_PACKAGES; otherwise treat as core
+      SELECTED_PACKAGES="${VELOCITY_PACKAGES:-}"
+      success "Custom selection (non-interactive): ${SELECTED_PACKAGES:-<none>}"
       ;;
     *)
-      warn "Invalid choice, please enter 1, 2, or 3"
+      warn "Unknown VELOCITY_PROFILE='$PROFILE' — falling back to core"
+      SELECTED_PACKAGES=""
       ;;
   esac
-done
+else
+  while true; do
+    echo -ne "  Select [1/2/3]: "
+    read -r PROFILE_CHOICE
+
+    case "$PROFILE_CHOICE" in
+      1)
+        success "Core Installation selected"
+        SELECTED_PACKAGES=""
+        break
+        ;;
+      2)
+        success "Extended Installation selected"
+        SELECTED_PACKAGES="strudel latex typst"
+        break
+        ;;
+      3)
+        echo ""
+        info "Custom package selection:"
+        echo ""
+
+        # Strudel
+        echo -ne "  ${BOLD}Strudel${NC} (Live coding music with TidalCycles) [y/N]: "
+        read -r CHOICE_STRUDEL
+        [[ "$CHOICE_STRUDEL" =~ ^[Yy]$ ]] && SELECTED_PACKAGES="$SELECTED_PACKAGES strudel"
+
+        # LaTeX
+        echo -ne "  ${BOLD}LaTeX${NC} (Scientific writing with texlab LSP) [y/N]: "
+        read -r CHOICE_LATEX
+        [[ "$CHOICE_LATEX" =~ ^[Yy]$ ]] && SELECTED_PACKAGES="$SELECTED_PACKAGES latex"
+
+        # Typst
+        echo -ne "  ${BOLD}Typst${NC} (Modern typesetting with tinymist LSP) [y/N]: "
+        read -r CHOICE_TYPST
+        [[ "$CHOICE_TYPST" =~ ^[Yy]$ ]] && SELECTED_PACKAGES="$SELECTED_PACKAGES typst"
+
+        echo ""
+        if [ -z "$SELECTED_PACKAGES" ]; then
+          success "No optional packages selected"
+        else
+          success "Selected:$SELECTED_PACKAGES"
+        fi
+        break
+        ;;
+      *)
+        warn "Invalid choice, please enter 1, 2, or 3"
+        ;;
+    esac
+  done
+fi
 
 # Save selection to JSON config file
 CONFIG_FILE="$DATA_DIR/optional-features.json"
@@ -498,10 +552,18 @@ fi
 
 echo ""
 echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${BOLD}  Installation complete! Press ENTER to start VelocityNvim...${NC}"
-echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo ""
-read -r
+if [ -t 0 ]; then
+  echo -e "${BOLD}  Installation complete! Press ENTER to start VelocityNvim...${NC}"
+  echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+  echo ""
+  read -r
+else
+  echo -e "${BOLD}  Installation complete!${NC}"
+  echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+fi
+
+# Exit explicitly so callers (CI, scripts) get a clean status code
+exit 0
 
 ]=], data_dir, pack_dir, nvim_appname, table.concat(plugin_commands, "\n"))
 
@@ -550,6 +612,49 @@ end
 -- Silent check for headless mode
 function M.quick_check()
   return not M.is_needed()
+end
+
+-- Non-interactive installer for CI / scripted setups.
+-- Writes the install script to disk, executes it via bash, prints output,
+-- propagates the exit code, then quits Neovim. Honours VELOCITY_PROFILE
+-- and VELOCITY_PACKAGES env vars (the bash side reads them directly).
+function M.run_installation_ci()
+  if vim.fn.executable("bash") ~= 1 then
+    io.stderr:write("VelocityNvim CI: bash is required but was not found.\n")
+    vim.cmd("cquit 2")
+    return
+  end
+
+  local script = generate_install_script()
+  local script_path = vim.fn.stdpath("data") .. "/velocity-install.sh"
+  vim.fn.mkdir(vim.fn.stdpath("data"), "p")
+  vim.fn.writefile(vim.split(script, "\n"), script_path)
+  vim.fn.setfperm(script_path, "rwxr-xr-x")
+
+  io.stdout:write("VelocityNvim CI: running " .. script_path .. "\n")
+  io.stdout:flush()
+
+  -- Stream bash output directly to stdout so CI logs capture it.
+  -- vim.fn.system buffers everything; for long installs we want live output,
+  -- so we use os.execute which inherits stdio from the parent process.
+  local cmd = string.format("bash %s", vim.fn.shellescape(script_path))
+  local ok, _, code = os.execute(cmd)
+  local exit_code = 0
+  if ok == true then
+    exit_code = 0
+  elseif type(ok) == "number" then
+    exit_code = ok  -- Lua 5.1 returns the raw exit code
+  else
+    exit_code = code or 1
+  end
+
+  if exit_code == 0 then
+    io.stdout:write("VelocityNvim CI: installation finished successfully.\n")
+    vim.cmd("qa!")
+  else
+    io.stderr:write(string.format("VelocityNvim CI: install script failed (exit %d).\n", exit_code))
+    vim.cmd("cquit " .. tostring(exit_code))
+  end
 end
 
 return M

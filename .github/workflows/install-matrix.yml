@@ -1,0 +1,203 @@
+name: Install Matrix
+
+# Verifies that the first-run installation succeeds end-to-end on every
+# supported OS and produces a working VelocityNvim setup. Each job:
+#   1. Installs minimal host tooling (git, curl, tar, build tools).
+#   2. Drops Neovim's official portable tarball / brew bottle in place.
+#   3. Stages the repo at $HOME/.config/VelocityNvim.
+#   4. Runs the bash installer non-interactively via VELOCITY_CI=1.
+#   5. Runs tests/ci/verify_install.lua to assert the result.
+#
+# A failure on any matrix cell uploads its install/verify logs as artifacts.
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "docs/**"
+      - "**.md"
+      - ".github/ISSUE_TEMPLATE/**"
+      - ".github/FUNDING.yml"
+  pull_request:
+    paths-ignore:
+      - "docs/**"
+      - "**.md"
+      - ".github/ISSUE_TEMPLATE/**"
+      - ".github/FUNDING.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: install-matrix-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ────────────────────────────────────────────────────────────────────────────
+  # Linux distributions, each in its own container
+  # ────────────────────────────────────────────────────────────────────────────
+  linux:
+    name: ${{ matrix.distro }} (${{ matrix.profile }})
+    runs-on: ubuntu-latest
+    container:
+      image: ${{ matrix.image }}
+      options: --user root
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [core, extended]
+        include:
+          - distro: arch
+            image: archlinux:latest
+            install_tools: |
+              pacman -Sy --noconfirm --needed \
+                git curl tar gzip ca-certificates findutils \
+                gcc make sed gawk grep coreutils which
+          - distro: ubuntu
+            image: ubuntu:24.04
+            install_tools: |
+              export DEBIAN_FRONTEND=noninteractive
+              apt-get update
+              apt-get install -y --no-install-recommends \
+                git curl tar gzip ca-certificates findutils \
+                build-essential sed gawk grep coreutils
+          - distro: debian
+            image: debian:bookworm
+            install_tools: |
+              export DEBIAN_FRONTEND=noninteractive
+              apt-get update
+              apt-get install -y --no-install-recommends \
+                git curl tar gzip ca-certificates findutils \
+                build-essential sed gawk grep coreutils
+          - distro: fedora
+            image: fedora:latest
+            install_tools: |
+              dnf install -y \
+                git curl tar gzip findutils \
+                gcc make sed gawk grep coreutils which
+          - distro: opensuse
+            image: opensuse/tumbleweed
+            install_tools: |
+              zypper --non-interactive install \
+                git curl tar gzip findutils \
+                gcc make sed gawk grep coreutils which
+
+    steps:
+      - name: Install host tooling
+        shell: bash
+        run: ${{ matrix.install_tools }}
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Containers run as root with a different $HOME than checkout assumes;
+      # git complains about ownership when actions touch the workspace.
+      - name: Trust workspace for git
+        shell: bash
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+      - name: Install Neovim (stable tarball)
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fL --retry 3 -o /tmp/nvim.tar.gz \
+            https://github.com/neovim/neovim/releases/download/stable/nvim-linux-x86_64.tar.gz
+          mkdir -p /opt
+          tar -C /opt -xzf /tmp/nvim.tar.gz
+          ln -sf /opt/nvim-linux-x86_64/bin/nvim /usr/local/bin/nvim
+          nvim --version | head -1
+
+      - name: Stage VelocityNvim config
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$HOME/.config"
+          cp -a "$GITHUB_WORKSPACE/." "$HOME/.config/VelocityNvim/"
+          ls "$HOME/.config/VelocityNvim/init.lua" >/dev/null
+
+      - name: Run first-run installation (CI mode)
+        shell: bash
+        env:
+          VELOCITY_CI: "1"
+          VELOCITY_PROFILE: ${{ matrix.profile }}
+          NVIM_APPNAME: VelocityNvim
+        run: |
+          set -o pipefail
+          # init.lua sees missing plugins dir, routes to run_installation_ci(),
+          # which writes velocity-install.sh, runs it, then quits with the
+          # bash script's exit code.
+          nvim --headless 2>&1 | tee install.log
+          test "${PIPESTATUS[0]}" -eq 0
+
+      - name: Verify installation
+        shell: bash
+        env:
+          NVIM_APPNAME: VelocityNvim
+        run: |
+          set -o pipefail
+          nvim --headless \
+            -c 'lua dofile(vim.fn.stdpath("config").."/tests/ci/verify_install.lua")' \
+            2>&1 | tee verify.log
+          test "${PIPESTATUS[0]}" -eq 0
+
+      - name: Upload logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: logs-${{ matrix.distro }}-${{ matrix.profile }}
+          path: |
+            install.log
+            verify.log
+          if-no-files-found: ignore
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # macOS via GitHub-hosted runner
+  # ────────────────────────────────────────────────────────────────────────────
+  macos:
+    name: macos (${{ matrix.profile }})
+    runs-on: macos-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [core, extended]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Neovim
+        run: brew install neovim
+
+      - name: Stage VelocityNvim config
+        run: |
+          set -euo pipefail
+          mkdir -p "$HOME/.config"
+          cp -R "$GITHUB_WORKSPACE/" "$HOME/.config/VelocityNvim/"
+          ls "$HOME/.config/VelocityNvim/init.lua" >/dev/null
+
+      - name: Run first-run installation (CI mode)
+        env:
+          VELOCITY_CI: "1"
+          VELOCITY_PROFILE: ${{ matrix.profile }}
+          NVIM_APPNAME: VelocityNvim
+        run: |
+          set -o pipefail
+          nvim --headless 2>&1 | tee install.log
+          test "${PIPESTATUS[0]}" -eq 0
+
+      - name: Verify installation
+        env:
+          NVIM_APPNAME: VelocityNvim
+        run: |
+          set -o pipefail
+          nvim --headless \
+            -c 'lua dofile(vim.fn.stdpath("config").."/tests/ci/verify_install.lua")' \
+            2>&1 | tee verify.log
+          test "${PIPESTATUS[0]}" -eq 0
+
+      - name: Upload logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: logs-macos-${{ matrix.profile }}
+          path: |
+            install.log
+            verify.log
+          if-no-files-found: ignore
