@@ -249,6 +249,89 @@ jobs:
           if-no-files-found: ignore
 
   # ────────────────────────────────────────────────────────────────────────────
+  # Same idea as rust-build, but on macOS so the dylib path is exercised.
+  # macos-latest ships a stable Rust toolchain by default; the job falls back
+  # to `brew install rust` if cargo ever disappears from the image.
+  # ────────────────────────────────────────────────────────────────────────────
+  macos-rust-build:
+    name: rust-build (macos, stable)
+    runs-on: macos-latest
+    steps:
+      - name: Ensure stable Rust is available
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! command -v cargo >/dev/null 2>&1; then
+            echo "cargo not preinstalled on runner; installing via Homebrew"
+            brew install rust
+          fi
+          rustc --version
+          cargo --version
+
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Install Neovim
+        run: brew install neovim
+
+      - name: Stage VelocityNvim config
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$HOME/.config"
+          cp -R "$GITHUB_WORKSPACE/" "$HOME/.config/VelocityNvim/"
+
+      - name: Run first-run installation (CI mode, with cargo present)
+        shell: bash
+        env:
+          VELOCITY_CI: "1"
+          VELOCITY_PROFILE: core
+          NVIM_APPNAME: VelocityNvim
+        run: |
+          set -o pipefail
+          nvim --headless 2>&1 | tee install.log
+          test "${PIPESTATUS[0]}" -eq 0
+
+      - name: Assert blink.cmp Rust dylib exists
+        shell: bash
+        run: |
+          set -euo pipefail
+          BLINK="$HOME/.local/share/VelocityNvim/site/pack/user/start/blink.cmp"
+          DYLIB="$BLINK/target/release/libblink_cmp_fuzzy.dylib"
+          if [ -f "$DYLIB" ]; then
+            echo "blink.cmp Rust matcher built successfully on stable Rust (macOS)"
+            file "$DYLIB"
+            ls -lh "$DYLIB"
+          else
+            echo "ERROR: Rust matcher .dylib missing — Phase 5 must have failed"
+            ls -la "$BLINK/target/release/" 2>/dev/null || echo "no target/ dir"
+            echo "--- last 80 lines of install.log ---"
+            tail -80 install.log
+            exit 1
+          fi
+
+      - name: Run install verifier
+        shell: bash
+        env:
+          NVIM_APPNAME: VelocityNvim
+        run: |
+          set -o pipefail
+          nvim --headless \
+            -c 'lua dofile(vim.fn.stdpath("config").."/tests/ci/verify_install.lua")' \
+            2>&1 | tee verify.log
+          test "${PIPESTATUS[0]}" -eq 0
+
+      - name: Upload logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: logs-macos-rust-build
+          path: |
+            install.log
+            verify.log
+          if-no-files-found: ignore
+
+  # ────────────────────────────────────────────────────────────────────────────
   # macOS via GitHub-hosted runner
   # ────────────────────────────────────────────────────────────────────────────
   macos:
