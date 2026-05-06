@@ -275,9 +275,9 @@ rm -rf ~/.cache/VelocityNvim
 
 ## Support
 
-- [GitHub Issues](https://github.com/Maik-0000FF/VelocityNvim/issues)
-- [Ko-fi](https://ko-fi.com/maik0000ff)
-- Star this repository
+[![GitHub Issues](https://img.shields.io/badge/GitHub-Issues-181717?logo=github&logoColor=white)](https://github.com/Maik-0000FF/VelocityNvim/issues)
+[![Ko-fi](https://img.shields.io/badge/Ko--fi-Support%20me-ff5f5f?logo=ko-fi&logoColor=white)](https://ko-fi.com/maik0000ff)
+[![Stars](https://img.shields.io/github/stars/Maik-0000FF/VelocityNvim?style=flat&label=Star&color=yellow)](https://github.com/Maik-0000FF/VelocityNvim)
 
 ## License
 
