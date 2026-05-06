@@ -273,13 +273,6 @@ rm -rf ~/.local/state/VelocityNvim
 rm -rf ~/.cache/VelocityNvim
 ```
 
-## Contributing
-
-1. Fork the repository
-2. Make changes
-3. Test with `:VelocityHealth`
-4. Submit a pull request
-
 ## Support
 
 - [GitHub Issues](https://github.com/Maik-0000FF/VelocityNvim/issues)
