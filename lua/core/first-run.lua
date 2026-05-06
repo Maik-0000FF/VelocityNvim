@@ -10,6 +10,42 @@ function M.is_needed()
   return vim.fn.isdirectory(plugins_dir) == 0
 end
 
+-- Verify Neovim meets the minimum required version (0.12.0).
+-- Returns true on success, or false plus a multi-line user-facing message.
+-- Distro packages on Debian/Ubuntu/Kali ship outdated Neovim (often < 0.12),
+-- which is why the message includes a tarball install hint.
+function M.assert_minimum_nvim_version()
+  local v = vim.version()
+  local required = { major = 0, minor = 12, patch = 0 }
+  local ok = v.major > required.major
+    or (v.major == required.major and v.minor > required.minor)
+    or (v.major == required.major and v.minor == required.minor and (v.patch or 0) >= required.patch)
+  if ok then
+    return true
+  end
+
+  local current = string.format("%d.%d.%d", v.major, v.minor, v.patch or 0)
+  local required_str = string.format("%d.%d.%d", required.major, required.minor, required.patch)
+  local message = table.concat({
+    "",
+    "VelocityNvim requires Neovim >= " .. required_str,
+    "  Detected: " .. current,
+    "",
+    "Distribution packages are often outdated (especially on Debian, Ubuntu, Kali).",
+    "Install the latest stable Neovim manually:",
+    "",
+    "  curl -fL -o /tmp/nvim.tar.gz \\",
+    "    https://github.com/neovim/neovim/releases/download/stable/nvim-linux-x86_64.tar.gz",
+    "  sudo tar -C /opt -xzf /tmp/nvim.tar.gz",
+    "  sudo ln -sf /opt/nvim-linux-x86_64/bin/nvim /usr/local/bin/nvim",
+    "",
+    "Then re-launch Neovim to start the VelocityNvim installation.",
+    "",
+  }, "\n")
+
+  return false, message
+end
+
 -- Generate the complete installation script
 local function generate_install_script()
   local data_dir = vim.fn.stdpath("data")

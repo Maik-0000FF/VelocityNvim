@@ -9,6 +9,19 @@ if vim.fn.isdirectory(plugins_dir) == 0 then
   local first_run = require("core.first-run")
 
   if first_run.is_needed() then
+    -- Abort early when Neovim is too old; nothing else will work and the
+    -- installer can't bootstrap nvim itself.
+    local version_ok, version_msg = first_run.assert_minimum_nvim_version()
+    if not version_ok then
+      if vim.env.VELOCITY_CI == "1" then
+        io.stderr:write(version_msg)
+        vim.cmd("cquit 1")
+        return
+      end
+      vim.api.nvim_echo({ { version_msg, "ErrorMsg" } }, true, {})
+      return
+    end
+
     -- CI / unattended mode: run bash installer non-interactively, propagate exit code
     if vim.env.VELOCITY_CI == "1" then
       first_run.run_installation_ci()

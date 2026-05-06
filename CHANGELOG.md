@@ -8,6 +8,24 @@
   - Language-agnostic support (TypeScript, Python, Rust, Go, etc.)
   - Zero-configuration background operation
   - Plugin count: 25 → 26
+- First-run version guard — aborts with a clear, copy-pasteable tarball
+  install hint when launched on a Neovim version below the minimum
+  (`lua/core/first-run.lua:assert_minimum_nvim_version`)
+- README note for Debian / Ubuntu / Kali users — apt typically ships
+  outdated Neovim; tarball install steps included
+
+### Changed
+- **Minimum Neovim version raised to 0.12.0** (was 0.11.0). The CI install
+  matrix has been pulling the `stable` Neovim tarball — currently the 0.12
+  line — since `ea34129`, so 0.11 was no longer being verified. Bumping
+  the requirement makes the documented baseline match what is actually
+  tested. README badge, requirements, bug-report template, and the
+  first-run version check were updated accordingly.
+
+### Removed
+- **`install.sh`** — orphaned bootstrap script from the initial commit.
+  Never referenced by README, CI, the website repo, or any other code path
+  since `lua/core/first-run.lua` took over the installation flow.
 
 ---
 

@@ -3,7 +3,7 @@
 > Native vim.pack Neovim Distribution - No Plugin Manager Required
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Neovim](https://img.shields.io/badge/Neovim-0.11+-green.svg)](https://neovim.io)
+[![Neovim](https://img.shields.io/badge/Neovim-0.12+-green.svg)](https://neovim.io)
 [![Native vim.pack](https://img.shields.io/badge/Architecture-Native_vim.pack-brightgreen.svg)](#architecture)
 [![Ko-fi](https://img.shields.io/badge/Ko--fi-Support%20me-ff5f5f?logo=ko-fi&logoColor=white)](https://ko-fi.com/maik0000ff)
 
@@ -25,10 +25,21 @@ A modern Neovim distribution built on native vim.pack architecture with modern v
 
 ### Essential
 
-- **Neovim >= 0.11.0**
+- **Neovim >= 0.12.0**
 - **Git**
 - **GCC/Clang** (for Treesitter parser compilation)
 - **NerdFont** (recommended: [MesloLGS NF](https://github.com/ryanoasis/nerd-fonts/releases/latest))
+
+> **Debian / Ubuntu / Kali users:** the `nvim` package in apt is usually
+> outdated (often < 0.12) and will not work. Install the latest stable
+> Neovim manually before launching VelocityNvim:
+>
+> ```bash
+> curl -fL -o /tmp/nvim.tar.gz \
+>   https://github.com/neovim/neovim/releases/download/stable/nvim-linux-x86_64.tar.gz
+> sudo tar -C /opt -xzf /tmp/nvim.tar.gz
+> sudo ln -sf /opt/nvim-linux-x86_64/bin/nvim /usr/local/bin/nvim
+> ```
 
 ### Full Installation (Recommended)
 
@@ -274,12 +285,6 @@ rm -rf ~/.cache/VelocityNvim
 - [GitHub Issues](https://github.com/Maik-0000FF/VelocityNvim/issues)
 - [Ko-fi](https://ko-fi.com/maik0000ff)
 - Star this repository
-
-### Bitcoin Donations
-
-```
-bc1q6gmpgfn4wx2hx2c3njgpep9tl00etma9k7w6d4
-```
 
 ## License
 
